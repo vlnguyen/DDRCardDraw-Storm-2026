@@ -9,7 +9,7 @@ const DEFAULT_LOBBY_CONNECTION = {
   password: "YYZ",
 };
 
-export function LobbyState() {
+export function LiveRankings() {
   const lobbyConnection = useAppState(
     (s) => s.event.tournament?.lobbyConnection,
   );

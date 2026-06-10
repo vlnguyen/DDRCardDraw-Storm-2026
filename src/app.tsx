@@ -149,8 +149,8 @@ const router = createBrowserRouter([
       {
         index: true,
         lazy: async () => {
-          const { LobbyState } = await import("./obs-sources/lobby");
-          return { Component: LobbyState };
+          const { LiveRankings } = await import("./obs-sources/lobby");
+          return { Component: LiveRankings };
         },
       },
     ],
