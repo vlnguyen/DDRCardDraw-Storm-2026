@@ -105,6 +105,20 @@ export const eventSlice = createSlice({
     updateObsCss(state, action: PayloadAction<string>) {
       state.obsCss = action.payload;
     },
+    updateLobbyConnection(
+      state,
+      action: PayloadAction<{
+        url: string;
+        port: number;
+        code: string;
+        password: string;
+      }>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      state.tournament.lobbyConnection = action.payload;
+    },
   },
   extraReducers(builder) {
     builder.addCase(mergeDraws, (state, { payload }) => {

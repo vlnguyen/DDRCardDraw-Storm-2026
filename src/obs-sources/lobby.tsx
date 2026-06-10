@@ -48,6 +48,14 @@ export function LobbyState() {
       }
     });
 
+    socket.addEventListener("error", () => {
+      setGameState(null);
+    });
+
+    socket.addEventListener("close", () => {
+      setGameState(null);
+    });
+
     return () => {
       socket.close();
     };

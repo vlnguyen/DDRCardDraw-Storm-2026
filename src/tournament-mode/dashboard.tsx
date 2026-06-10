@@ -11,10 +11,12 @@ import {
   H3,
   H4,
   InputGroup,
+  Tab,
+  Tabs,
 } from "@blueprintjs/core";
 import { useAppDispatch, useAppState } from "../state/store";
 import { Add, Duplicate, Edit, FloppyDisk } from "@blueprintjs/icons";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { eventSlice } from "../state/event.slice";
 import { nanoid } from "nanoid";
 import { copyObsSource, routableGlobalSourcePath } from "./copy-obs-source";
@@ -23,49 +25,140 @@ import styles from "./dashboard.css";
 import { useInObs, useTheme } from "../theme-toggle";
 import { useHref } from "react-router-dom";
 import ReactCodeMirror from "@uiw/react-codemirror";
+import { toaster } from "../toaster";
+
+type DashboardTabId = "obs-text-sources" | "lobby-rankings";
 
 export function Dashboard() {
+  const [currentTab, setCurrentTab] = useState<DashboardTabId>(
+    "obs-text-sources",
+  );
+
+  return (
+    <div className={styles.container}>
+      <Tabs
+        id="dashboard"
+        size="large"
+        selectedTabId={currentTab}
+        onChange={(newTabId: DashboardTabId) => setCurrentTab(newTabId)}
+      >
+        <Tab id="obs-text-sources" panel={<ObsTextSources />}>
+          OBS Text Sources
+        </Tab>
+        <Tab id="lobby-rankings" panel={<LobbyRankings />}>
+          Lobby Rankings
+        </Tab>
+      </Tabs>
+    </div>
+  );
+}
+
+function ObsTextSources() {
   const [currentEdit, setCurrentEdit] = useState<string | null>(null);
   const labels = useAppState((s) => s.event.obsLabels);
-  const isObs = useInObs();
 
   return (
     <>
-      <div className={styles.container}>
-        {!isObs && (
-          <p>
-            <em>
-              <b>HINT:</b> add this page as a custom browser dock in OBS!
-            </em>
-          </p>
-        )}
-        <section style={{ maxWidth: "600px" }}>
-          <EditDialog
-            sourceId={currentEdit}
-            close={() => setCurrentEdit(null)}
-          />
-          <H3>
-            OBS Text Sources{" "}
-            <Button
-              icon={<Add />}
-              onClick={() => setCurrentEdit(nanoid())}
-            ></Button>
-          </H3>
-          <CardList>
-            {Object.entries(labels).map(([id, { label, value }]) => (
-              <LabelCard
-                key={id}
-                id={id}
-                label={label}
-                value={value}
-                onEdit={() => setCurrentEdit(id)}
-              />
-            ))}
-          </CardList>
-        </section>
-        <CssEditor />
-      </div>
+      <section style={{ maxWidth: "600px" }}>
+        <EditDialog
+          sourceId={currentEdit}
+          close={() => setCurrentEdit(null)}
+        />
+        <H3>
+          OBS Text Sources{" "}
+          <Button
+            icon={<Add />}
+            onClick={() => setCurrentEdit(nanoid())}
+          ></Button>
+        </H3>
+        <CardList>
+          {Object.entries(labels).map(([id, { label, value }]) => (
+            <LabelCard
+              key={id}
+              id={id}
+              label={label}
+              value={value}
+              onEdit={() => setCurrentEdit(id)}
+            />
+          ))}
+        </CardList>
+      </section>
+      <CssEditor />
     </>
+  );
+}
+
+function LobbyRankings() {
+  const lobbyConnection = useAppState(
+    (s) => s.event.tournament?.lobbyConnection,
+  );
+  const dispatch = useAppDispatch();
+
+  const [url, setUrl] = useState(lobbyConnection?.url ?? "");
+  const [port, setPort] = useState(lobbyConnection?.port?.toString() ?? "");
+  const [code, setCode] = useState(lobbyConnection?.code ?? "");
+  const [password, setPassword] = useState(lobbyConnection?.password ?? "");
+
+  useEffect(() => {
+    if (lobbyConnection) {
+      setUrl(lobbyConnection.url ?? "");
+      setPort(lobbyConnection.port?.toString() ?? "");
+      setCode(lobbyConnection.code ?? "");
+      setPassword(lobbyConnection.password ?? "");
+    }
+  }, [lobbyConnection]);
+
+  const submit = () => {
+    dispatch(
+      eventSlice.actions.updateLobbyConnection({
+        url,
+        port: Number(port) || 0,
+        code,
+        password,
+      }),
+    );
+    toaster.show({
+      message: "Lobby connection info has been updated.",
+      intent: "success",
+    });
+  };
+
+  return (
+    <section style={{ maxWidth: "600px" }}>
+      <H3>Lobby Rankings</H3>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit();
+        }}
+      >
+        <FormGroup label="URL">
+          <InputGroup value={url} onChange={(e) => setUrl(e.target.value)} />
+        </FormGroup>
+        <FormGroup label="Port">
+          <InputGroup
+            type="number"
+            value={port}
+            onChange={(e) => setPort(e.target.value)}
+          />
+        </FormGroup>
+        <FormGroup label="Code">
+          <InputGroup
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
+        </FormGroup>
+        <FormGroup label="Password">
+          <InputGroup
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </FormGroup>
+        <Button type="submit" intent="primary">
+          Submit
+        </Button>
+      </form>
+    </section>
   );
 }
 
