@@ -13,8 +13,21 @@ export interface CabInfo {
 interface EventState {
   eventName: string;
   cabs: Record<string, CabInfo>;
+  tournament: TournamentState;
   obsLabels: Record<string, { label: string; value: string }>;
   obsCss: string;
+}
+
+/**
+ * Event state properties that are unique to use at Project Storm
+ */
+interface TournamentState {
+  lobbyConnection?: {
+    url?: string;
+    port?: number;
+    code?: string;
+    password?: string;
+  }
 }
 
 const initialState: EventState = {
@@ -25,6 +38,14 @@ const initialState: EventState = {
       name: "Primary Cab",
       activeMatch: null,
     },
+  },
+  tournament: {
+    lobbyConnection: {
+      url: 'syncservice.groovestats.com',
+      port: 1337,
+      code: '',
+      password: '',
+    }
   },
   obsLabels: {},
   obsCss: `h1 {

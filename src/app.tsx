@@ -143,6 +143,19 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/lobby-rankings",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { LobbyState } = await import("./obs-sources/lobby");
+          return { Component: LobbyState };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/cab/:cabId/source",
     element: <ObsSource />,
     children: [

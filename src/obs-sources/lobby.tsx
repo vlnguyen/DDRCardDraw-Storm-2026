@@ -1,0 +1,57 @@
+import { useEffect, useState } from "react";
+import { useAppState } from "../state/store";
+import { LobbyStatePayload } from "./lobby.types";
+
+const DEFAULT_LOBBY_CONNECTION = {
+  url: "syncservice.groovestats.com",
+  port: 1337,
+  code: "ERGK",
+  password: "YYZ",
+};
+
+export function LobbyState() {
+  const lobbyConnection = useAppState(
+    (s) => s.event.tournament?.lobbyConnection,
+  );
+
+  const url = lobbyConnection?.url ?? DEFAULT_LOBBY_CONNECTION.url;
+  const port = lobbyConnection?.port ?? DEFAULT_LOBBY_CONNECTION.port;
+  const code = lobbyConnection?.code ?? DEFAULT_LOBBY_CONNECTION.code;
+  const password = lobbyConnection?.password ?? DEFAULT_LOBBY_CONNECTION.password;
+
+  const [gameState, setGameState] = useState<LobbyStatePayload | null>(null);
+
+  useEffect(() => {
+    const socket = new WebSocket(`ws://${url}:${port}`);
+
+    socket.addEventListener("open", () => {
+      socket.send(
+        JSON.stringify({
+          event: "spectateLobby",
+          data: {
+            spectator: { profileName: "OBS" },
+            code,
+            password,
+          },
+        }),
+      );
+    });
+
+    socket.addEventListener("message", (ev) => {
+      try {
+        const message = JSON.parse(ev.data);
+        if (message.event === "lobbyState") {
+          setGameState(message.data);
+        }
+      } catch {
+        // ignore malformed messages
+      }
+    });
+
+    return () => {
+      socket.close();
+    };
+  }, [url, port, code, password]);
+
+  return <pre>{JSON.stringify(gameState, null, 2)}</pre>;
+}
