@@ -11,60 +11,79 @@ import {
   H3,
   H4,
   InputGroup,
+  Tab,
+  Tabs,
 } from "@blueprintjs/core";
-import { useAppDispatch, useAppState } from "../state/store";
 import { Add, Duplicate, Edit, FloppyDisk } from "@blueprintjs/icons";
-import React, { useRef, useState } from "react";
-import { eventSlice } from "../state/event.slice";
-import { nanoid } from "nanoid";
-import { copyObsSource, routableGlobalSourcePath } from "./copy-obs-source";
-
-import styles from "./dashboard.css";
-import { useInObs, useTheme } from "../theme-toggle";
-import { useHref } from "react-router-dom";
+import { css } from "@codemirror/lang-css";
 import ReactCodeMirror from "@uiw/react-codemirror";
+import { nanoid } from "nanoid";
+import React, { useRef, useState } from "react";
+import { useHref } from "react-router-dom";
+import { eventSlice } from "../../state/event.slice";
+import { useAppDispatch, useAppState } from "../../state/store";
+import { useTheme } from "../../theme-toggle";
+import { copyObsSource, routableGlobalSourcePath } from "../copy-obs-source";
+import styles from "./dashboard.css";
+import { Lobbies } from "./lobbies";
+import { MatchLog } from "./match-log";
+
+type DashboardTabId = "obs-text-sources" | "lobbies" | "match-log";
 
 export function Dashboard() {
+  const [currentTab, setCurrentTab] =
+    useState<DashboardTabId>("obs-text-sources");
+
+  return (
+    <div className={styles.container}>
+      <Tabs
+        id="dashboard"
+        size="large"
+        selectedTabId={currentTab}
+        onChange={(newTabId: DashboardTabId) => setCurrentTab(newTabId)}
+      >
+        <Tab id="obs-text-sources" panel={<ObsTextSources />}>
+          OBS Text Sources
+        </Tab>
+        <Tab id="lobbies" panel={<Lobbies />}>
+          Lobbies
+        </Tab>
+        <Tab id="match-log" panel={<MatchLog />}>
+          Match Log
+        </Tab>
+      </Tabs>
+    </div>
+  );
+}
+
+function ObsTextSources() {
   const [currentEdit, setCurrentEdit] = useState<string | null>(null);
   const labels = useAppState((s) => s.event.obsLabels);
-  const isObs = useInObs();
 
   return (
     <>
-      <div className={styles.container}>
-        {!isObs && (
-          <p>
-            <em>
-              <b>HINT:</b> add this page as a custom browser dock in OBS!
-            </em>
-          </p>
-        )}
-        <section style={{ maxWidth: "600px" }}>
-          <EditDialog
-            sourceId={currentEdit}
-            close={() => setCurrentEdit(null)}
-          />
-          <H3>
-            OBS Text Sources{" "}
-            <Button
-              icon={<Add />}
-              onClick={() => setCurrentEdit(nanoid())}
-            ></Button>
-          </H3>
-          <CardList>
-            {Object.entries(labels).map(([id, { label, value }]) => (
-              <LabelCard
-                key={id}
-                id={id}
-                label={label}
-                value={value}
-                onEdit={() => setCurrentEdit(id)}
-              />
-            ))}
-          </CardList>
-        </section>
-        <CssEditor />
-      </div>
+      <section style={{ maxWidth: "600px" }}>
+        <EditDialog sourceId={currentEdit} close={() => setCurrentEdit(null)} />
+        <H3>
+          OBS Text Sources{" "}
+          <Button
+            icon={<Add />}
+            onClick={() => setCurrentEdit(nanoid())}
+          ></Button>
+        </H3>
+        <CardList>
+          {Object.entries(labels).map(([id, { label, value }]) => (
+            <LabelCard
+              key={id}
+              id={id}
+              label={label}
+              value={value}
+              onEdit={() => setCurrentEdit(id)}
+            />
+          ))}
+        </CardList>
+      </section>
+      <CssEditor />
     </>
   );
 }
@@ -105,7 +124,7 @@ function EditDialog({
   close(this: void): void;
 }) {
   const label = useAppState((s) =>
-    sourceId ? s.event.obsLabels[sourceId] : null,
+    sourceId ? s.event.obsLabels[sourceId] : null
   ) || { label: "", value: "" };
   const dispatch = useAppDispatch();
   const nameInput = useRef<HTMLInputElement>(null);
@@ -119,12 +138,12 @@ function EditDialog({
         id: sourceId,
         label: nameInput.current?.value || "",
         value: valueInput.current?.value || "",
-      }),
+      })
     );
     close();
   };
   const handleInputKeydown: React.KeyboardEventHandler<HTMLInputElement> = (
-    e,
+    e
   ) => {
     if (
       e.key === "Enter" &&
@@ -169,8 +188,6 @@ function EditDialog({
     </Dialog>
   );
 }
-
-import { css } from "@codemirror/lang-css";
 
 function CssEditor() {
   const cleanDoc = useAppState((s) => s.event.obsCss);

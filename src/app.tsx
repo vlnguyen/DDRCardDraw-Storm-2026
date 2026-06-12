@@ -123,7 +123,9 @@ const router = createBrowserRouter([
       {
         path: "dash",
         lazy: async () => {
-          const { Dashboard } = await import("./tournament-mode/dashboard");
+          const { Dashboard } = await import(
+            "./tournament-mode/dashboard/dashboard"
+          );
           return { Component: Dashboard };
         },
       },
@@ -138,6 +140,19 @@ const router = createBrowserRouter([
         lazy: async () => {
           const { GlobalLabel } = await import("./obs-sources/text");
           return { Component: GlobalLabel };
+        },
+      },
+    ],
+  },
+  {
+    path: "e/:roomName/live-rankings",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { LiveRankings } = await import("./obs-sources/lobby");
+          return { Component: LiveRankings };
         },
       },
     ],

@@ -1,0 +1,18 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.rankOrdinal {
+  font-size: 9vw;
+  text-shadow: 2px 2px 0px black;
+  margin-left: 10px;
+  margin-right: 10px;
+}

@@ -13,8 +13,19 @@ export interface CabInfo {
 interface EventState {
   eventName: string;
   cabs: Record<string, CabInfo>;
+  tournament: TournamentState;
   obsLabels: Record<string, { label: string; value: string }>;
   obsCss: string;
+}
+
+/**
+ * Event state properties that are unique to use at Project Storm
+ */
+interface TournamentState {
+  lobbyConnection?: {
+    code?: string;
+    password?: string;
+  };
 }
 
 const initialState: EventState = {
@@ -24,6 +35,12 @@ const initialState: EventState = {
       id: "default",
       name: "Primary Cab",
       activeMatch: null,
+    },
+  },
+  tournament: {
+    lobbyConnection: {
+      code: "",
+      password: "",
     },
   },
   obsLabels: {},
@@ -83,6 +100,18 @@ export const eventSlice = createSlice({
     },
     updateObsCss(state, action: PayloadAction<string>) {
       state.obsCss = action.payload;
+    },
+    updateLobbyConnection(
+      state,
+      action: PayloadAction<{
+        code: string;
+        password: string;
+      }>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      state.tournament.lobbyConnection = action.payload;
     },
   },
   extraReducers(builder) {
