@@ -1,4 +1,4 @@
-import { Button, Card, H3, H4 } from "@blueprintjs/core";
+import { Button, Card, H3, H4, Tooltip } from "@blueprintjs/core";
 import { Refresh } from "@blueprintjs/icons";
 import { useEffect, useState } from "react";
 import { Lobby, Player } from "../../obs-sources/lobby.types";
@@ -7,6 +7,8 @@ import {
   SYNCSTART_PORT,
   SYNCSTART_URL,
 } from "../../obs-sources/syncstart-connection";
+import { eventSlice } from "../../state/event.slice";
+import { useAppDispatch, useAppState } from "../../state/store";
 import { formatRatio } from "./match-log";
 import matchLogStyles from "./match-log.css";
 import styles from "./lobbies.css";
@@ -16,6 +18,11 @@ export function Lobbies() {
 
   const [lobbies, setLobbies] = useState<Lobby[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  const dispatch = useAppDispatch();
+  const lobbyConnection = useAppState(
+    (s) => s.event.tournament?.lobbyConnection,
+  );
 
   const gameState = useLiveRankings({
     name: "Stream Dashboard",
@@ -78,12 +85,28 @@ export function Lobbies() {
     setSelectedLobby(isActive ? null : lobby);
   };
 
+  const isPushedToStream =
+    !!selectedLobby && selectedLobby.code === lobbyConnection?.code;
+
+  const togglePushToStream = () => {
+    if (isPushedToStream) {
+      dispatch(eventSlice.actions.updateLobbyConnection({ code: "", password: "" }));
+    } else if (selectedLobby) {
+      dispatch(
+        eventSlice.actions.updateLobbyConnection({
+          code: selectedLobby.code,
+          password: selectedLobby.password,
+        }),
+      );
+    }
+  };
+
   return (
     <div className={styles.lobbies}>
       <section className={styles.lobbyList}>
         <H3>
           Lobbies{" "}
-          <Button icon={<Refresh />} onClick={fetchLobbies} variant="minimal" />
+          <Button icon={<Refresh />} onClick={fetchLobbies} />
         </H3>
         {error && <p>{error}</p>}
         <div className={styles.lobbyCards}>
@@ -109,7 +132,12 @@ export function Lobbies() {
                 interactive
                 onClick={() => toggleSpectateLobby(lobby)}
               >
-                <H4>{lobby.code}</H4>
+                <H4>
+                  {lobby.code}
+                  {lobby.code === lobbyConnection?.code &&
+                    lobbyConnection.code &&
+                    " 🎥🔴"}
+                </H4>
                 <p>Song: {songLabel}</p>
                 {players.length > 0 && (
                   <>
@@ -139,7 +167,20 @@ export function Lobbies() {
         </div>
       </section>
       <section className={styles.lobbyState}>
-        <H3>Lobby State</H3>
+        <H3>
+          Lobby State{" "}
+          {selectedLobby && (
+            <Tooltip
+              content={
+                isPushedToStream ? "Remove from stream" : "Push to stream"
+              }
+            >
+              <Button onClick={togglePushToStream}>
+                {isPushedToStream ? "🎥❌" : "🎥🔴"}
+              </Button>
+            </Tooltip>
+          )}
+        </H3>
         {gameState?.songInfo && (
           <p>
             {gameState.songInfo.title}
