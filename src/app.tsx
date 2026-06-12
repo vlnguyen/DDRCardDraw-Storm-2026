@@ -143,7 +143,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "e/:roomName/lobby-rankings",
+    path: "e/:roomName/live-rankings",
     element: <ObsSource />,
     children: [
       {

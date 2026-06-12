@@ -6584,6 +6584,7 @@ __metadata:
     react: "npm:19.2.3"
     react-dom: "npm:19.2.3"
     react-error-boundary: "npm:6.0.1"
+    react-flip-toolkit: "npm:^7.2.4"
     react-intl: "npm:8.0.9"
     react-redux: "npm:^9.2.0"
     react-refresh: "npm:0.18.0"
@@ -7770,6 +7771,15 @@ __metadata:
   bin:
     flat: cli.js
   checksum: 10/72479e651c15eab53e25ce04c31bab18cfaac0556505cac19221dbbe85bbb9686bc76e4d397e89e5bf516ce667dcf818f8b07e585568edba55abc2bf1f698fb5
+  languageName: node
+  linkType: hard
+
+"flip-toolkit@npm:7.2.4":
+  version: 7.2.4
+  resolution: "flip-toolkit@npm:7.2.4"
+  dependencies:
+    rematrix: "npm:0.2.2"
+  checksum: 10/1fadae1fbfbeea16392ade6a23599717c654437150e4ef7c3c1a24edc710f9e1a616887f580d6cb43e91b958277ada6d02da71938821b299df9a906860e237be
   languageName: node
   linkType: hard
 
@@ -11769,7 +11779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.6.2":
+"prop-types@npm:^15.6.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -11907,6 +11917,19 @@ __metadata:
   version: 3.2.2
   resolution: "react-fast-compare@npm:3.2.2"
   checksum: 10/a6826180ba75cefba1c8d3ac539735f9b627ca05d3d307fe155487f5d0228d376dac6c9708d04a283a7b9f9aee599b637446635b79c8c8753d0b4eece56c125c
+  languageName: node
+  linkType: hard
+
+"react-flip-toolkit@npm:^7.2.4":
+  version: 7.2.4
+  resolution: "react-flip-toolkit@npm:7.2.4"
+  dependencies:
+    flip-toolkit: "npm:7.2.4"
+    prop-types: "npm:^15.8.1"
+  peerDependencies:
+    react: ">= 16.x"
+    react-dom: ">= 16.x"
+  checksum: 10/7e6833f2e1330c9be048d549f3e67438dc1625417645d938b00bb8e2fc2d3c81799a54591f21de1c55e82efd0320d943539be9e15bafacb89b03b848bdaa86b6
   languageName: node
   linkType: hard
 
@@ -12222,6 +12245,13 @@ __metadata:
     fbjs: "npm:^3.0.0"
     invariant: "npm:^2.2.4"
   checksum: 10/d6211e8206ea7273f88dccd5ea72abe6836c6f0bfe95a48ddf80c54e47a08edaf312bedecba98a0a0ba6abcd360cbacd6a2ddb4cef65f00170fb0f36cc324f5e
+  languageName: node
+  linkType: hard
+
+"rematrix@npm:0.2.2":
+  version: 0.2.2
+  resolution: "rematrix@npm:0.2.2"
+  checksum: 10/59e776d199a8863412271ddfc7cf75e892260f3fbeebb5495929c68cedfae119b95d926300dc6fba88a4d6326af36fb75feb056b9fea7a85cd3f2f81fbd043fc
   languageName: node
   linkType: hard
 

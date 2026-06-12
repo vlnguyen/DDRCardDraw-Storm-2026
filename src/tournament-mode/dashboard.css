@@ -10,3 +10,17 @@
   display: flex;
   justify-content: space-between;
 }
+
+.lobbyRankings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.lobbyConnectionInfo {
+  flex: 0 1 320px;
+}
+
+.lobbyState {
+  flex: 1 1 400px;
+}
