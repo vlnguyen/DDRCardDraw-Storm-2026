@@ -123,7 +123,9 @@ const router = createBrowserRouter([
       {
         path: "dash",
         lazy: async () => {
-          const { Dashboard } = await import("./tournament-mode/dashboard");
+          const { Dashboard } = await import(
+            "./tournament-mode/dashboard/dashboard"
+          );
           return { Component: Dashboard };
         },
       },
