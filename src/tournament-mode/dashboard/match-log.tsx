@@ -8,8 +8,6 @@ import {
 } from "../../obs-sources/syncstart-connection";
 import styles from "./match-log.css";
 
-const REFRESH_INTERVAL_SECONDS = 5 * 60;
-
 function formatRatio(numerator: number | null, total: number | null) {
   if (numerator == null || total == null) return "-";
   return `${numerator}/${total}`;
@@ -19,7 +17,6 @@ export function MatchLog() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [now, setNow] = useState(() => Date.now());
 
   const fetchMatches = () => {
     setError(null);
@@ -34,14 +31,26 @@ export function MatchLog() {
 
   useEffect(() => {
     fetchMatches();
-    const refreshInterval = setInterval(
-      fetchMatches,
-      REFRESH_INTERVAL_SECONDS * 1000,
-    );
-    const tickInterval = setInterval(() => setNow(Date.now()), 1000);
+  }, []);
+
+  useEffect(() => {
+    const socket = new WebSocket(`ws://${SYNCSTART_URL}:${SYNCSTART_PORT}`);
+
+    socket.addEventListener("message", (ev) => {
+      try {
+        const message = JSON.parse(ev.data);
+        if (message.event === "matchLogged") {
+          const match: Match = message.data;
+          setMatches((prev) => [match, ...prev]);
+          setLastUpdated(new Date());
+        }
+      } catch {
+        // ignore malformed messages
+      }
+    });
+
     return () => {
-      clearInterval(refreshInterval);
-      clearInterval(tickInterval);
+      socket.close();
     };
   }, []);
 
@@ -49,13 +58,6 @@ export function MatchLog() {
     (sum, match) => sum + match.scores.length,
     0,
   );
-  const secondsUntilRefresh = lastUpdated
-    ? Math.max(
-        0,
-        REFRESH_INTERVAL_SECONDS -
-          Math.floor((now - lastUpdated.getTime()) / 1000),
-      )
-    : REFRESH_INTERVAL_SECONDS;
 
   return (
     <section className={styles.container}>
@@ -67,8 +69,6 @@ export function MatchLog() {
           Last updated: {lastUpdated.toLocaleString()}
           <br />
           Received {matches.length} matches and {totalScores} scores.
-          <br />
-          Next update in {secondsUntilRefresh} seconds
         </p>
       )}
       {error && <p>{error}</p>}
