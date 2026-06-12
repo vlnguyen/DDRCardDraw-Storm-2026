@@ -22,6 +22,11 @@ export function useLiveRankings(
   const [gameState, setGameState] = useState<LobbyStatePayload | null>(null);
 
   useEffect(() => {
+    if (!code) {
+      setGameState(null);
+      return;
+    }
+
     const socket = new WebSocket(`ws://${SYNCSTART_URL}:${SYNCSTART_PORT}`);
 
     socket.addEventListener("open", () => {

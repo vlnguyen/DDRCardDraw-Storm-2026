@@ -62,7 +62,8 @@ export function MatchLog() {
   return (
     <section className={styles.container}>
       <H3>
-        Match Log <Button icon={<Refresh />} onClick={fetchMatches} minimal />
+        Match Log{" "}
+        <Button icon={<Refresh />} onClick={fetchMatches} variant="minimal" />
       </H3>
       {lastUpdated && (
         <p className={styles.refreshInfo}>

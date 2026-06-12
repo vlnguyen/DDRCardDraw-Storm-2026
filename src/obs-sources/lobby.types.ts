@@ -52,6 +52,26 @@ export interface LobbyStatePayload {
   songInfo?: SongInfo;
 }
 
+export interface Spectator {
+  profileName: string;
+  socketId?: string;
+}
+
+export interface Machine {
+  player1?: Player;
+  player2?: Player;
+  socketId?: string;
+}
+
+export interface Lobby {
+  code: string;
+  password: string;
+  machines: Record<string, Machine>;
+  spectators: Record<string, Spectator>;
+  songInfo?: SongInfo;
+  lastUpdate: number;
+}
+
 /**
  * Mirrors syncstart's src/MatchLog/MatchLog.types.ts.
  */

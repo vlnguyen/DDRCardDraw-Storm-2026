@@ -25,10 +25,10 @@ import { useAppDispatch, useAppState } from "../../state/store";
 import { useTheme } from "../../theme-toggle";
 import { copyObsSource, routableGlobalSourcePath } from "../copy-obs-source";
 import styles from "./dashboard.css";
-import { LobbyRankings } from "./lobby-rankings";
+import { Lobbies } from "./lobbies";
 import { MatchLog } from "./match-log";
 
-type DashboardTabId = "obs-text-sources" | "lobby-rankings" | "match-log";
+type DashboardTabId = "obs-text-sources" | "lobbies" | "match-log";
 
 export function Dashboard() {
   const [currentTab, setCurrentTab] =
@@ -45,8 +45,8 @@ export function Dashboard() {
         <Tab id="obs-text-sources" panel={<ObsTextSources />}>
           OBS Text Sources
         </Tab>
-        <Tab id="lobby-rankings" panel={<LobbyRankings />}>
-          Lobby Rankings
+        <Tab id="lobbies" panel={<Lobbies />}>
+          Lobbies
         </Tab>
         <Tab id="match-log" panel={<MatchLog />}>
           Match Log
