@@ -21,6 +21,7 @@ export interface Judgments {
 
 export interface Player {
   playerId: "P1" | "P2";
+  socketId?: string;
   profileName: string;
   screenName:
     | "NoScreen"

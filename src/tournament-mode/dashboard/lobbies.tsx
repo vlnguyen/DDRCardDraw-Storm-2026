@@ -9,6 +9,8 @@ import {
 } from "../../obs-sources/syncstart-connection";
 import { eventSlice } from "../../state/event.slice";
 import { useAppDispatch, useAppState } from "../../state/store";
+import { formatRatio } from "./match-log";
+import matchLogStyles from "./match-log.css";
 import styles from "./lobbies.css";
 
 export function Lobbies() {
@@ -144,8 +146,181 @@ export function Lobbies() {
       </section>
       <section className={styles.lobbyState}>
         <H3>Lobby State</H3>
-        {gameState && <pre>{JSON.stringify(gameState, null, 2)}</pre>}
+        {gameState?.songInfo && (
+          <p>
+            {gameState.songInfo.title}
+            {gameState.songInfo.artist && ` - ${gameState.songInfo.artist}`}
+          </p>
+        )}
+        {groupPlayersByMachine(gameState?.players).map(
+          ({ socketId, players }) => (
+            <MachineStateCard
+              key={socketId}
+              socketId={socketId}
+              players={players}
+            />
+          ),
+        )}
       </section>
     </div>
+  );
+}
+
+interface MachinePlayers {
+  socketId: string;
+  players: Player[];
+}
+
+function groupPlayersByMachine(
+  players: Player[] | undefined,
+): MachinePlayers[] {
+  if (!players) return [];
+  const machines = new Map<string, Map<string, Player>>();
+  for (const player of players) {
+    const socketId = player.socketId ?? "";
+    let byPlayerId = machines.get(socketId);
+    if (!byPlayerId) {
+      byPlayerId = new Map();
+      machines.set(socketId, byPlayerId);
+    }
+    byPlayerId.set(player.playerId, player);
+  }
+  return [...machines.entries()].map(([socketId, byPlayerId]) => ({
+    socketId,
+    players: [...byPlayerId.values()],
+  }));
+}
+
+function MachineStateCard({ socketId, players }: MachinePlayers) {
+  return (
+    <Card className={matchLogStyles.matchCard}>
+      <div className={matchLogStyles.matchHeader}>
+        <H4>Machine {socketId}</H4>
+        {players[0]?.screenName && <span>{players[0].screenName}</span>}
+      </div>
+      <table className={matchLogStyles.scoreTable}>
+        <thead>
+          <tr>
+            <th className={styles.playerNameCell}>Player</th>
+            <th className={matchLogStyles.numericCell}>EX%</th>
+            <th
+              className={`${matchLogStyles.numericCell} ${matchLogStyles.fantasticPlus}`}
+            >
+              FA+
+            </th>
+            <th
+              className={`${matchLogStyles.numericCell} ${matchLogStyles.fantastic}`}
+            >
+              FA
+            </th>
+            <th
+              className={`${matchLogStyles.numericCell} ${matchLogStyles.excellent}`}
+            >
+              EXC
+            </th>
+            <th
+              className={`${matchLogStyles.numericCell} ${matchLogStyles.great}`}
+            >
+              Great
+            </th>
+            <th
+              className={`${matchLogStyles.numericCell} ${matchLogStyles.decent}`}
+            >
+              Decent
+            </th>
+            <th
+              className={`${matchLogStyles.numericCell} ${matchLogStyles.wayOff}`}
+            >
+              W/O
+            </th>
+            <th
+              className={`${matchLogStyles.numericCell} ${matchLogStyles.miss}`}
+            >
+              Miss
+            </th>
+            <th className={matchLogStyles.numericCell}>Mines</th>
+            <th className={matchLogStyles.numericCell}>Holds</th>
+            <th className={matchLogStyles.numericCell}>Rolls</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(["P1", "P2"] as const).map((playerId) => {
+            const player = players.find((p) => p.playerId === playerId);
+            const judgments = player?.judgments;
+            const emoji = playerId === "P1" ? "1️⃣" : "2️⃣";
+            return (
+              <tr key={playerId}>
+                <td className={styles.playerNameCell}>
+                  {emoji} {player?.profileName ?? "-"}
+                </td>
+                <td className={matchLogStyles.numericCell}>
+                  {player?.exScore != null
+                    ? Number(player.exScore / 100).toLocaleString(undefined, {
+                        style: "percent",
+                        minimumFractionDigits: 2,
+                      })
+                    : "-"}
+                </td>
+                <td
+                  className={`${matchLogStyles.numericCell} ${matchLogStyles.fantasticPlus}`}
+                >
+                  {judgments?.fantasticPlus ?? "-"}
+                </td>
+                <td
+                  className={`${matchLogStyles.numericCell} ${matchLogStyles.fantastic}`}
+                >
+                  {judgments?.fantastics ?? "-"}
+                </td>
+                <td
+                  className={`${matchLogStyles.numericCell} ${matchLogStyles.excellent}`}
+                >
+                  {judgments?.excellents ?? "-"}
+                </td>
+                <td
+                  className={`${matchLogStyles.numericCell} ${matchLogStyles.great}`}
+                >
+                  {judgments?.greats ?? "-"}
+                </td>
+                <td
+                  className={`${matchLogStyles.numericCell} ${matchLogStyles.decent}`}
+                >
+                  {judgments?.decents ?? "-"}
+                </td>
+                <td
+                  className={`${matchLogStyles.numericCell} ${matchLogStyles.wayOff}`}
+                >
+                  {judgments?.wayOffs ?? "-"}
+                </td>
+                <td
+                  className={`${matchLogStyles.numericCell} ${matchLogStyles.miss}`}
+                >
+                  {judgments?.misses ?? "-"}
+                </td>
+                <td className={matchLogStyles.numericCell}>
+                  {formatRatio(
+                    judgments
+                      ? judgments.totalMines - judgments.minesHit
+                      : null,
+                    judgments?.totalMines ?? null,
+                  )}
+                </td>
+                <td className={matchLogStyles.numericCell}>
+                  {formatRatio(
+                    judgments?.holdsHeld ?? null,
+                    judgments?.totalHolds ?? null,
+                  )}
+                </td>
+                <td className={matchLogStyles.numericCell}>
+                  {formatRatio(
+                    judgments?.rollsHeld ?? null,
+                    judgments?.totalRolls ?? null,
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </Card>
   );
 }

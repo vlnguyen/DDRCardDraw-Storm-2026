@@ -8,7 +8,7 @@ import {
 } from "../../obs-sources/syncstart-connection";
 import styles from "./match-log.css";
 
-function formatRatio(numerator: number | null, total: number | null) {
+export function formatRatio(numerator: number | null, total: number | null) {
   if (numerator == null || total == null) return "-";
   return `${numerator}/${total}`;
 }
