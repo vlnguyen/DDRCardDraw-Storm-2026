@@ -1,24 +1,16 @@
 import { useEffect, useState } from "react";
-import { useAppState } from "../state/store";
 import { LobbyStatePayload } from "./lobby.types";
 import { SYNCSTART_PORT, SYNCSTART_URL } from "./syncstart-connection";
 
-export const DEFAULT_LOBBY_CONNECTION = {
-  code: "ERGK",
-  password: "YYZ",
-};
-
-export function useLiveRankings(
-  name = "DDRCardDraw Spectator",
-): LobbyStatePayload | null {
-  const lobbyConnection = useAppState(
-    (s) => s.event.tournament?.lobbyConnection,
-  );
-
-  const code = lobbyConnection?.code ?? DEFAULT_LOBBY_CONNECTION.code;
-  const password =
-    lobbyConnection?.password ?? DEFAULT_LOBBY_CONNECTION.password;
-
+export function useLiveRankings({
+  name,
+  code,
+  password,
+}: {
+  name: string;
+  code: string;
+  password?: string;
+}): LobbyStatePayload | null {
   const [gameState, setGameState] = useState<LobbyStatePayload | null>(null);
 
   useEffect(() => {

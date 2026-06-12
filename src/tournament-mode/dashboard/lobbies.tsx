@@ -7,21 +7,21 @@ import {
   SYNCSTART_PORT,
   SYNCSTART_URL,
 } from "../../obs-sources/syncstart-connection";
-import { eventSlice } from "../../state/event.slice";
-import { useAppDispatch, useAppState } from "../../state/store";
 import { formatRatio } from "./match-log";
 import matchLogStyles from "./match-log.css";
 import styles from "./lobbies.css";
 
 export function Lobbies() {
-  const lobbyConnection = useAppState(
-    (s) => s.event.tournament?.lobbyConnection,
-  );
-  const dispatch = useAppDispatch();
-  const gameState = useLiveRankings("Stream Dashboard");
+  const [selectedLobby, setSelectedLobby] = useState<Lobby | null>(null);
 
   const [lobbies, setLobbies] = useState<Lobby[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  const gameState = useLiveRankings({
+    name: "Stream Dashboard",
+    code: selectedLobby?.code ?? "",
+    password: selectedLobby?.password,
+  });
 
   const fetchLobbies = () => {
     setError(null);
@@ -74,14 +74,8 @@ export function Lobbies() {
   }, []);
 
   const toggleSpectateLobby = (lobby: Lobby) => {
-    const isActive = lobby.code === lobbyConnection?.code;
-    dispatch(
-      eventSlice.actions.updateLobbyConnection(
-        isActive
-          ? { code: "", password: "" }
-          : { code: lobby.code, password: lobby.password },
-      ),
-    );
+    const isActive = lobby.code === selectedLobby?.code;
+    setSelectedLobby(isActive ? null : lobby);
   };
 
   return (
@@ -106,7 +100,7 @@ export function Lobbies() {
                   lobby.songInfo.artist ? ` - ${lobby.songInfo.artist}` : ""
                 }`
               : "---";
-            const isActive = lobby.code === lobbyConnection?.code;
+            const isActive = lobby.code === selectedLobby?.code;
 
             return (
               <Card

@@ -1,10 +1,18 @@
 import { Flipped, Flipper } from "react-flip-toolkit";
+import { useAppState } from "../state/store";
 import { Player } from "./lobby.types";
 import { useLiveRankings } from "./useLiveRankings";
 import styles from "./lobby.css";
 
 export function LiveRankings() {
-  const gameState = useLiveRankings("OBS Live Rankings");
+  const lobbyConnection = useAppState(
+    (s) => s.event.tournament?.lobbyConnection,
+  );
+  const gameState = useLiveRankings({
+    name: "OBS Live Rankings",
+    code: lobbyConnection?.code ?? "",
+    password: lobbyConnection?.password,
+  });
 
   return <Ranking players={gameState?.players} />;
 }
