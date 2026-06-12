@@ -26,8 +26,9 @@ import { useTheme } from "../../theme-toggle";
 import { copyObsSource, routableGlobalSourcePath } from "../copy-obs-source";
 import styles from "./dashboard.css";
 import { LobbyRankings } from "./lobby-rankings";
+import { MatchLog } from "./match-log";
 
-type DashboardTabId = "obs-text-sources" | "lobby-rankings";
+type DashboardTabId = "obs-text-sources" | "lobby-rankings" | "match-log";
 
 export function Dashboard() {
   const [currentTab, setCurrentTab] =
@@ -46,6 +47,9 @@ export function Dashboard() {
         </Tab>
         <Tab id="lobby-rankings" panel={<LobbyRankings />}>
           Lobby Rankings
+        </Tab>
+        <Tab id="match-log" panel={<MatchLog />}>
+          Match Log
         </Tab>
       </Tabs>
     </div>

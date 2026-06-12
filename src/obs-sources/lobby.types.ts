@@ -51,3 +51,40 @@ export interface LobbyStatePayload {
   code: string;
   songInfo?: SongInfo;
 }
+
+/**
+ * Mirrors syncstart's src/MatchLog/MatchLog.types.ts.
+ */
+export interface PlayerScore {
+  id: number;
+  playerId: Player["playerId"];
+  profileName: string;
+  score: number | null;
+  exScore: number | null;
+  fantasticPlus: number | null;
+  fantastics: number | null;
+  excellents: number | null;
+  greats: number | null;
+  decents: number | null;
+  wayOffs: number | null;
+  misses: number | null;
+  minesHit: number | null;
+  holdsHeld: number | null;
+  rollsHeld: number | null;
+  /** 1 if the sum of judgments matches the match's totalSteps, 0 otherwise. */
+  isValid: number;
+}
+
+export interface Match {
+  id: string;
+  dateAdded: number;
+  lobbyCode: string;
+  songTitle: string | null;
+  songArtist: string | null;
+  songPath: string | null;
+  totalSteps: number | null;
+  totalHolds: number | null;
+  totalRolls: number | null;
+  totalMines: number | null;
+  scores: PlayerScore[];
+}

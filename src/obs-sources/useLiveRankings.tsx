@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAppState } from "../state/store";
 import { LobbyStatePayload } from "./lobby.types";
+import { SYNCSTART_PORT, SYNCSTART_URL } from "./syncstart-connection";
 
-const DEFAULT_LOBBY_CONNECTION = {
-  url: "syncservice.groovestats.com",
-  port: 1337,
+export const DEFAULT_LOBBY_CONNECTION = {
   code: "ERGK",
   password: "YYZ",
 };
@@ -16,15 +15,14 @@ export function useLiveRankings(
     (s) => s.event.tournament?.lobbyConnection,
   );
 
-  const url = lobbyConnection?.url ?? DEFAULT_LOBBY_CONNECTION.url;
-  const port = lobbyConnection?.port ?? DEFAULT_LOBBY_CONNECTION.port;
   const code = lobbyConnection?.code ?? DEFAULT_LOBBY_CONNECTION.code;
-  const password = lobbyConnection?.password ?? DEFAULT_LOBBY_CONNECTION.password;
+  const password =
+    lobbyConnection?.password ?? DEFAULT_LOBBY_CONNECTION.password;
 
   const [gameState, setGameState] = useState<LobbyStatePayload | null>(null);
 
   useEffect(() => {
-    const socket = new WebSocket(`ws://${url}:${port}`);
+    const socket = new WebSocket(`ws://${SYNCSTART_URL}:${SYNCSTART_PORT}`);
 
     socket.addEventListener("open", () => {
       socket.send(
@@ -61,7 +59,7 @@ export function useLiveRankings(
     return () => {
       socket.close();
     };
-  }, [url, port, code, password, name]);
+  }, [code, password, name]);
 
   return gameState;
 }

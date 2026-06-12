@@ -23,11 +23,9 @@ interface EventState {
  */
 interface TournamentState {
   lobbyConnection?: {
-    url?: string;
-    port?: number;
     code?: string;
     password?: string;
-  }
+  };
 }
 
 const initialState: EventState = {
@@ -41,11 +39,9 @@ const initialState: EventState = {
   },
   tournament: {
     lobbyConnection: {
-      url: 'syncservice.groovestats.com',
-      port: 1337,
-      code: '',
-      password: '',
-    }
+      code: "",
+      password: "",
+    },
   },
   obsLabels: {},
   obsCss: `h1 {
@@ -108,8 +104,6 @@ export const eventSlice = createSlice({
     updateLobbyConnection(
       state,
       action: PayloadAction<{
-        url: string;
-        port: number;
         code: string;
         password: string;
       }>,
