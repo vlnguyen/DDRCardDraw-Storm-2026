@@ -102,7 +102,7 @@ function MatchCard({ match }: { match: Match }) {
       <table className={styles.scoreTable}>
         <thead>
           <tr>
-            <th>Player</th>
+            <th className={styles.playerNameCell}>Player</th>
             <th className={styles.numericCell}>EX%</th>
             <th className={`${styles.numericCell} ${styles.fantasticPlus}`}>
               FA+

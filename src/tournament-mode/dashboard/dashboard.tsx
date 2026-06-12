@@ -27,8 +27,13 @@ import { copyObsSource, routableGlobalSourcePath } from "../copy-obs-source";
 import styles from "./dashboard.css";
 import { Lobbies } from "./lobbies";
 import { MatchLog } from "./match-log";
+import { Players } from "./players";
 
-type DashboardTabId = "obs-text-sources" | "lobbies" | "match-log";
+type DashboardTabId =
+  | "obs-text-sources"
+  | "lobbies"
+  | "match-log"
+  | "players";
 
 export function Dashboard() {
   const [currentTab, setCurrentTab] =
@@ -44,6 +49,9 @@ export function Dashboard() {
       >
         <Tab id="obs-text-sources" panel={<ObsTextSources />}>
           OBS Text Sources
+        </Tab>
+        <Tab id="players" panel={<Players />}>
+          Players
         </Tab>
         <Tab id="lobbies" panel={<Lobbies />}>
           Lobbies
