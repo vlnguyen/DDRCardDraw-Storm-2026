@@ -179,10 +179,12 @@ function groupPlayersByMachine(
     }
     byPlayerId.set(player.playerId, player);
   }
-  return [...machines.entries()].map(([socketId, byPlayerId]) => ({
-    socketId,
-    players: [...byPlayerId.values()],
-  }));
+  return [...machines.entries()]
+    .map(([socketId, byPlayerId]) => ({
+      socketId,
+      players: [...byPlayerId.values()],
+    }))
+    .sort((a, b) => a.socketId.localeCompare(b.socketId));
 }
 
 function MachineStateCard({ socketId, players }: MachinePlayers) {
