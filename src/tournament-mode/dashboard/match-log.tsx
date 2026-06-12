@@ -103,7 +103,7 @@ function MatchCard({ match }: { match: Match }) {
         <thead>
           <tr>
             <th>Player</th>
-            <th className={styles.numericCell}>EX Score</th>
+            <th className={styles.numericCell}>EX%</th>
             <th className={`${styles.numericCell} ${styles.fantasticPlus}`}>
               FA+
             </th>
