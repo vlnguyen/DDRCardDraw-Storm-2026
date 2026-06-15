@@ -28,6 +28,7 @@
     "import:smx": "node --experimental-strip-types scripts/import-smx.mts",
     "import:itg": "node scripts/import-itg.mjs",
     "import:eventList": "node scripts/event-filter.mjs",
+    "import:startgg": "node --experimental-strip-types scripts/import-startgg.mts",
     "validate": "run-p 'validate:*'",
     "validate:lint": "oxlint",
     "validate:format": "oxfmt --check",
