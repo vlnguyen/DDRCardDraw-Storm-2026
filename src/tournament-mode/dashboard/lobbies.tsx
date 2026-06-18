@@ -1,6 +1,7 @@
-import { Button, Card, H3, H4, Tooltip } from "@blueprintjs/core";
-import { Refresh } from "@blueprintjs/icons";
-import { useEffect, useState } from "react";
+import { AnchorButton, Button, Card, H3, H4, Tooltip } from "@blueprintjs/core";
+import { Duplicate, Refresh } from "@blueprintjs/icons";
+import { useEffect, useRef, useState } from "react";
+import { useHref } from "react-router-dom";
 import { Lobby, Player, ServerMessage } from "../../obs-sources/lobby.types";
 import { useLiveRankings } from "../../obs-sources/useLiveRankings";
 import {
@@ -9,6 +10,7 @@ import {
 } from "../../obs-sources/syncstart-connection";
 import { eventSlice } from "../../state/event.slice";
 import { useAppDispatch, useAppState } from "../../state/store";
+import { copyObsSource, routableLiveRankingsPath } from "../copy-obs-source";
 import { formatRatio } from "./match-log";
 import { useLobbiesStore } from "./lobbies.store";
 import matchLogStyles from "./match-log.css";
@@ -28,6 +30,13 @@ export function Lobbies() {
   const lobbyConnection = useAppState(
     (s) => s.event.tournament?.lobbyConnection,
   );
+
+  const liveRankingsHref = useHref(routableLiveRankingsPath());
+
+  const selectedLobbyRef = useRef(selectedLobby);
+  selectedLobbyRef.current = selectedLobby;
+  const lobbyConnectionRef = useRef(lobbyConnection);
+  lobbyConnectionRef.current = lobbyConnection;
 
   const gameState = useLiveRankings({
     name: "Stream Dashboard",
@@ -54,6 +63,12 @@ export function Lobbies() {
             break;
           case "lobbyRemoved":
             removeLobby(message.data.code);
+            if (message.data.code === selectedLobbyRef.current?.code) {
+              setSelectedLobby(null);
+            }
+            if (message.data.code === lobbyConnectionRef.current?.code) {
+              dispatch(eventSlice.actions.updateLobbyConnection({ code: "", password: "" }));
+            }
             break;
         }
       } catch {
@@ -153,6 +168,15 @@ export function Lobbies() {
       <section className={styles.lobbyState}>
         <H3>
           Lobby State{" "}
+          <AnchorButton
+            icon={<Duplicate />}
+            href={liveRankingsHref}
+            onClick={(e) => {
+              e.preventDefault();
+              copyObsSource(new URL(liveRankingsHref, document.location.href).href);
+            }}
+          />
+          {" "}
           {selectedLobby && (
             <Tooltip
               content={
