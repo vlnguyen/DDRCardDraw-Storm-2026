@@ -1,5 +1,5 @@
-import { Button, Dialog, DialogBody, MenuItem } from "@blueprintjs/core";
-import { Edit, Minus, Plus, Trash } from "@blueprintjs/icons";
+import { Button, Card, Dialog, DialogBody, FormGroup, H3, InputGroup, MenuItem } from "@blueprintjs/core";
+import { Edit, Minus, Plus, Trash, Unlink } from "@blueprintjs/icons";
 import {
   DndContext,
   DragEndEvent,
@@ -18,7 +18,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Suggest } from "@blueprintjs/select";
-import { CSSProperties, useRef, useState } from "react";
+import { CSSProperties, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { PoolPlayer, PoolPlayerScore, PoolState } from "../../state/event.slice";
 import { toaster } from "../../toaster";
 import { eventSlice } from "../../state/event.slice";
@@ -62,6 +62,19 @@ export function Players() {
     playerIndex: number;
     songIndex: number;
   } | null>(null);
+
+  const [editingLocalScore, setEditingLocalScore] = useState<PoolPlayerScore>({});
+  const playersRef = useRef(players);
+  playersRef.current = players;
+
+  useEffect(() => {
+    if (!editingScore) {
+      setEditingLocalScore({});
+      return;
+    }
+    const { playerIndex, songIndex } = editingScore;
+    setEditingLocalScore({ exScore: 0, ...playersRef.current[playerIndex]?.scores[songIndex] });
+  }, [editingScore]);
 
   // Stable IDs that follow rows as they are reordered
   const nextIdRef = useRef(0);
@@ -242,10 +255,55 @@ export function Players() {
         }
       >
         <DialogBody>
+          {editingScore && (
+            <CurrentScoreCard
+              score={editingLocalScore}
+              originallyLinked={
+                players[editingScore.playerIndex]?.scores[editingScore.songIndex]?.scoreId != null
+              }
+              onScoreChange={setEditingLocalScore}
+              onUnlink={() => {
+                const { scoreId: _, ...rest } = editingLocalScore;
+                setEditingLocalScore(rest);
+              }}
+              onSubmit={() => {
+                const { playerIndex, songIndex } = editingScore;
+                setPoolState((prev) => ({
+                  ...prev,
+                  players: (prev.players ?? []).map((p, j) =>
+                    j !== playerIndex
+                      ? p
+                      : {
+                          ...p,
+                          scores: p.scores.map((s, k) =>
+                            k !== songIndex ? s : editingLocalScore,
+                          ),
+                        },
+                  ),
+                }));
+                setEditingScore(null);
+              }}
+            />
+          )}
           <MatchLog
             onScoreSelected={(score) => {
               if (!editingScore) return;
               const { playerIndex, songIndex } = editingScore;
+              const linked: PoolPlayerScore = {
+                scoreId: score.id,
+                exScore: score.exScore ?? undefined,
+                fantasticPlus: score.fantasticPlus ?? undefined,
+                fantastics: score.fantastics ?? undefined,
+                excellents: score.excellents ?? undefined,
+                greats: score.greats ?? undefined,
+                decents: score.decents ?? undefined,
+                wayOffs: score.wayOffs ?? undefined,
+                misses: score.misses ?? undefined,
+                minesHit: score.minesHit ?? undefined,
+                holdsHeld: score.holdsHeld ?? undefined,
+                rollsHeld: score.rollsHeld ?? undefined,
+              };
+              setEditingLocalScore(linked);
               setPoolState((prev) => ({
                 ...prev,
                 players: (prev.players ?? []).map((p, j) =>
@@ -254,22 +312,7 @@ export function Players() {
                     : {
                         ...p,
                         scores: p.scores.map((s, k) =>
-                          k !== songIndex
-                            ? s
-                            : {
-                                scoreId: score.id,
-                                exScore: score.exScore ?? undefined,
-                                fantasticPlus: score.fantasticPlus ?? undefined,
-                                fantastics: score.fantastics ?? undefined,
-                                excellents: score.excellents ?? undefined,
-                                greats: score.greats ?? undefined,
-                                decents: score.decents ?? undefined,
-                                wayOffs: score.wayOffs ?? undefined,
-                                misses: score.misses ?? undefined,
-                                minesHit: score.minesHit ?? undefined,
-                                holdsHeld: score.holdsHeld ?? undefined,
-                                rollsHeld: score.rollsHeld ?? undefined,
-                              },
+                          k !== songIndex ? s : linked,
                         ),
                       },
                 ),
@@ -350,7 +393,7 @@ function SortablePlayerRow({
       {songs.map((_, si) => (
         <td key={si} className={styles.scoreCell}>
           {player.scores[si]?.exScore != null
-            ? `${player.scores[si].exScore.toFixed(2)}%`
+            ? `${player.scores[si].scoreId == null ? "*" : ""}${player.scores[si].exScore.toFixed(2)}%`
             : "--.--%"}
           {" "}
           <Button icon={<Edit />} onClick={() => onEditScore(si)} />
@@ -360,5 +403,132 @@ function SortablePlayerRow({
       ))}
       <td></td>
     </tr>
+  );
+}
+
+const ExScoreInput = forwardRef<
+  { focus(): void },
+  {
+    value: number | undefined;
+    disabled: boolean;
+    autoFocus?: boolean;
+    onChange(value: number | undefined): void;
+  }
+>(function ExScoreInput({ value, disabled, autoFocus, onChange }, ref) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus() {
+      inputRef.current?.focus();
+    },
+  }));
+
+  const [text, setText] = useState(() => (value != null ? String(value) : ""));
+
+  const prevValue = useRef(value);
+  if (prevValue.current !== value) {
+    prevValue.current = value;
+    setText(value != null ? String(value) : "");
+  }
+
+  return (
+    <InputGroup
+      inputRef={inputRef}
+      autoFocus={autoFocus}
+      disabled={disabled}
+      value={text}
+      onChange={(e) => {
+        // Allow digits, at most one decimal point
+        const filtered = e.target.value
+          .replace(/[^\d.]/g, "")
+          .replace(/(\..*)\./g, "$1");
+        setText(filtered);
+        const num = parseFloat(filtered);
+        onChange(filtered === "" || isNaN(num) ? undefined : num);
+      }}
+    />
+  );
+});
+
+const SCORE_FIELDS: Array<{ label: string; key: keyof Omit<PoolPlayerScore, "scoreId"> }> = [
+  { label: "EX Score", key: "exScore" },
+  { label: "FA+", key: "fantasticPlus" },
+  { label: "FA", key: "fantastics" },
+  { label: "EXC", key: "excellents" },
+  { label: "Great", key: "greats" },
+  { label: "Decent", key: "decents" },
+  { label: "W/O", key: "wayOffs" },
+  { label: "Miss", key: "misses" },
+  { label: "Mines Hit", key: "minesHit" },
+  { label: "Holds Held", key: "holdsHeld" },
+  { label: "Rolls Held", key: "rollsHeld" },
+];
+
+function CurrentScoreCard({
+  score,
+  originallyLinked,
+  onScoreChange,
+  onUnlink,
+  onSubmit,
+}: {
+  score: PoolPlayerScore;
+  originallyLinked: boolean;
+  onScoreChange(score: PoolPlayerScore): void;
+  onUnlink(): void;
+  onSubmit(): void;
+}) {
+  const isLinked = score.scoreId != null;
+  const canSubmit = !isLinked && !(score.exScore != null && score.exScore > 100);
+  const exScoreRef = useRef<{ focus(): void }>(null);
+
+  return (
+    <div
+      style={{ marginBottom: "20px" }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.altKey && !e.ctrlKey && !e.metaKey && canSubmit) {
+          e.preventDefault();
+          onSubmit();
+        }
+      }}
+    >
+      <Card>
+        <H3>
+          Current Score{" "}
+          {isLinked && <Button icon={<Unlink />} onClick={onUnlink} />}
+          {originallyLinked && !isLinked && (
+            <small><em>Click "Submit" to confirm unlinking.</em></small>
+          )}
+        </H3>
+        <div className={styles.currentScoreGrid}>
+          {SCORE_FIELDS.map(({ label, key }) => (
+            <FormGroup key={key} label={label}>
+              {key === "exScore" ? (
+                <ExScoreInput
+                  ref={exScoreRef}
+                  value={score.exScore}
+                  disabled={isLinked}
+                  autoFocus={!isLinked}
+                  onChange={(v) => onScoreChange({ ...score, exScore: v })}
+                />
+              ) : (
+                <InputGroup
+                  type="number"
+                  disabled={isLinked}
+                  value={score[key] != null ? String(score[key]) : ""}
+                  onChange={(e) =>
+                    onScoreChange({
+                      ...score,
+                      [key]: e.target.value === "" ? undefined : Number(e.target.value),
+                    })
+                  }
+                />
+              )}
+            </FormGroup>
+          ))}
+        </div>
+        <Button disabled={!canSubmit} onClick={onSubmit}>Submit</Button>{" "}
+        <Button disabled={isLinked} onClick={() => { onScoreChange({ exScore: 0 }); exScoreRef.current?.focus(); }}>Clear</Button>
+      </Card>
+    </div>
   );
 }
