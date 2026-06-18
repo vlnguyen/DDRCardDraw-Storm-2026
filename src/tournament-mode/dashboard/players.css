@@ -9,10 +9,35 @@
   padding: 4px 8px;
 }
 
+.playersTable th:first-child,
+.playersTable td:first-child {
+  border-left: none;
+}
+
 .playersTable th {
   text-align: left;
 }
 
 .submitCell {
   text-align: right;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dragHandle {
+  cursor: grab;
+  padding: 0 4px;
+  opacity: 0.4;
+  font-size: 1.2em;
+  line-height: 1;
+  user-select: none;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+  opacity: 0.8;
 }
