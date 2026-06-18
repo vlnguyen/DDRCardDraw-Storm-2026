@@ -247,14 +247,14 @@ export function Players() {
       <Dialog
         isOpen={editingScore !== null}
         onClose={() => setEditingScore(null)}
-        style={{ width: "90vw" }}
+        style={{ width: "90vw", maxHeight: "90vh", overflowY: "auto" }}
         title={
           editingScore
             ? `${players[editingScore.playerIndex]?.gamerTag ?? "Player"} - Song ${editingScore.songIndex + 1}`
             : undefined
         }
       >
-        <DialogBody>
+        <DialogBody useOverflowScrollContainer={false}>
           {editingScore && (
             <CurrentScoreCard
               score={editingLocalScore}
