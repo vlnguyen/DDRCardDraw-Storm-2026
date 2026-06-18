@@ -1,5 +1,5 @@
-import { Button, MenuItem } from "@blueprintjs/core";
-import { Minus, Plus } from "@blueprintjs/icons";
+import { Button, Dialog, DialogBody, MenuItem } from "@blueprintjs/core";
+import { Edit, Minus, Plus, Trash } from "@blueprintjs/icons";
 import {
   DndContext,
   DragEndEvent,
@@ -19,11 +19,12 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Suggest } from "@blueprintjs/select";
 import { CSSProperties, useRef, useState } from "react";
-import { PoolPlayer, PoolState } from "../../state/event.slice";
+import { PoolPlayer, PoolPlayerScore, PoolState } from "../../state/event.slice";
 import { toaster } from "../../toaster";
 import { eventSlice } from "../../state/event.slice";
 import { useAppDispatch, useAppState } from "../../state/store";
 import entrants from "../../assets/entrants.json";
+import { MatchLog } from "./match-log";
 import styles from "./players.css";
 
 const sortedEntrants = [...entrants].sort((a, b) =>
@@ -56,6 +57,11 @@ export function Players() {
 
   const players = poolState.players ?? [];
   const songs = poolState.songs ?? [];
+
+  const [editingScore, setEditingScore] = useState<{
+    playerIndex: number;
+    songIndex: number;
+  } | null>(null);
 
   // Stable IDs that follow rows as they are reordered
   const nextIdRef = useRef(0);
@@ -102,7 +108,8 @@ export function Players() {
               <th>Player</th>
               {songs.map((_, i) => (
                 <th key={i}>
-                  {`Song ${i + 1}`}{" "}
+                  <div className={styles.songHeader}>
+                  <span>{`Song ${i + 1}`}</span>
                   <Button
                     icon={<Minus />}
                     onClick={() =>
@@ -116,6 +123,7 @@ export function Players() {
                       }))
                     }
                   />
+                  </div>
                 </th>
               ))}
               <th>
@@ -127,7 +135,7 @@ export function Players() {
                       songs: [...(prev.songs ?? []), ""],
                       players: (prev.players ?? []).map((p) => ({
                         ...p,
-                        scores: [...p.scores, 0],
+                        scores: [...p.scores, {}],
                       })),
                     }))
                   }
@@ -143,6 +151,24 @@ export function Players() {
                   id={ids[i]}
                   player={player}
                   songs={songs}
+                  onEditScore={(songIndex: number) =>
+                    setEditingScore({ playerIndex: i, songIndex })
+                  }
+                  onClearScore={(songIndex: number) =>
+                    setPoolState((prev) => ({
+                      ...prev,
+                      players: (prev.players ?? []).map((p, j) =>
+                        j !== i
+                          ? p
+                          : {
+                              ...p,
+                              scores: p.scores.map((s, k) =>
+                                k !== songIndex ? s : {},
+                              ),
+                            },
+                      ),
+                    }))
+                  }
                   onRemove={() =>
                     setPoolState((prev) => ({
                       ...prev,
@@ -181,7 +207,10 @@ export function Players() {
                       players: [
                         ...(prev.players ?? []),
                         {
-                          scores: new Array(songs.length).fill(0),
+                          scores: Array.from(
+                            { length: songs.length },
+                            (): PoolPlayerScore => ({}),
+                          ),
                           isEliminated: false,
                           isDisabled: false,
                         },
@@ -202,6 +231,54 @@ export function Players() {
         </table>
       </DndContext>
       <pre>{JSON.stringify(poolState, null, 2)}</pre>
+      <Dialog
+        isOpen={editingScore !== null}
+        onClose={() => setEditingScore(null)}
+        style={{ width: "90vw" }}
+        title={
+          editingScore
+            ? `${players[editingScore.playerIndex]?.gamerTag ?? "Player"} - Song ${editingScore.songIndex + 1}`
+            : undefined
+        }
+      >
+        <DialogBody>
+          <MatchLog
+            onScoreSelected={(score) => {
+              if (!editingScore) return;
+              const { playerIndex, songIndex } = editingScore;
+              setPoolState((prev) => ({
+                ...prev,
+                players: (prev.players ?? []).map((p, j) =>
+                  j !== playerIndex
+                    ? p
+                    : {
+                        ...p,
+                        scores: p.scores.map((s, k) =>
+                          k !== songIndex
+                            ? s
+                            : {
+                                scoreId: score.id,
+                                exScore: score.exScore ?? undefined,
+                                fantasticPlus: score.fantasticPlus ?? undefined,
+                                fantastics: score.fantastics ?? undefined,
+                                excellents: score.excellents ?? undefined,
+                                greats: score.greats ?? undefined,
+                                decents: score.decents ?? undefined,
+                                wayOffs: score.wayOffs ?? undefined,
+                                misses: score.misses ?? undefined,
+                                minesHit: score.minesHit ?? undefined,
+                                holdsHeld: score.holdsHeld ?? undefined,
+                                rollsHeld: score.rollsHeld ?? undefined,
+                              },
+                        ),
+                      },
+                ),
+              }));
+              setEditingScore(null);
+            }}
+          />
+        </DialogBody>
+      </Dialog>
     </>
   );
 }
@@ -210,6 +287,8 @@ interface SortablePlayerRowProps {
   id: string;
   player: PoolPlayer;
   songs: string[];
+  onEditScore(songIndex: number): void;
+  onClearScore(songIndex: number): void;
   onRemove(): void;
   onPlayerSelect(option: EntrantOption): void;
 }
@@ -218,6 +297,8 @@ function SortablePlayerRow({
   id,
   player,
   songs,
+  onEditScore,
+  onClearScore,
   onRemove,
   onPlayerSelect,
 }: SortablePlayerRowProps) {
@@ -267,7 +348,15 @@ function SortablePlayerRow({
         />
       </td>
       {songs.map((_, si) => (
-        <td key={si}>{(player.scores[si] ?? 0).toFixed(2)}%</td>
+        <td key={si} className={styles.scoreCell}>
+          {player.scores[si]?.exScore != null
+            ? `${player.scores[si].exScore.toFixed(2)}%`
+            : "--.--%"}
+          {" "}
+          <Button icon={<Edit />} onClick={() => onEditScore(si)} />
+          {" "}
+          <Button icon={<Trash />} onClick={() => onClearScore(si)} />
+        </td>
       ))}
       <td></td>
     </tr>

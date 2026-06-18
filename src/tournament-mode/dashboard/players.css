@@ -22,6 +22,18 @@
   text-align: right;
 }
 
+.songHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+}
+
+.scoreCell {
+  text-align: right;
+  font-family: monospace;
+}
+
 .rowActions {
   display: flex;
   align-items: center;

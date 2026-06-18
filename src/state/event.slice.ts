@@ -18,11 +18,36 @@ interface EventState {
   obsCss: string;
 }
 
+export interface PoolPlayerScore {
+  /** 
+   * The scoreId from a specific match or undefined if the 
+   * score is not associated with a specific match.
+   * 
+   * If the scoreId is defined then the exScore and judgement counts
+   * can be populated from the match data, otherwise the scoreId can 
+   * remain null and the judgement counts can be entered manually.
+   */
+  scoreId?: number;
+  
+  // judgement counts and ex score
+  exScore?: number;
+  fantasticPlus?: number;
+  fantastics?: number;
+  excellents?: number;
+  greats?: number;
+  decents?: number;
+  wayOffs?: number;
+  misses?: number;
+  minesHit?: number;
+  holdsHeld?: number;
+  rollsHeld?: number;
+}
+
 export interface PoolPlayer {
   gamerTag?: string;
   prefix?: string;
   entrantId?: number;
-  scores: number[];
+  scores: PoolPlayerScore[];
   isEliminated: boolean;
   isDisabled: boolean;
 }
