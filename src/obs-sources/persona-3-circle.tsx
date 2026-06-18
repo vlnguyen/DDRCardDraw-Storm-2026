@@ -9,6 +9,9 @@ interface Props {
   radius?: number;
   outerText?: string;
   fontSize?: number;
+  strokeWidth?: number;
+  strokeLength?: number;
+  strokeGap?: number;
 }
 
 export function Persona3Circle({
@@ -17,6 +20,9 @@ export function Persona3Circle({
   radius = 0.1723,
   outerText = "Project Storm",
   fontSize = 80,
+  strokeWidth = 8,
+  strokeLength = 16,
+  strokeGap = 48,
 }: Props) {
   const baseCircleCx = W * cx;
   const baseCircleCy = H * cy;
@@ -47,7 +53,7 @@ export function Persona3Circle({
         <circle cx={baseCircleCx} cy={baseCircleCy} r={baseCircleR} fill={BASE_COLOR} />
         <circle cx={baseCircleCx} cy={baseCircleCy} r={accentCircleR} fill={ACCENT_COLOR} />
         <circle cx={baseCircleCx} cy={baseCircleCy} r={innerCircleR} fill={BASE_COLOR} />
-        <circle className="persona3-rotating" cx={baseCircleCx} cy={baseCircleCy} r={dottedCircleR} fill="none" stroke={ACCENT_COLOR} strokeWidth={8} strokeDasharray="16 48" strokeLinecap="round" />
+        <circle className="persona3-rotating" cx={baseCircleCx} cy={baseCircleCy} r={dottedCircleR} fill="none" stroke={ACCENT_COLOR} strokeWidth={strokeWidth} strokeDasharray={`${strokeLength} ${strokeGap}`} strokeLinecap="round" />
         <g className="persona3-rotating">
           <text textAnchor="middle" fill={ACCENT_COLOR} fontSize={fontSize} fontWeight="bold">
             <textPath href="#text-arc" startOffset="50%">
