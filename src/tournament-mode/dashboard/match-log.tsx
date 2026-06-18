@@ -1,11 +1,12 @@
 import { Button, Card, H3, H4 } from "@blueprintjs/core";
 import { Refresh } from "@blueprintjs/icons";
-import { useEffect, useState } from "react";
-import { Match } from "../../obs-sources/lobby.types";
+import { useEffect } from "react";
+import { Match, ServerMessage } from "../../obs-sources/lobby.types";
 import {
   SYNCSTART_PORT,
   SYNCSTART_URL,
 } from "../../obs-sources/syncstart-connection";
+import { useMatchLogStore } from "./match-log.store";
 import styles from "./match-log.css";
 
 export function formatRatio(numerator: number | null, total: number | null) {
@@ -14,45 +15,32 @@ export function formatRatio(numerator: number | null, total: number | null) {
 }
 
 export function MatchLog() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-
-  const fetchMatches = () => {
-    setError(null);
-    fetch(`http://${SYNCSTART_URL}:${SYNCSTART_PORT}/match/list`)
-      .then((res) => res.json())
-      .then((data: Match[]) => {
-        setMatches(data);
-        setLastUpdated(new Date());
-      })
-      .catch(() => setError("Failed to load match log."));
-  };
+  const matches = useMatchLogStore((s) => s.matches);
+  const error = useMatchLogStore((s) => s.error);
+  const lastUpdated = useMatchLogStore((s) => s.lastUpdated);
+  const fetchMatches = useMatchLogStore((s) => s.fetchMatches);
+  const addMatch = useMatchLogStore((s) => s.addMatch);
 
   useEffect(() => {
     fetchMatches();
-  }, []);
+  }, [fetchMatches]);
 
   useEffect(() => {
     const socket = new WebSocket(`ws://${SYNCSTART_URL}:${SYNCSTART_PORT}`);
 
     socket.addEventListener("message", (ev) => {
       try {
-        const message = JSON.parse(ev.data);
+        const message: ServerMessage = JSON.parse(ev.data);
         if (message.event === "matchLogged") {
-          const match: Match = message.data;
-          setMatches((prev) => [match, ...prev]);
-          setLastUpdated(new Date());
+          addMatch(message.data);
         }
       } catch {
         // ignore malformed messages
       }
     });
 
-    return () => {
-      socket.close();
-    };
-  }, []);
+    return () => socket.close();
+  }, [addMatch]);
 
   const totalScores = matches.reduce(
     (sum, match) => sum + match.scores.length,
