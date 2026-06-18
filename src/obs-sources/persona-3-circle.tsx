@@ -1,24 +1,31 @@
 const W = 3840;
 const H = 2160;
-const BASE_CIRCLE_CX = W * 0.305;
-const BASE_CIRCLE_CY = H * 0.505;
-const BASE_CIRCLE_R = W * 0.1936;
 const BASE_COLOR = "#00a2fe";
 const ACCENT_COLOR = "white";
-const ACCENT_CIRCLE_R = BASE_CIRCLE_R * 0.923;
-const INNER_CIRCLE_R = BASE_CIRCLE_R * 0.89;
-const DOTTED_CIRCLE_R = BASE_CIRCLE_R * 1.054;
-const TEXT_CIRCLE_R = DOTTED_CIRCLE_R + 40;
-
-const CX = BASE_CIRCLE_CX;
-const CY = BASE_CIRCLE_CY;
 
 interface Props {
+  cx?: number;
+  cy?: number;
+  radius?: number;
   outerText?: string;
+  fontSize?: number;
 }
 
-export function Persona3Circle({ outerText = "Project Storm" }: Props) {
-  const topArc = `M ${CX - TEXT_CIRCLE_R},${CY} A ${TEXT_CIRCLE_R},${TEXT_CIRCLE_R},0,0,1,${CX + TEXT_CIRCLE_R},${CY}`;
+export function Persona3Circle({
+  cx = 0.305,
+  cy = 0.505,
+  radius = 0.1723,
+  outerText = "Project Storm",
+  fontSize = 80,
+}: Props) {
+  const baseCircleCx = W * cx;
+  const baseCircleCy = H * cy;
+  const innerCircleR = W * radius;
+  const baseCircleR = innerCircleR * 1.1236;
+  const accentCircleR = innerCircleR * 1.0371;
+  const dottedCircleR = innerCircleR * 1.1845;
+  const textCircleR = dottedCircleR + 40;
+  const topArc = `M ${baseCircleCx - textCircleR},${baseCircleCy} A ${textCircleR},${textCircleR},0,0,1,${baseCircleCx + textCircleR},${baseCircleCy}`;
 
   return (
     <div style={{ width: W, height: H, overflow: "hidden" }}>
@@ -26,15 +33,15 @@ export function Persona3Circle({ outerText = "Project Storm" }: Props) {
         <defs>
           <path id="text-arc" d={topArc} />
         </defs>
-        <circle cx={CX} cy={CY} r={BASE_CIRCLE_R} fill={BASE_COLOR} />
-        <circle cx={CX} cy={CY} r={ACCENT_CIRCLE_R} fill={ACCENT_COLOR} />
-        <circle cx={CX} cy={CY} r={INNER_CIRCLE_R} fill={BASE_COLOR} />
-        <circle cx={CX} cy={CY} r={DOTTED_CIRCLE_R} fill="none" stroke={ACCENT_COLOR} strokeWidth={8} strokeDasharray="16 48" strokeLinecap="round">
-          <animateTransform attributeName="transform" type="rotate" from={`0 ${CX} ${CY}`} to={`360 ${CX} ${CY}`} dur="20s" repeatCount="indefinite" />
+        <circle cx={baseCircleCx} cy={baseCircleCy} r={baseCircleR} fill={BASE_COLOR} />
+        <circle cx={baseCircleCx} cy={baseCircleCy} r={accentCircleR} fill={ACCENT_COLOR} />
+        <circle cx={baseCircleCx} cy={baseCircleCy} r={innerCircleR} fill={BASE_COLOR} />
+        <circle cx={baseCircleCx} cy={baseCircleCy} r={dottedCircleR} fill="none" stroke={ACCENT_COLOR} strokeWidth={8} strokeDasharray="16 48" strokeLinecap="round">
+          <animateTransform attributeName="transform" type="rotate" from={`0 ${baseCircleCx} ${baseCircleCy}`} to={`360 ${baseCircleCx} ${baseCircleCy}`} dur="20s" repeatCount="indefinite" />
         </circle>
         <g>
-          <animateTransform attributeName="transform" type="rotate" from={`0 ${CX} ${CY}`} to={`360 ${CX} ${CY}`} dur="20s" repeatCount="indefinite" />
-          <text textAnchor="middle" fill={ACCENT_COLOR} fontSize={80} fontWeight="bold">
+          <animateTransform attributeName="transform" type="rotate" from={`0 ${baseCircleCx} ${baseCircleCy}`} to={`360 ${baseCircleCx} ${baseCircleCy}`} dur="20s" repeatCount="indefinite" />
+          <text textAnchor="middle" fill={ACCENT_COLOR} fontSize={fontSize} fontWeight="bold">
             <textPath href="#text-arc" startOffset="50%">
               {outerText}
             </textPath>
