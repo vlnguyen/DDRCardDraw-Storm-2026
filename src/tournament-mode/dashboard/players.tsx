@@ -61,9 +61,10 @@ export function Players() {
                     setPoolState((prev) => ({
                       ...prev,
                       songs: (prev.songs ?? []).filter((_, j) => j !== i),
-                      players: (prev.players ?? []).map((p) =>
-                        p ? { ...p, scores: p.scores.filter((_, j) => j !== i) } : null,
-                      ),
+                      players: (prev.players ?? []).map((p) => ({
+                        ...p,
+                        scores: p.scores.filter((_, j) => j !== i),
+                      })),
                     }))
                   }
                 />
@@ -76,9 +77,10 @@ export function Players() {
                   setPoolState((prev) => ({
                     ...prev,
                     songs: [...(prev.songs ?? []), ""],
-                    players: (prev.players ?? []).map((p) =>
-                      p ? { ...p, scores: [...p.scores, 0] } : null,
-                    ),
+                    players: (prev.players ?? []).map((p) => ({
+                      ...p,
+                      scores: [...p.scores, 0],
+                    })),
                   }))
                 }
               />
@@ -102,7 +104,7 @@ export function Players() {
               <td>
                 <Suggest<EntrantOption>
                   items={options}
-                  selectedItem={options.find((o) => o.value === player?.entrantId) ?? null}
+                  selectedItem={options.find((o) => o.value === player.entrantId) ?? null}
                   itemPredicate={(query, item) => fuzzyMatch(query, item)}
                   itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
                     <MenuItem
@@ -116,21 +118,18 @@ export function Players() {
                   )}
                   onItemSelect={(option) => {
                     const entrant = sortedEntrants.find((en) => en.id === option.value);
+                    if (!entrant) return;
                     setPoolState((prev) => ({
                       ...prev,
                       players: (prev.players ?? []).map((p, j) =>
                         j !== i
                           ? p
-                          : entrant
-                            ? {
-                                entrantId: entrant.id,
-                                gamerTag: entrant.gamerTag,
-                                prefix: entrant.prefix,
-                                scores: p?.scores ?? new Array(songs.length).fill(0),
-                                isEliminated: p?.isEliminated ?? false,
-                                isDisabled: p?.isDisabled ?? false,
-                              }
-                            : null,
+                          : {
+                              ...p,
+                              entrantId: entrant.id,
+                              gamerTag: entrant.gamerTag,
+                              prefix: entrant.prefix,
+                            },
                       ),
                     }));
                   }}
@@ -139,7 +138,7 @@ export function Players() {
                 />
               </td>
               {songs.map((_, si) => (
-                <td key={si}>{(player?.scores[si] ?? 0).toFixed(2)}%</td>
+                <td key={si}>{(player.scores[si] ?? 0).toFixed(2)}%</td>
               ))}
               <td></td>
             </tr>
@@ -151,7 +150,10 @@ export function Players() {
                 onClick={() =>
                   setPoolState((prev) => ({
                     ...prev,
-                    players: [...(prev.players ?? []), null],
+                    players: [
+                      ...(prev.players ?? []),
+                      { scores: new Array(songs.length).fill(0), isEliminated: false, isDisabled: false },
+                    ],
                   }))
                 }
               />

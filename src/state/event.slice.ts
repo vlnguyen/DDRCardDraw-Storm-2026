@@ -19,9 +19,9 @@ interface EventState {
 }
 
 export interface PoolPlayer {
-  gamerTag: string;
-  prefix: string;
-  entrantId: number;
+  gamerTag?: string;
+  prefix?: string;
+  entrantId?: number;
   scores: number[];
   isEliminated: boolean;
   isDisabled: boolean;
@@ -29,7 +29,7 @@ export interface PoolPlayer {
 
 export interface PoolState {
   songs?: string[];
-  players?: (PoolPlayer | null)[];
+  players?: PoolPlayer[];
 }
 
 /**
@@ -121,7 +121,7 @@ export const eventSlice = createSlice({
     updateObsCss(state, action: PayloadAction<string>) {
       state.obsCss = action.payload;
     },
-    setPoolPlayers(state, action: PayloadAction<(PoolPlayer | null)[]>) {
+    setPoolPlayers(state, action: PayloadAction<PoolPlayer[]>) {
       if (!state.tournament.poolState) {
         state.tournament.poolState = {};
       }
