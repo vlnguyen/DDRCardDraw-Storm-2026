@@ -39,9 +39,9 @@ export function Players() {
           <tr>
             <th></th>
             <th>Player</th>
-            {songs.map((song, i) => (
+            {songs.map((_, i) => (
               <th key={i}>
-                {song}{" "}
+                {`Song ${i + 1}`}{" "}
                 <Button
                   icon={<Minus />}
                   onClick={() =>
@@ -62,7 +62,7 @@ export function Players() {
                 onClick={() =>
                   setPoolState((prev) => ({
                     ...prev,
-                    songs: [...(prev.songs ?? []), `Song ${(prev.songs?.length ?? 0) + 1}`],
+                    songs: [...(prev.songs ?? []), ""],
                     players: (prev.players ?? []).map((p) =>
                       p ? { ...p, scores: [...p.scores, 0] } : null,
                     ),
