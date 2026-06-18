@@ -1,5 +1,6 @@
-import { Button } from "@blueprintjs/core";
+import { Button, MenuItem } from "@blueprintjs/core";
 import { Minus, Plus } from "@blueprintjs/icons";
+import { Suggest } from "@blueprintjs/select";
 import { useState } from "react";
 import { PoolState } from "../../state/event.slice";
 import { toaster } from "../../toaster";
@@ -12,10 +13,22 @@ const sortedEntrants = [...entrants].sort((a, b) =>
   a.gamerTag.localeCompare(b.gamerTag),
 );
 
-const options = sortedEntrants.map((e) => ({
+type EntrantOption = { value: number; label: string };
+
+const options: EntrantOption[] = sortedEntrants.map((e) => ({
   value: e.id,
   label: e.prefix ? `${e.gamerTag} [${e.prefix}]` : e.gamerTag,
 }));
+
+function fuzzyMatch(query: string, item: EntrantOption): boolean {
+  const q = query.toLowerCase();
+  const s = item.label.toLowerCase();
+  let qi = 0;
+  for (let si = 0; si < s.length && qi < q.length; si++) {
+    if (s[si] === q[qi]) qi++;
+  }
+  return qi === q.length;
+}
 
 export function Players() {
   const dispatch = useAppDispatch();
@@ -87,12 +100,22 @@ export function Players() {
                 />
               </td>
               <td>
-                <select
-                  value={player?.entrantId ?? ""}
-                  onChange={(e) => {
-                    const entrant = sortedEntrants.find(
-                      (en) => en.id === Number(e.target.value),
-                    );
+                <Suggest<EntrantOption>
+                  items={options}
+                  selectedItem={options.find((o) => o.value === player?.entrantId) ?? null}
+                  itemPredicate={(query, item) => fuzzyMatch(query, item)}
+                  itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
+                    <MenuItem
+                      key={item.value}
+                      text={item.label}
+                      active={modifiers.active}
+                      disabled={modifiers.disabled}
+                      onClick={handleClick}
+                      onFocus={handleFocus}
+                    />
+                  )}
+                  onItemSelect={(option) => {
+                    const entrant = sortedEntrants.find((en) => en.id === option.value);
                     setPoolState((prev) => ({
                       ...prev,
                       players: (prev.players ?? []).map((p, j) =>
@@ -111,14 +134,9 @@ export function Players() {
                       ),
                     }));
                   }}
-                >
-                  <option value="">-- Select player --</option>
-                  {options.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
+                  inputValueRenderer={(item) => item.label}
+                  noResults={<MenuItem disabled text="No matching players" />}
+                />
               </td>
               {songs.map((_, si) => (
                 <td key={si}>{(player?.scores[si] ?? 0).toFixed(2)}%</td>
