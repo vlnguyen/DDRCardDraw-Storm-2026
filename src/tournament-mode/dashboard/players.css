@@ -1,0 +1,18 @@
+.playersTable {
+  border-collapse: collapse;
+  border-style: hidden;
+}
+
+.playersTable th,
+.playersTable td {
+  border: 1px solid currentColor;
+  padding: 4px 8px;
+}
+
+.playersTable th {
+  text-align: left;
+}
+
+.submitCell {
+  text-align: right;
+}

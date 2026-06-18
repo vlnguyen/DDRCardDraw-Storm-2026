@@ -18,6 +18,20 @@ interface EventState {
   obsCss: string;
 }
 
+export interface PoolPlayer {
+  gamerTag: string;
+  prefix: string;
+  entrantId: number;
+  scores: number[];
+  isEliminated: boolean;
+  isDisabled: boolean;
+}
+
+export interface PoolState {
+  songs?: string[];
+  players?: (PoolPlayer | null)[];
+}
+
 /**
  * Event state properties that are unique to use at Project Storm
  */
@@ -26,7 +40,9 @@ interface TournamentState {
     code?: string;
     password?: string;
   };
+  poolState?: PoolState;
 }
+
 
 const initialState: EventState = {
   eventName: "",
@@ -41,6 +57,10 @@ const initialState: EventState = {
     lobbyConnection: {
       code: "",
       password: "",
+    },
+    poolState: {
+      songs: [],
+      players: [],
     },
   },
   obsLabels: {},
@@ -100,6 +120,12 @@ export const eventSlice = createSlice({
     },
     updateObsCss(state, action: PayloadAction<string>) {
       state.obsCss = action.payload;
+    },
+    setPoolPlayers(state, action: PayloadAction<(PoolPlayer | null)[]>) {
+      if (!state.tournament.poolState) {
+        state.tournament.poolState = {};
+      }
+      state.tournament.poolState.players = action.payload;
     },
     updateLobbyConnection(
       state,
