@@ -1,0 +1,12 @@
+
+.background {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #2C55FD;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.12) 2px, rgba(255, 255, 255, 0.03) 4px, transparent 6px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.12) 2px, rgba(255, 255, 255, 0.03) 4px, transparent 6px);
+  background-size: 35px 54px;
+  background-position: 0 0, 17.5px 27px;
+}
