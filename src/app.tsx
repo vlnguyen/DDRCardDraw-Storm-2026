@@ -158,6 +158,19 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/persona-3-circle",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { Persona3Circle } = await import("./obs-sources/persona-3-circle");
+          return { Component: Persona3Circle };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/triangles",
     element: <ObsSource />,
     children: [
