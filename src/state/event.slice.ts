@@ -18,6 +18,45 @@ interface EventState {
   obsCss: string;
 }
 
+export interface PoolPlayerScore {
+  /** 
+   * The scoreId from a specific match or undefined if the 
+   * score is not associated with a specific match.
+   * 
+   * If the scoreId is defined then the exScore and judgement counts
+   * can be populated from the match data, otherwise the scoreId can 
+   * remain null and the judgement counts can be entered manually.
+   */
+  scoreId?: number;
+  
+  // judgement counts and ex score
+  exScore?: number;
+  fantasticPlus?: number;
+  fantastics?: number;
+  excellents?: number;
+  greats?: number;
+  decents?: number;
+  wayOffs?: number;
+  misses?: number;
+  minesHit?: number;
+  holdsHeld?: number;
+  rollsHeld?: number;
+}
+
+export interface PoolPlayer {
+  gamerTag?: string;
+  prefix?: string;
+  entrantId?: number;
+  scores: PoolPlayerScore[];
+  isEliminated: boolean;
+  isDisabled: boolean;
+}
+
+export interface PoolState {
+  songs?: string[];
+  players?: PoolPlayer[];
+}
+
 /**
  * Event state properties that are unique to use at Project Storm
  */
@@ -26,7 +65,9 @@ interface TournamentState {
     code?: string;
     password?: string;
   };
+  poolState?: PoolState;
 }
+
 
 const initialState: EventState = {
   eventName: "",
@@ -41,6 +82,10 @@ const initialState: EventState = {
     lobbyConnection: {
       code: "",
       password: "",
+    },
+    poolState: {
+      songs: [],
+      players: [],
     },
   },
   obsLabels: {},
@@ -100,6 +145,12 @@ export const eventSlice = createSlice({
     },
     updateObsCss(state, action: PayloadAction<string>) {
       state.obsCss = action.payload;
+    },
+    setPoolPlayers(state, action: PayloadAction<PoolPlayer[]>) {
+      if (!state.tournament.poolState) {
+        state.tournament.poolState = {};
+      }
+      state.tournament.poolState.players = action.payload;
     },
     updateLobbyConnection(
       state,

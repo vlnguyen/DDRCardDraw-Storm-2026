@@ -130,6 +130,6 @@ for (const participant of participants) {
   console.log(`${participant.id}\t${participant.prefix}\t${participant.gamerTag}`);
 }
 
-const outputPath = `${slug.split("/").pop()}.json`;
+const outputPath = "src/assets/entrants.json";
 await writeFile(outputPath, JSON.stringify(participants, null, 2));
 console.log(`Wrote ${outputPath}`);

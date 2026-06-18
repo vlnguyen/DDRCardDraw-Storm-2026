@@ -1,7 +1,8 @@
-import { Button, Card, H3, H4, Tooltip } from "@blueprintjs/core";
-import { Refresh } from "@blueprintjs/icons";
-import { useEffect, useState } from "react";
-import { Lobby, Player } from "../../obs-sources/lobby.types";
+import { AnchorButton, Button, Card, H3, H4, Tooltip } from "@blueprintjs/core";
+import { Duplicate, Refresh } from "@blueprintjs/icons";
+import { useEffect, useRef, useState } from "react";
+import { useHref } from "react-router-dom";
+import { Lobby, Player, ServerMessage } from "../../obs-sources/lobby.types";
 import { useLiveRankings } from "../../obs-sources/useLiveRankings";
 import {
   SYNCSTART_PORT,
@@ -9,20 +10,33 @@ import {
 } from "../../obs-sources/syncstart-connection";
 import { eventSlice } from "../../state/event.slice";
 import { useAppDispatch, useAppState } from "../../state/store";
+import { copyObsSource, routableLiveRankingsPath } from "../copy-obs-source";
 import { formatRatio } from "./match-log";
+import { useLobbiesStore } from "./lobbies.store";
 import matchLogStyles from "./match-log.css";
 import styles from "./lobbies.css";
 
 export function Lobbies() {
   const [selectedLobby, setSelectedLobby] = useState<Lobby | null>(null);
 
-  const [lobbies, setLobbies] = useState<Lobby[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const lobbies = useLobbiesStore((s) => s.lobbies);
+  const error = useLobbiesStore((s) => s.error);
+  const fetchLobbies = useLobbiesStore((s) => s.fetchLobbies);
+  const addLobby = useLobbiesStore((s) => s.addLobby);
+  const updateLobby = useLobbiesStore((s) => s.updateLobby);
+  const removeLobby = useLobbiesStore((s) => s.removeLobby);
 
   const dispatch = useAppDispatch();
   const lobbyConnection = useAppState(
     (s) => s.event.tournament?.lobbyConnection,
   );
+
+  const liveRankingsHref = useHref(routableLiveRankingsPath());
+
+  const selectedLobbyRef = useRef(selectedLobby);
+  selectedLobbyRef.current = selectedLobby;
+  const lobbyConnectionRef = useRef(lobbyConnection);
+  lobbyConnectionRef.current = lobbyConnection;
 
   const gameState = useLiveRankings({
     name: "Stream Dashboard",
@@ -30,55 +44,40 @@ export function Lobbies() {
     password: selectedLobby?.password,
   });
 
-  const fetchLobbies = () => {
-    setError(null);
-    fetch(`http://${SYNCSTART_URL}:${SYNCSTART_PORT}/lobby/list`)
-      .then((res) => res.json())
-      .then((data: Lobby[]) => setLobbies(data))
-      .catch(() => setError("Failed to load lobby list."));
-  };
-
   useEffect(() => {
     fetchLobbies();
-  }, []);
+  }, [fetchLobbies]);
 
   useEffect(() => {
     const socket = new WebSocket(`ws://${SYNCSTART_URL}:${SYNCSTART_PORT}`);
 
     socket.addEventListener("message", (ev) => {
       try {
-        const message = JSON.parse(ev.data);
+        const message: ServerMessage = JSON.parse(ev.data);
         switch (message.event) {
-          case "lobbyAdded": {
-            const lobby: Lobby = message.data;
-            setLobbies((prev) => [
-              ...prev.filter((l) => l.code !== lobby.code),
-              lobby,
-            ]);
+          case "lobbyAdded":
+            addLobby(message.data);
             break;
-          }
-          case "lobbyUpdated": {
-            const lobby: Lobby = message.data;
-            setLobbies((prev) =>
-              prev.map((l) => (l.code === lobby.code ? lobby : l)),
-            );
+          case "lobbyUpdated":
+            updateLobby(message.data);
             break;
-          }
-          case "lobbyRemoved": {
-            const { code }: { code: string } = message.data;
-            setLobbies((prev) => prev.filter((l) => l.code !== code));
+          case "lobbyRemoved":
+            removeLobby(message.data.code);
+            if (message.data.code === selectedLobbyRef.current?.code) {
+              setSelectedLobby(null);
+            }
+            if (message.data.code === lobbyConnectionRef.current?.code) {
+              dispatch(eventSlice.actions.updateLobbyConnection({ code: "", password: "" }));
+            }
             break;
-          }
         }
       } catch {
         // ignore malformed messages
       }
     });
 
-    return () => {
-      socket.close();
-    };
-  }, []);
+    return () => socket.close();
+  }, [addLobby, updateLobby, removeLobby]);
 
   const toggleSpectateLobby = (lobby: Lobby) => {
     const isActive = lobby.code === selectedLobby?.code;
@@ -169,6 +168,15 @@ export function Lobbies() {
       <section className={styles.lobbyState}>
         <H3>
           Lobby State{" "}
+          <AnchorButton
+            icon={<Duplicate />}
+            href={liveRankingsHref}
+            onClick={(e) => {
+              e.preventDefault();
+              copyObsSource(new URL(liveRankingsHref, document.location.href).href);
+            }}
+          />
+          {" "}
           {selectedLobby && (
             <Tooltip
               content={

@@ -109,3 +109,9 @@ export interface Match {
   totalMines: number | null;
   scores: PlayerScore[];
 }
+
+export type ServerMessage =
+  | { event: "matchLogged"; data: Match }
+  | { event: "lobbyAdded"; data: Lobby }
+  | { event: "lobbyUpdated"; data: Lobby }
+  | { event: "lobbyRemoved"; data: { code: string } };

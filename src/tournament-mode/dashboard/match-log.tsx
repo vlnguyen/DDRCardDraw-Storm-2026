@@ -1,11 +1,12 @@
 import { Button, Card, H3, H4 } from "@blueprintjs/core";
-import { Refresh } from "@blueprintjs/icons";
-import { useEffect, useState } from "react";
-import { Match } from "../../obs-sources/lobby.types";
+import { Locate, Refresh } from "@blueprintjs/icons";
+import { useEffect } from "react";
+import { Match, PlayerScore, ServerMessage } from "../../obs-sources/lobby.types";
 import {
   SYNCSTART_PORT,
   SYNCSTART_URL,
 } from "../../obs-sources/syncstart-connection";
+import { useMatchLogStore } from "./match-log.store";
 import styles from "./match-log.css";
 
 export function formatRatio(numerator: number | null, total: number | null) {
@@ -13,46 +14,37 @@ export function formatRatio(numerator: number | null, total: number | null) {
   return `${numerator}/${total}`;
 }
 
-export function MatchLog() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-
-  const fetchMatches = () => {
-    setError(null);
-    fetch(`http://${SYNCSTART_URL}:${SYNCSTART_PORT}/match/list`)
-      .then((res) => res.json())
-      .then((data: Match[]) => {
-        setMatches(data);
-        setLastUpdated(new Date());
-      })
-      .catch(() => setError("Failed to load match log."));
-  };
+export function MatchLog({
+  onScoreSelected,
+}: {
+  onScoreSelected?: (score: PlayerScore) => void;
+}) {
+  const matches = useMatchLogStore((s) => s.matches);
+  const error = useMatchLogStore((s) => s.error);
+  const lastUpdated = useMatchLogStore((s) => s.lastUpdated);
+  const fetchMatches = useMatchLogStore((s) => s.fetchMatches);
+  const addMatch = useMatchLogStore((s) => s.addMatch);
 
   useEffect(() => {
     fetchMatches();
-  }, []);
+  }, [fetchMatches]);
 
   useEffect(() => {
     const socket = new WebSocket(`ws://${SYNCSTART_URL}:${SYNCSTART_PORT}`);
 
     socket.addEventListener("message", (ev) => {
       try {
-        const message = JSON.parse(ev.data);
+        const message: ServerMessage = JSON.parse(ev.data);
         if (message.event === "matchLogged") {
-          const match: Match = message.data;
-          setMatches((prev) => [match, ...prev]);
-          setLastUpdated(new Date());
+          addMatch(message.data);
         }
       } catch {
         // ignore malformed messages
       }
     });
 
-    return () => {
-      socket.close();
-    };
-  }, []);
+    return () => socket.close();
+  }, [addMatch]);
 
   const totalScores = matches.reduce(
     (sum, match) => sum + match.scores.length,
@@ -74,13 +66,19 @@ export function MatchLog() {
       )}
       {error && <p>{error}</p>}
       {matches.map((match) => (
-        <MatchCard key={match.id} match={match} />
+        <MatchCard key={match.id} match={match} onScoreSelected={onScoreSelected} />
       ))}
     </section>
   );
 }
 
-function MatchCard({ match }: { match: Match }) {
+function MatchCard({
+  match,
+  onScoreSelected,
+}: {
+  match: Match;
+  onScoreSelected?: (score: PlayerScore) => void;
+}) {
   const date = new Date(match.dateAdded).toLocaleString();
   const sortedScores = [...match.scores].sort(
     (a, b) => (b.exScore ?? -1) - (a.exScore ?? -1),
@@ -89,20 +87,20 @@ function MatchCard({ match }: { match: Match }) {
   return (
     <Card className={styles.matchCard}>
       <div className={styles.matchHeader}>
-        <H4>
-          {match.lobbyCode} &mdash; {date}
-        </H4>
         {match.songTitle && (
-          <span>
+          <H4>
             {match.songTitle}
             {match.songArtist && ` - ${match.songArtist}`}
-          </span>
+          </H4>
         )}
+        <span>
+          {match.lobbyCode} &mdash; {date}
+        </span>
       </div>
       <table className={styles.scoreTable}>
         <thead>
           <tr>
-            <th>Player</th>
+            <th className={styles.playerNameCell}>Player</th>
             <th className={styles.numericCell}>EX%</th>
             <th className={`${styles.numericCell} ${styles.fantasticPlus}`}>
               FA+
@@ -134,7 +132,15 @@ function MatchCard({ match }: { match: Match }) {
               key={score.playerId}
               className={!score.isValid ? styles.invalidRow : undefined}
             >
-              <td>{score.profileName}</td>
+              <td>
+                {onScoreSelected && (
+                  <Button
+                    icon={<Locate />}
+                    onClick={() => onScoreSelected(score)}
+                  />
+                )}{" "}
+                {score.profileName}
+              </td>
               <td className={styles.numericCell}>
                 {score.exScore != null
                   ? Number(score.exScore / 100).toLocaleString(undefined, {

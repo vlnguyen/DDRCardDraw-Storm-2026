@@ -15,6 +15,17 @@
   gap: 1rem;
 }
 
+@media (max-width: 1280px) {
+  .lobbies {
+    flex-direction: column;
+  }
+
+  .lobbyList,
+  .lobbyState {
+    flex: 1 1 auto;
+  }
+}
+
 .lobbyCards {
   display: flex;
   flex-direction: column;

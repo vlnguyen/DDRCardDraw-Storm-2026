@@ -1,0 +1,61 @@
+.playersTable {
+  border-collapse: collapse;
+  border-style: hidden;
+}
+
+.playersTable th,
+.playersTable td {
+  border: 1px solid currentColor;
+  padding: 4px 8px;
+}
+
+.playersTable th:first-child,
+.playersTable td:first-child {
+  border-left: none;
+}
+
+.playersTable th {
+  text-align: left;
+}
+
+.submitCell {
+  text-align: right;
+}
+
+.songHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+}
+
+.scoreCell {
+  text-align: right;
+  font-family: monospace;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.currentScoreGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.dragHandle {
+  cursor: grab;
+  padding: 0 4px;
+  opacity: 0.4;
+  font-size: 1.2em;
+  line-height: 1;
+  user-select: none;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+  opacity: 0.8;
+}

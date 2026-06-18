@@ -36,6 +36,10 @@
   text-align: right;
 }
 
+.playerNameCell {
+  width: 220px;
+}
+
 .fantasticPlus {
   color: #21cce8;
 }
