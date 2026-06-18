@@ -26,21 +26,29 @@ export function Persona3Circle({
   const dottedCircleR = innerCircleR * 1.1845;
   const textCircleR = dottedCircleR + 40;
   const topArc = `M ${baseCircleCx - textCircleR},${baseCircleCy} A ${textCircleR},${textCircleR},0,0,1,${baseCircleCx + textCircleR},${baseCircleCy}`;
+  const rotateCSS = `
+    @keyframes persona3Rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .persona3-rotating {
+      transform-origin: ${baseCircleCx}px ${baseCircleCy}px;
+      animation: persona3Rotate 20s linear infinite;
+    }
+  `;
 
   return (
     <div style={{ width: W, height: H, overflow: "hidden" }}>
       <svg width={W} height={H}>
         <defs>
+          <style>{rotateCSS}</style>
           <path id="text-arc" d={topArc} />
         </defs>
         <circle cx={baseCircleCx} cy={baseCircleCy} r={baseCircleR} fill={BASE_COLOR} />
         <circle cx={baseCircleCx} cy={baseCircleCy} r={accentCircleR} fill={ACCENT_COLOR} />
         <circle cx={baseCircleCx} cy={baseCircleCy} r={innerCircleR} fill={BASE_COLOR} />
-        <circle cx={baseCircleCx} cy={baseCircleCy} r={dottedCircleR} fill="none" stroke={ACCENT_COLOR} strokeWidth={8} strokeDasharray="16 48" strokeLinecap="round">
-          <animateTransform attributeName="transform" type="rotate" from={`0 ${baseCircleCx} ${baseCircleCy}`} to={`360 ${baseCircleCx} ${baseCircleCy}`} dur="20s" repeatCount="indefinite" />
-        </circle>
-        <g>
-          <animateTransform attributeName="transform" type="rotate" from={`0 ${baseCircleCx} ${baseCircleCy}`} to={`360 ${baseCircleCx} ${baseCircleCy}`} dur="20s" repeatCount="indefinite" />
+        <circle className="persona3-rotating" cx={baseCircleCx} cy={baseCircleCy} r={dottedCircleR} fill="none" stroke={ACCENT_COLOR} strokeWidth={8} strokeDasharray="16 48" strokeLinecap="round" />
+        <g className="persona3-rotating">
           <text textAnchor="middle" fill={ACCENT_COLOR} fontSize={fontSize} fontWeight="bold">
             <textPath href="#text-arc" startOffset="50%">
               {outerText}
