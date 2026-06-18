@@ -26,6 +26,7 @@ import { useTheme } from "../../theme-toggle";
 import { copyObsSource, routableGlobalSourcePath } from "../copy-obs-source";
 import styles from "./dashboard.css";
 import { Lobbies } from "./lobbies";
+import { useLobbiesStore } from "./lobbies.store";
 import { MatchLog } from "./match-log";
 import { useMatchLogStore } from "./match-log.store";
 import { Players } from "./players";
@@ -40,6 +41,7 @@ export function Dashboard() {
   const [currentTab, setCurrentTab] =
     useState<DashboardTabId>("obs-text-sources");
   const matchCount = useMatchLogStore((s) => s.matches.length);
+  const lobbyCount = useLobbiesStore((s) => s.lobbies.length);
 
   return (
     <div className={styles.container}>
@@ -56,7 +58,7 @@ export function Dashboard() {
           Players
         </Tab>
         <Tab id="lobbies" panel={<Lobbies />}>
-          Lobbies
+          Lobbies ({lobbyCount})
         </Tab>
         <Tab id="match-log" panel={<MatchLog />}>
           Match Log ({matchCount})
