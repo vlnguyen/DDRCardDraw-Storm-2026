@@ -24,6 +24,13 @@
   margin: 0;
 }
 
+.matchLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
 .scoreTable {
   width: 100%;
   border-collapse: collapse;
