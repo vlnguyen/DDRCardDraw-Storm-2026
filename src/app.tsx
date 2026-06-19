@@ -216,6 +216,24 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "player/:playerIndex/:displayType?",
+        lazy: async () => {
+          const { CabPlayer, toDisplayType } =
+            await import("./obs-sources/text");
+          return {
+            Component: function PlayerSource() {
+              const { playerIndex, displayType } = useParams();
+              return (
+                <CabPlayer
+                  p={+playerIndex!}
+                  displayType={toDisplayType(displayType)}
+                />
+              );
+            },
+          };
+        },
+      },
+      {
         path: "p1",
         lazy: async () => {
           const { CabPlayer } = await import("./obs-sources/text");
@@ -226,14 +244,14 @@ const router = createBrowserRouter([
         path: "p1-name",
         lazy: async () => {
           const { CabPlayer } = await import("./obs-sources/text");
-          return { element: <CabPlayer p={1} displayType="Name" /> };
+          return { element: <CabPlayer p={1} displayType="name" /> };
         },
       },
       {
         path: "p1-score",
         lazy: async () => {
           const { CabPlayer } = await import("./obs-sources/text");
-          return { element: <CabPlayer p={1} displayType="Score" /> };
+          return { element: <CabPlayer p={1} displayType="score" /> };
         },
       },
       {
@@ -247,14 +265,14 @@ const router = createBrowserRouter([
         path: "p2-name",
         lazy: async () => {
           const { CabPlayer } = await import("./obs-sources/text");
-          return { element: <CabPlayer p={2} displayType="Name" /> };
+          return { element: <CabPlayer p={2} displayType="name" /> };
         },
       },
       {
         path: "p2-score",
         lazy: async () => {
           const { CabPlayer } = await import("./obs-sources/text");
-          return { element: <CabPlayer p={2} displayType="Score" /> };
+          return { element: <CabPlayer p={2} displayType="score" /> };
         },
       },
     ],

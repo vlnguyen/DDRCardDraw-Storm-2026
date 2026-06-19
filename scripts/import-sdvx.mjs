@@ -26,7 +26,23 @@ function typedKeys(object) {
 }
 
 const OUTFILE = "src/songs/sdvx_nabla.json";
-const JACKETS_PATH = "src/assets/jackets/sdvx";
+const JACKETS_PATH = "src/assets/jackets/sdvx/nabla";
+
+const radarAxes = [
+  "notes",
+  "peak",
+  "tsumami",
+  "tricky",
+  "hand-trip",
+  "one-hand",
+];
+/**
+ * @param {string} radarAxis
+ */
+function radarAxisToFlag(radarAxis) {
+  return `radar-peak:${radarAxis}`;
+}
+const allRadarFlags = radarAxes.map(radarAxisToFlag);
 
 async function main() {
   const sdvxFile = process.argv[2];
@@ -65,7 +81,7 @@ async function main() {
         { key: "nabla", color: "#00ff00" },
         { key: "ultimate", color: "#efbf04" },
       ],
-      flags: typedKeys(SDVX_UNLOCK_IDS),
+      flags: typedKeys(SDVX_UNLOCK_IDS).concat(allRadarFlags),
       lastUpdated: Date.now(),
     },
     defaults: {
@@ -81,7 +97,7 @@ async function main() {
         "nabla",
         "ultimate",
       ],
-      flags: ["omegaDimension", "hexadiver", "otherEvents"],
+      flags: ["omegaDimension", "hexadiver", "otherEvents", ...allRadarFlags],
       lowerLvlBound: 16,
       upperLvlBound: 19,
     },
@@ -105,6 +121,10 @@ async function main() {
         variantgate: "Variant Gate",
         otherEvents: "Time-limited & Other Events",
         jpOnly: "J-Region Exclusive",
+        ...radarAxes.reduce((prev, curr) => {
+          prev[radarAxisToFlag(curr)] = `Radar Peak: ${curr}`;
+          return prev;
+        }, {}),
         $abbr: {
           novice: "NOV",
           advanced: "ADV",
@@ -225,7 +245,17 @@ function buildSong(song, availableJackets) {
     驩: "Ø",
     齲: "♥",
     齶: "♡",
+    黻: "*",
+    釁: "🍄",
+    闃: "Ā",
+    蔕: "ῦ",
+    鑷: "ゔ",
+    饌: "²",
     趁: "Ǣ",
+    瀑: "À",
+    鹹: "Ĥ",
+    躔: "★",
+    壥: "Є",
     騫: "á",
     曦: "à",
     驫: "ā",
@@ -248,6 +278,8 @@ function buildSong(song, availableJackets) {
     盥: "⚙︎",
     疉: "Ö",
     鑒: "₩",
+    煢: "ø",
+    鷸: "♫",
   };
 
   let name = info.title_name[0];
@@ -275,6 +307,17 @@ function buildSong(song, availableJackets) {
       continue;
     }
 
+    const radarValues = {};
+    for (const radarType of radarAxes) {
+      radarValues[radarType] = parseInt(chartInfo.radar[0][radarType][0]._, 10);
+    }
+    // highest radar value of all six axes
+    const peakValue = Math.max(...Object.values(radarValues));
+    // all keys tied with radar value
+    const peakKeys = Object.keys(radarValues).filter(
+      (key) => radarValues[key] === peakValue,
+    );
+
     const chartJacket = determineChartJacket(chartType, song, availableJackets);
     if (!chartJacket) {
       usesSharedJacket = true;
@@ -288,7 +331,7 @@ function buildSong(song, availableJackets) {
       jacket: chartJacket,
     };
     /** @type {string[]} */
-    const flags = [];
+    const flags = peakKeys.map(radarAxisToFlag);
     for (const flag of typedKeys(SDVX_UNLOCK_IDS)) {
       if (
         SDVX_UNLOCK_IDS[flag].some(
