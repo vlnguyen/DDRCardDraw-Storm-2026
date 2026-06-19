@@ -87,15 +87,11 @@ function MatchCard({
   return (
     <Card className={styles.matchCard}>
       <div className={styles.matchHeader}>
-        {match.songTitle && (
-          <H4>
-            {match.songTitle}
-            {match.songArtist && ` - ${match.songArtist}`}
-          </H4>
-        )}
-        <span>
-          {match.lobbyCode} &mdash; {date}
-        </span>
+        <H4>{match.songTitle}</H4>
+        <div style={{ textAlign: "right" }}>
+          <b>{match.label ?? `Match ${match.id}`}</b>
+          <div>{match.lobbyCode} &mdash; {date}</div>
+        </div>
       </div>
       <table className={styles.scoreTable}>
         <thead>

@@ -15,8 +15,13 @@
 .matchHeader {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 0.5rem;
+  align-items: flex-end;
+  margin: 0;
+  padding-bottom: 8px;
+}
+
+.matchHeader h4 {
+  margin: 0;
 }
 
 .scoreTable {
@@ -24,6 +29,7 @@
   border-collapse: collapse;
   font-family: monospace;
   table-layout: fixed;
+  border-top: 1px solid currentColor;
 }
 
 .scoreTable th,
