@@ -29,6 +29,12 @@ import { Lobbies } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
 import { MatchLog } from "./match-log";
 import { useMatchLogStore } from "./match-log.store";
+import { Match } from "../../obs-sources/lobby.types";
+import { toaster } from "../../toaster";
+import {
+  SYNCSTART_PORT,
+  SYNCSTART_URL,
+} from "../../obs-sources/syncstart-connection";
 import { Players } from "./players";
 
 type DashboardTabId =
@@ -60,7 +66,7 @@ export function Dashboard() {
         <Tab id="lobbies" panel={<Lobbies />}>
           Lobbies ({lobbyCount})
         </Tab>
-        <Tab id="match-log" panel={<MatchLog />}>
+        <Tab id="match-log" panel={<MatchLogPanel />}>
           Match Log ({matchCount})
         </Tab>
       </Tabs>
@@ -198,6 +204,76 @@ function EditDialog({
         }
       />
     </Dialog>
+  );
+}
+
+function MatchLogPanel() {
+  const patchMatch = useMatchLogStore((s) => s.patchMatch);
+  const [editingMatch, setEditingMatch] = useState<Match | null>(null);
+  const [labelText, setLabelText] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleLabelSubmit() {
+    if (!editingMatch) return;
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(
+        `http://${SYNCSTART_URL}:${SYNCSTART_PORT}/match/${editingMatch.id}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ label: labelText || null }),
+        },
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const updated: Match = await res.json();
+      patchMatch(updated);
+      setEditingMatch(null);
+      toaster.show({ message: "Match label updated.", intent: "success" });
+    } catch {
+      toaster.show({ message: "Failed to update match label.", intent: "danger" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <>
+      <MatchLog
+        onLabelEdit={(match) => {
+          setEditingMatch(match);
+          setLabelText(match.label ?? "");
+        }}
+      />
+      <Dialog
+        isOpen={editingMatch !== null}
+        onClose={() => setEditingMatch(null)}
+        title="Edit Match Label"
+      >
+        <DialogBody>
+          <FormGroup label="Label">
+            <InputGroup
+              autoFocus
+              disabled={isSubmitting}
+              value={labelText}
+              onChange={(e) => setLabelText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.altKey && !e.ctrlKey && !e.metaKey) {
+                  void handleLabelSubmit();
+                }
+              }}
+            />
+          </FormGroup>
+        </DialogBody>
+        <DialogFooter
+          actions={
+            <Button intent="primary" loading={isSubmitting} onClick={() => void handleLabelSubmit()}>
+              Submit
+            </Button>
+          }
+        />
+      </Dialog>
+    </>
   );
 }
 

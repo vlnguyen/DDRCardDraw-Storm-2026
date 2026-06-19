@@ -1,5 +1,5 @@
 import { Button, Card, H3, H4 } from "@blueprintjs/core";
-import { Locate, Refresh } from "@blueprintjs/icons";
+import { Edit, Locate, Refresh } from "@blueprintjs/icons";
 import { useEffect } from "react";
 import { Match, PlayerScore, ServerMessage } from "../../obs-sources/lobby.types";
 import {
@@ -16,14 +16,17 @@ export function formatRatio(numerator: number | null, total: number | null) {
 
 export function MatchLog({
   onScoreSelected,
+  onLabelEdit,
 }: {
   onScoreSelected?: (score: PlayerScore) => void;
+  onLabelEdit?: (match: Match) => void;
 }) {
   const matches = useMatchLogStore((s) => s.matches);
   const error = useMatchLogStore((s) => s.error);
   const lastUpdated = useMatchLogStore((s) => s.lastUpdated);
   const fetchMatches = useMatchLogStore((s) => s.fetchMatches);
   const addMatch = useMatchLogStore((s) => s.addMatch);
+  const patchMatch = useMatchLogStore((s) => s.patchMatch);
 
   useEffect(() => {
     fetchMatches();
@@ -37,6 +40,8 @@ export function MatchLog({
         const message: ServerMessage = JSON.parse(ev.data);
         if (message.event === "matchLogged") {
           addMatch(message.data);
+        } else if (message.event === "matchUpdated") {
+          patchMatch(message.data);
         }
       } catch {
         // ignore malformed messages
@@ -44,7 +49,7 @@ export function MatchLog({
     });
 
     return () => socket.close();
-  }, [addMatch]);
+  }, [addMatch, patchMatch]);
 
   const totalScores = matches.reduce(
     (sum, match) => sum + match.scores.length,
@@ -66,7 +71,12 @@ export function MatchLog({
       )}
       {error && <p>{error}</p>}
       {matches.map((match) => (
-        <MatchCard key={match.id} match={match} onScoreSelected={onScoreSelected} />
+        <MatchCard
+          key={match.id}
+          match={match}
+          onScoreSelected={onScoreSelected}
+          onLabelEdit={onLabelEdit}
+        />
       ))}
     </section>
   );
@@ -75,9 +85,11 @@ export function MatchLog({
 function MatchCard({
   match,
   onScoreSelected,
+  onLabelEdit,
 }: {
   match: Match;
   onScoreSelected?: (score: PlayerScore) => void;
+  onLabelEdit?: (match: Match) => void;
 }) {
   const date = new Date(match.dateAdded).toLocaleString();
   const sortedScores = [...match.scores].sort(
@@ -87,15 +99,20 @@ function MatchCard({
   return (
     <Card className={styles.matchCard}>
       <div className={styles.matchHeader}>
-        {match.songTitle && (
-          <H4>
-            {match.songTitle}
-            {match.songArtist && ` - ${match.songArtist}`}
-          </H4>
-        )}
-        <span>
-          {match.lobbyCode} &mdash; {date}
-        </span>
+        <H4>{match.songTitle}</H4>
+        <div style={{ textAlign: "right" }}>
+          <div className={styles.matchLabel}>
+            <b>{match.label ?? `Match ${match.id}`}</b>
+            {onLabelEdit && (
+              <Button
+                icon={<Edit />}
+                style={{ height: "1.25em", minHeight: "unset", padding: 0, lineHeight: 1 }}
+                onClick={() => onLabelEdit(match)}
+              />
+            )}
+          </div>
+          <div>{match.lobbyCode} &mdash; {date}</div>
+        </div>
       </div>
       <table className={styles.scoreTable}>
         <thead>

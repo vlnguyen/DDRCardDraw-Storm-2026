@@ -100,6 +100,7 @@ export interface Match {
   id: string;
   dateAdded: number;
   lobbyCode: string;
+  label: string | null;
   songTitle: string | null;
   songArtist: string | null;
   songPath: string | null;
@@ -112,6 +113,7 @@ export interface Match {
 
 export type ServerMessage =
   | { event: "matchLogged"; data: Match }
+  | { event: "matchUpdated"; data: Match }
   | { event: "lobbyAdded"; data: Lobby }
   | { event: "lobbyUpdated"; data: Lobby }
   | { event: "lobbyRemoved"; data: { code: string } };

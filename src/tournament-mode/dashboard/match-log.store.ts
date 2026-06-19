@@ -11,6 +11,7 @@ interface MatchLogState {
   lastUpdated: Date | null;
   fetchMatches(this: void): Promise<void>;
   addMatch(this: void, match: Match): void;
+  patchMatch(this: void, match: Match): void;
 }
 
 export const useMatchLogStore = create<MatchLogState>((set) => ({
@@ -33,6 +34,11 @@ export const useMatchLogStore = create<MatchLogState>((set) => ({
     set((prev) => ({
       matches: [match, ...prev.matches],
       lastUpdated: new Date(),
+    }));
+  },
+  patchMatch(match) {
+    set((prev) => ({
+      matches: prev.matches.map((m) => (m.id === match.id ? match : m)),
     }));
   },
 }));
