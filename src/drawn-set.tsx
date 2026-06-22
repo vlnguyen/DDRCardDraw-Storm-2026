@@ -2,6 +2,7 @@ import { memo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { SongCard, PersonaSongCard } from "./song-card";
 import styles from "./drawn-set.css";
+import personaStyles from "./song-card/persona-song-card.css";
 import { useDrawing } from "./drawing-context";
 import { DrawingActions } from "./tournament-mode/drawing-actions";
 import { ErrorFallback } from "./utils/error-fallback";
@@ -14,8 +15,10 @@ export type SongCardStyle = "default" | "persona";
 export function ChartList({ style = "default" }: { style?: SongCardStyle } = {}) {
   const charts = useDrawing((d) => d.charts);
   if (!charts) return null;
+  const chartListClass =
+    style === "persona" ? personaStyles.chartList : styles.chartList;
   return (
-    <div className={styles.chartList}>
+    <div className={chartListClass}>
       {charts.map((c) => (
         <ChartFromContext key={c.id} chartId={c.id} style={style} />
       ))}
