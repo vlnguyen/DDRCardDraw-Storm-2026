@@ -184,22 +184,14 @@
   transform: scale(0.9);
   transform-origin: center;
   border-color: #e12b2b;
-  box-shadow: 0px 0px 10px #e12b2b;
+  box-shadow: 0px 0px 8px #e12b2b;
 }
 
+.picked,
+.replaced,
 .protected {
   border-color: #a8ff00;
-  box-shadow: 0px 0px 10px #a8ff00;
-}
-
-.replaced {
-  border-color: cornflowerblue;
-  box-shadow: 0px 0px 10px cornflowerblue;
-}
-
-.picked {
-  border-color: grey;
-  box-shadow: 0px 0px 10px grey;
+  box-shadow: 0px 0px 8px #a8ff00;
 }
 
 .hideVeto.vetoed {
