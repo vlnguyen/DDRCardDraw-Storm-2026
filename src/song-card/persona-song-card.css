@@ -1,0 +1,242 @@
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+/* @import url("https://fonts.googleapis.com/css?family=Russo+One"); */
+/* cyrillic */
+@font-face {
+  font-family: "Russo One";
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/russoone/v14/Z9XUDmZRWg6M1LvRYsHOy8mJrrg.woff2)
+    format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* latin-ext */
+@font-face {
+  font-family: "Russo One";
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/russoone/v14/Z9XUDmZRWg6M1LvRYsHOwcmJrrg.woff2)
+    format("woff2");
+  unicode-range:
+    U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: "Russo One";
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/russoone/v14/Z9XUDmZRWg6M1LvRYsHOz8mJ.woff2)
+    format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF,
+    U+FFFD;
+}
+
+.cardSlot {
+  display: flex;
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.chartList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.chart {
+  display: flex !important;
+  flex: 0 0 300px;
+  text-align: center;
+  border: 2px solid black;
+  border-radius: 5px;
+  flex-direction: column;
+  min-height: 150px;
+  color: white;
+  text-shadow:
+    0px 0px 10px black,
+    1px 1px 1px black;
+  font-family:
+    Evogria, "Russo One", Arial, "Helvetica Neue", Helvetica, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  margin: 8px;
+  word-wrap: break-word;
+  overflow: hidden;
+  transition: transform ease 0.3s;
+  position: relative;
+  min-width: 300px;
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.chart.clickable {
+  cursor: pointer;
+}
+
+.chart.randomSelected {
+  box-shadow: 0px 0px 4px black;
+  transform: scale(1.05);
+}
+
+:global(.bp6-dark) .chart.randomSelected {
+  box-shadow: 0px 0px 4px white;
+}
+
+.clickTarget {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(1px) brightness(60%);
+  /* subtle darkening gradient overlay over the bottom half of jacket background */
+  background-image: linear-gradient(
+    transparent,
+    transparent 50%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+}
+
+.cardCenter {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.name,
+.nameTranslation {
+  font-family: "FOT-Rodin Pro", Evogria, "Russo One", Arial,
+    "Helvetica Neue", Helvetica, sans-serif;
+  color: white;
+  -webkit-text-stroke: 1px #222222;
+  paint-order: stroke fill;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+}
+
+.name {
+  font-size: 180%;
+}
+.nameTranslation {
+  font-size: 95%;
+}
+.dateAdded {
+  font-size: 140%;
+}
+.maxScore {
+  font-size: 110%;
+}
+.folder {
+  font-size: 75%;
+}
+
+.cardHeader,
+.cardFooter {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 8px;
+  align-items: center;
+  min-height: 1.8em;
+}
+
+.coffinCorner {
+  position: absolute;
+  right: 0.3em;
+  bottom: 0.25em;
+}
+
+.coffinCorner img {
+  height: 2.5em;
+  display: block;
+}
+
+.coffinCornerTextBox {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(0.2em) translateY(-0.1em) rotate(-10deg);
+}
+
+.coffinCornerText {
+  font-family: "Chiaro Std", sans-serif;
+  font-size: 80%;
+  white-space: nowrap;
+  color: white;
+}
+
+.winnerIcon,
+.headerIcon {
+  height: 1.8em;
+  background-color: inherit;
+}
+
+.winnerLabel,
+.protectLabel,
+.vetoLabel {
+  font-size: 140%;
+}
+
+.winnerLabel {
+  color: #f2fb17;
+}
+
+.protectLabel {
+  color: #a8ff00;
+}
+
+.vetoLabel {
+  color: #e12b2b;
+}
+
+.shockBadge {
+  background-color: white;
+  border: 1px solid black;
+  padding: 1px;
+  border-radius: 50%;
+  height: 1em;
+  min-width: 1em;
+}
+
+.difficulty {
+  text-transform: uppercase;
+}
+
+.vetoed {
+  opacity: 0.95;
+  transform: scale(0.9);
+  transform-origin: center;
+  border-color: #e12b2b;
+  box-shadow: 0px 0px 8px #e12b2b;
+}
+
+.picked,
+.replaced,
+.protected {
+  border-color: #a8ff00;
+  box-shadow: 0px 0px 8px #a8ff00;
+}
+
+.hideVeto.vetoed {
+  display: none !important;
+}

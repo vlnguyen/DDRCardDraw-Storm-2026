@@ -1,5 +1,5 @@
 import { DrawingProvider } from "./drawing-context";
-import DrawnSet, { ChartList } from "./drawn-set";
+import DrawnSet, { ChartList, type SongCardStyle } from "./drawn-set";
 import { useRotatingGradientStyles } from "./hooks/useRotatingGradient";
 import { useAppState } from "./state/store";
 import { MatchLabels } from "./tournament-mode/drawing-labels";
@@ -27,7 +27,13 @@ export default function DrawnSetGroup({ drawingId }: { drawingId: string }) {
   );
 }
 
-export function PlainDrawnSetGroup({ drawingId }: { drawingId: string }) {
+export function PlainDrawnSetGroup({
+  drawingId,
+  style = "default",
+}: {
+  drawingId: string;
+  style?: SongCardStyle;
+}) {
   const drawing = useAppState((s) => s.drawings.entities[drawingId]);
   if (!drawing) return null;
   return (
@@ -38,7 +44,7 @@ export function PlainDrawnSetGroup({ drawingId }: { drawingId: string }) {
             key={subDraw.compoundId[1]}
             drawingId={subDraw.compoundId}
           >
-            <ChartList />
+            <ChartList style={style} />
           </DrawingProvider>
         ))}
     </div>
