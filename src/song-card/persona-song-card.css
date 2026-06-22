@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
 /* @import url("https://fonts.googleapis.com/css?family=Russo+One"); */
 /* cyrillic */
 @font-face {
@@ -81,13 +88,6 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-}
-
-.cardCenter {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   backdrop-filter: blur(1px) brightness(60%);
   /* subtle darkening gradient overlay over the bottom half of jacket background */
   background-image: linear-gradient(
@@ -97,14 +97,32 @@
   );
 }
 
+.cardCenter {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.name,
+.nameTranslation {
+  font-family: "FOT-Rodin Pro", Evogria, "Russo One", Arial,
+    "Helvetica Neue", Helvetica, sans-serif;
+  color: white;
+  -webkit-text-stroke: 1px #222222;
+  paint-order: stroke fill;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+}
+
 .name {
-  font-size: 140%;
+  font-size: 180%;
 }
 .nameTranslation {
-  font-size: 75%;
+  font-size: 95%;
 }
 .dateAdded {
-  font-size: 110%;
+  font-size: 140%;
 }
 .maxScore {
   font-size: 110%;
@@ -116,10 +134,20 @@
 .cardFooter {
   flex: 0 0 auto;
   display: flex;
-  justify-content: space-between;
-  padding: 5px;
-  align-items: flex-end;
-  border-top: 1px solid black;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 8px;
+  align-items: center;
+  min-height: 1.8em;
+}
+
+.winnerIcon {
+  height: 1.8em;
+  background-color: inherit;
+}
+
+.winnerLabel {
+  color: #f2fb17;
 }
 
 .shockBadge {

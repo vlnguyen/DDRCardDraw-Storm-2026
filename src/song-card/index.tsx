@@ -1,6 +1,6 @@
 import { SongCardBase, type SongCardProps } from "./song-card";
 import { PersonaSongCard as PersonaSongCardBase } from "./persona-song-card";
-import { getContentVariants } from "./variants";
+import { getContentVariants, getPersonaContentVariants } from "./variants";
 
 export { SongCardProps };
 
@@ -12,8 +12,6 @@ export function SongCard(p: SongCardProps) {
 }
 
 export function PersonaSongCard(p: SongCardProps) {
-  const cardImpl = getContentVariants(
-    "cardVariant" in p.chart ? p.chart.cardVariant : undefined,
-  );
+  const cardImpl = getPersonaContentVariants();
   return <PersonaSongCardBase {...p} {...cardImpl} />;
 }

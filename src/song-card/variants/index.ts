@@ -8,9 +8,10 @@ import {
   MaxScoreCardCenter,
 } from "./base";
 import { DdrCardFooter } from "./ddr";
-import { ItgCardFooter } from "./itg";
+import { ItgCardFooter, PersonaItgCardFooter } from "./itg";
 import { MaimaiCardFooter } from "./maimai";
 import { DonkeyKongaCardCenter } from "./donkeykonga";
+import { PersonaBaseCardCenter } from "./persona-base";
 
 export function getContentVariants(
   cardType: string | undefined,
@@ -42,4 +43,11 @@ export function getContentVariants(
         FooterContent: BaseCardFooter,
       };
   }
+}
+
+export function getPersonaContentVariants(): CardContentsProps {
+  return {
+    CenterContent: PersonaBaseCardCenter,
+    FooterContent: PersonaItgCardFooter,
+  };
 }

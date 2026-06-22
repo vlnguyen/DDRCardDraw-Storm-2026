@@ -144,13 +144,6 @@ export function PersonaSongCard(props: Props) {
           onRemove={iconCallbacks?.onReset}
         />
       )}
-      {winner !== undefined && winner !== null && (
-        <CardLabel
-          playerIdx={winner}
-          type={LabelType.Winner}
-          onRemove={() => iconCallbacks?.onSetWinner(null)}
-        />
-      )}
     </>
   );
 
@@ -182,22 +175,24 @@ export function PersonaSongCard(props: Props) {
           }}
           onCancel={() => setPocketPickPendingForPlayer(null)}
         />
-        <div className={styles.cardCenter}>
-          {actionLabels}
-          <CenterContent chart={replacedWith || chart} />
-        </div>
+        <div className={styles.clickTarget}>
+          <div className={styles.cardCenter}>
+            {actionLabels}
+            <CenterContent chart={replacedWith || chart} />
+          </div>
 
-        <Popover
-          content={menuContent}
-          isOpen={showingContextMenu}
-          onClose={hideMenu}
-          placement="top"
-          modifiers={{
-            offset: { options: { offset: [0, 35] } },
-          }}
-        >
-          <FooterContent chart={replacedWith || chart} />
-        </Popover>
+          <Popover
+            content={menuContent}
+            isOpen={showingContextMenu}
+            onClose={hideMenu}
+            placement="top"
+            modifiers={{
+              offset: { options: { offset: [0, 35] } },
+            }}
+          >
+            <FooterContent chart={replacedWith || chart} winner={winner} />
+          </Popover>
+        </div>
       </div>
     </Popover>
   );
