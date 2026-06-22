@@ -1,27 +1,35 @@
 import { memo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { SongCard } from "./song-card";
+import { SongCard, PersonaSongCard } from "./song-card";
 import styles from "./drawn-set.css";
 import { useDrawing } from "./drawing-context";
 import { DrawingActions } from "./tournament-mode/drawing-actions";
 import { ErrorFallback } from "./utils/error-fallback";
 
+export type SongCardStyle = "default" | "persona";
+
 /**
  * expects a drawing context wrapper
  **/
-export function ChartList() {
+export function ChartList({ style = "default" }: { style?: SongCardStyle } = {}) {
   const charts = useDrawing((d) => d.charts);
   if (!charts) return null;
   return (
     <div className={styles.chartList}>
       {charts.map((c) => (
-        <ChartFromContext key={c.id} chartId={c.id} />
+        <ChartFromContext key={c.id} chartId={c.id} style={style} />
       ))}
     </div>
   );
 }
 
-function ChartFromContext({ chartId }: { chartId: string }) {
+function ChartFromContext({
+  chartId,
+  style,
+}: {
+  chartId: string;
+  style: SongCardStyle;
+}) {
   const chart = useDrawing((d) => d.charts.find((c) => c.id === chartId));
   const veto = useDrawing((d) => {
     return d.bans[chartId];
@@ -32,8 +40,9 @@ function ChartFromContext({ chartId }: { chartId: string }) {
   if (!chart) {
     return null;
   }
+  const Card = style === "persona" ? PersonaSongCard : SongCard;
   return (
-    <SongCard
+    <Card
       vetoedBy={veto?.player}
       protectedBy={protect?.player}
       replacedBy={pocketPick?.player}

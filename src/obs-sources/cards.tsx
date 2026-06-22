@@ -13,11 +13,11 @@ export function CabCards() {
     return null;
   }
   if (typeof drawingId === "string") {
-    return <PlainDrawnSetGroup drawingId={drawingId} />;
+    return <PlainDrawnSetGroup drawingId={drawingId} style="persona" />;
   }
   return (
     <DrawingProvider drawingId={drawingId}>
-      <ChartList />
+      <ChartList style="persona" />
     </DrawingProvider>
   );
 }
