@@ -143,13 +143,14 @@
 }
 
 .winnerIcon,
-.protectIcon {
+.headerIcon {
   height: 1.8em;
   background-color: inherit;
 }
 
 .winnerLabel,
-.protectLabel {
+.protectLabel,
+.vetoLabel {
   font-size: 140%;
 }
 
@@ -159,6 +160,10 @@
 
 .protectLabel {
   color: #a8ff00;
+}
+
+.vetoLabel {
+  color: #e12b2b;
 }
 
 .shockBadge {
@@ -175,27 +180,26 @@
 }
 
 .vetoed {
-  opacity: 0.8;
+  opacity: 0.95;
   transform: scale(0.9);
   transform-origin: center;
-  filter: grayscale(75%);
-  border-color: red;
-  box-shadow: 0px 0px 5px red;
+  border-color: #e12b2b;
+  box-shadow: 0px 0px 10px #e12b2b;
 }
 
 .protected {
   border-color: #a8ff00;
-  box-shadow: 0px 0px 5px #a8ff00;
+  box-shadow: 0px 0px 10px #a8ff00;
 }
 
 .replaced {
   border-color: cornflowerblue;
-  box-shadow: 0px 0px 5px cornflowerblue;
+  box-shadow: 0px 0px 10px cornflowerblue;
 }
 
 .picked {
   border-color: grey;
-  box-shadow: 0px 0px 5px grey;
+  box-shadow: 0px 0px 10px grey;
 }
 
 .hideVeto.vetoed {

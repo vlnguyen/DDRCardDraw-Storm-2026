@@ -4,10 +4,10 @@ import { type JSX, useCallback, useEffect, useRef, useState } from "react";
 import { useConfigState } from "../state/hooks";
 import { CHART_PLACEHOLDER, DrawnChart } from "../models/Drawing";
 import { SongSearch } from "../song-search";
-import { CardLabel, LabelType } from "./card-label";
 import { FillPlaceholderList, ActionMenu } from "./acton-menu";
 import styles from "./persona-song-card.css";
 import protectIcon from "../assets/img/protect.svg";
+import vetoIcon from "../assets/img/veto.svg";
 import { getJacketUrl } from "../utils/jackets";
 import { copyTextToClipboard } from "../utils/share";
 import { useChartRandomSelected } from "../tournament-mode/highlight-random";
@@ -65,12 +65,11 @@ export function PersonaSongCard(props: Props) {
   );
   const hasWinner = typeof winner === "number";
 
-  const protectOrPocketPlayer = protectedBy ?? replacedBy;
-  const hasProtectOrPocket = protectOrPocketPlayer !== undefined;
-  const protectOrPocketLabel = usePlayerLabelForIndex(
-    protectOrPocketPlayer ?? 0,
-  );
-  const protectOrPocketVisibility = hasProtectOrPocket ? "visible" : "hidden";
+  const isVetoed = vetoedBy !== undefined;
+  const headerPlayer = vetoedBy ?? protectedBy ?? replacedBy;
+  const hasHeaderPlayer = headerPlayer !== undefined;
+  const headerLabel = usePlayerLabelForIndex(headerPlayer ?? 0);
+  const headerVisibility = hasHeaderPlayer ? "visible" : "hidden";
 
   let jacketBg = {};
   if (jacket) {
@@ -130,18 +129,6 @@ export function PersonaSongCard(props: Props) {
 
   const handleCardClick = menuContent ? showMenu : props.onClick || handleCopy;
 
-  const actionLabels = (
-    <>
-      {vetoedBy !== undefined && (
-        <CardLabel
-          playerIdx={vetoedBy}
-          type={LabelType.Ban}
-          onRemove={iconCallbacks?.onReset}
-        />
-      )}
-    </>
-  );
-
   return (
     <Popover
       isOpen={wasRandomlySelected}
@@ -173,20 +160,19 @@ export function PersonaSongCard(props: Props) {
         <div className={styles.clickTarget}>
           <div className={styles.cardHeader}>
             <img
-              className={styles.protectIcon}
-              src={protectIcon}
+              className={styles.headerIcon}
+              src={isVetoed ? vetoIcon : protectIcon}
               alt=""
-              style={{ visibility: protectOrPocketVisibility }}
+              style={{ visibility: headerVisibility }}
             />
             <span
-              className={styles.protectLabel}
-              style={{ visibility: protectOrPocketVisibility }}
+              className={isVetoed ? styles.vetoLabel : styles.protectLabel}
+              style={{ visibility: headerVisibility }}
             >
-              {protectOrPocketLabel}
+              {headerLabel}
             </span>
           </div>
           <div className={styles.cardCenter}>
-            {actionLabels}
             <CenterContent chart={replacedWith || chart} />
           </div>
 
