@@ -90,7 +90,7 @@ export function PersonaSongCard(props: Props) {
         <img src={coffinBlueIcon} alt="" />
         <div className={styles.coffinCornerTextBox}>
           <span className={styles.coffinCornerText}>
-            {bpm}bpm
+            {bpm} bpm
           </span>
         </div>
       </div>
