@@ -5,6 +5,13 @@
   src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
 }
 
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
 /* @import url("https://fonts.googleapis.com/css?family=Russo+One"); */
 /* cyrillic */
 @font-face {
@@ -39,9 +46,10 @@
     U+FFFD;
 }
 
-.popoverWrapper {
-  display: flex !important;
+.cardSlot {
+  display: flex;
   flex: 0 0 auto;
+  position: relative;
 }
 
 .chartList {
@@ -148,6 +156,33 @@
   padding: 8px;
   align-items: center;
   min-height: 1.8em;
+}
+
+.coffinCorner {
+  position: absolute;
+  right: 0.3em;
+  bottom: 0.25em;
+}
+
+.coffinCorner img {
+  height: 2.5em;
+  display: block;
+}
+
+.coffinCornerTextBox {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(0.2em) translateY(-0.1em) rotate(-10deg);
+}
+
+.coffinCornerText {
+  font-family: "Chiaro Std", sans-serif;
+  font-size: 80%;
+  white-space: nowrap;
+  color: white;
 }
 
 .winnerIcon,
