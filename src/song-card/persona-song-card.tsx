@@ -7,9 +7,11 @@ import { SongSearch } from "../song-search";
 import { CardLabel, LabelType } from "./card-label";
 import { FillPlaceholderList, ActionMenu } from "./acton-menu";
 import styles from "./persona-song-card.css";
+import protectIcon from "../assets/img/protect.svg";
 import { getJacketUrl } from "../utils/jackets";
 import { copyTextToClipboard } from "../utils/share";
 import { useChartRandomSelected } from "../tournament-mode/highlight-random";
+import { usePlayerLabelForIndex } from "./use-player-label";
 
 import { baseChartValues } from "./variants";
 import {
@@ -62,6 +64,13 @@ export function PersonaSongCard(props: Props) {
     replacedBy !== undefined
   );
   const hasWinner = typeof winner === "number";
+
+  const protectOrPocketPlayer = protectedBy ?? replacedBy;
+  const hasProtectOrPocket = protectOrPocketPlayer !== undefined;
+  const protectOrPocketLabel = usePlayerLabelForIndex(
+    protectOrPocketPlayer ?? 0,
+  );
+  const protectOrPocketVisibility = hasProtectOrPocket ? "visible" : "hidden";
 
   let jacketBg = {};
   if (jacket) {
@@ -130,20 +139,6 @@ export function PersonaSongCard(props: Props) {
           onRemove={iconCallbacks?.onReset}
         />
       )}
-      {protectedBy !== undefined && (
-        <CardLabel
-          playerIdx={protectedBy}
-          type={LabelType.Protect}
-          onRemove={iconCallbacks?.onReset}
-        />
-      )}
-      {replacedBy !== undefined && (
-        <CardLabel
-          playerIdx={replacedBy}
-          type={baseChartIsPlaceholder ? LabelType.FreePick : LabelType.Pocket}
-          onRemove={iconCallbacks?.onReset}
-        />
-      )}
     </>
   );
 
@@ -176,6 +171,20 @@ export function PersonaSongCard(props: Props) {
           onCancel={() => setPocketPickPendingForPlayer(null)}
         />
         <div className={styles.clickTarget}>
+          <div className={styles.cardHeader}>
+            <img
+              className={styles.protectIcon}
+              src={protectIcon}
+              alt=""
+              style={{ visibility: protectOrPocketVisibility }}
+            />
+            <span
+              className={styles.protectLabel}
+              style={{ visibility: protectOrPocketVisibility }}
+            >
+              {protectOrPocketLabel}
+            </span>
+          </div>
           <div className={styles.cardCenter}>
             {actionLabels}
             <CenterContent chart={replacedWith || chart} />

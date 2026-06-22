@@ -131,6 +131,7 @@
   font-size: 75%;
 }
 
+.cardHeader,
 .cardFooter {
   flex: 0 0 auto;
   display: flex;
@@ -141,13 +142,23 @@
   min-height: 1.8em;
 }
 
-.winnerIcon {
+.winnerIcon,
+.protectIcon {
   height: 1.8em;
   background-color: inherit;
 }
 
+.winnerLabel,
+.protectLabel {
+  font-size: 140%;
+}
+
 .winnerLabel {
   color: #f2fb17;
+}
+
+.protectLabel {
+  color: #a8ff00;
 }
 
 .shockBadge {
@@ -173,8 +184,8 @@
 }
 
 .protected {
-  border-color: green;
-  box-shadow: 0px 0px 5px green;
+  border-color: #a8ff00;
+  box-shadow: 0px 0px 5px #a8ff00;
 }
 
 .replaced {
