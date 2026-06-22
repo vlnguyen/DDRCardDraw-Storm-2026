@@ -1,91 +1,22 @@
 import { Popover } from "@blueprintjs/core";
 import classNames from "classnames";
-import {
-  type JSX,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type JSX, useCallback, useEffect, useRef, useState } from "react";
 import { useConfigState } from "../state/hooks";
-import { useDrawing } from "../drawing-context";
-import {
-  CHART_PLACEHOLDER,
-  DrawnChart,
-  EligibleChart,
-  PlayerPickPlaceholder,
-} from "../models/Drawing";
+import { CHART_PLACEHOLDER, DrawnChart } from "../models/Drawing";
 import { SongSearch } from "../song-search";
 import { CardLabel, LabelType } from "./card-label";
 import { FillPlaceholderList, ActionMenu } from "./acton-menu";
 import styles from "./persona-song-card.css";
-import { useAppDispatch } from "../state/store";
-import { createPickBanPocket, createRedrawChart } from "../state/thunks";
 import { getJacketUrl } from "../utils/jackets";
-import { drawingsSlice } from "../state/drawings.slice";
 import { copyTextToClipboard } from "../utils/share";
 import { useChartRandomSelected } from "../tournament-mode/highlight-random";
 
-import { baseChartValues, CardContentsProps } from "./variants";
-
-type PlayerIdx = number;
-
-interface IconCallbacks {
-  onVeto: (p: PlayerIdx) => void;
-  onProtect: (p: PlayerIdx) => void;
-  onReplace: (p: PlayerIdx, chart: EligibleChart) => void;
-  onRedraw: () => void;
-  onReset: () => void;
-  onSetWinner: (p: PlayerIdx | null) => void;
-}
-
-export interface SongCardProps {
-  onClick?: () => void;
-  chart: DrawnChart | EligibleChart | PlayerPickPlaceholder;
-  vetoedBy?: PlayerIdx;
-  protectedBy?: PlayerIdx;
-  replacedBy?: PlayerIdx;
-  winner?: PlayerIdx | null;
-  replacedWith?: EligibleChart;
-  actionsEnabled?: boolean;
-}
-
-type Props = SongCardProps & CardContentsProps;
-
-export { Props as SongCardBaseProps };
-
-function useIconCallbacksForChart(chartId: string): IconCallbacks {
-  const dispatch = useAppDispatch();
-  const drawingId = useDrawing((s) => s.compoundId);
-
-  const handleBanPickPocket = useCallback(
-    (
-      type: "ban" | "protect" | "pocket",
-      player: number,
-      pick?: EligibleChart,
-    ) => dispatch(createPickBanPocket(drawingId, chartId, type, player, pick)),
-    [drawingId, chartId, dispatch],
-  );
-
-  return useMemo(
-    () => ({
-      onVeto: handleBanPickPocket.bind(undefined, "ban"),
-      onProtect: handleBanPickPocket.bind(undefined, "protect"),
-      onReplace: handleBanPickPocket.bind(undefined, "pocket"),
-      onRedraw: () => {
-        dispatch(createRedrawChart(drawingId, chartId));
-      },
-      onReset: () =>
-        dispatch(drawingsSlice.actions.resetChart({ drawingId, chartId })),
-      onSetWinner: (player) =>
-        dispatch(
-          drawingsSlice.actions.setWinner({ drawingId, chartId, player }),
-        ),
-    }),
-    [handleBanPickPocket, drawingId, chartId, dispatch],
-  );
-}
+import { baseChartValues } from "./variants";
+import {
+  type PlayerIdx,
+  type SongCardBaseProps as Props,
+  useIconCallbacksForChart,
+} from "./song-card";
 
 export function PersonaSongCard(props: Props) {
   const {

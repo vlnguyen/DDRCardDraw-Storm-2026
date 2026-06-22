@@ -29,7 +29,7 @@ import { useChartRandomSelected } from "../tournament-mode/highlight-random";
 
 import { baseChartValues, CardContentsProps } from "./variants";
 
-type PlayerIdx = number;
+export type PlayerIdx = number;
 
 interface IconCallbacks {
   onVeto: (p: PlayerIdx) => void;
@@ -55,7 +55,7 @@ type Props = SongCardProps & CardContentsProps;
 
 export { Props as SongCardBaseProps };
 
-function useIconCallbacksForChart(chartId: string): IconCallbacks {
+export function useIconCallbacksForChart(chartId: string): IconCallbacks {
   const dispatch = useAppDispatch();
   const drawingId = useDrawing((s) => s.compoundId);
 
