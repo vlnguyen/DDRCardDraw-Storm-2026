@@ -11,6 +11,7 @@
 dist
 node_modules
 /*.zip
+/out/**
 scripts/scraping/textage/**
 scripts/scraping/sanbai/**
 .env
