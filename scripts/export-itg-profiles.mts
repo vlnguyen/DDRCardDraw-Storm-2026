@@ -29,21 +29,20 @@ function generateUniqueGuid(): string {
   return guid;
 }
 
-// characters disallowed in filenames on Windows; a superset of what Linux disallows ('/' and NUL)
-const INVALID_FILENAME_CHARS = /[<>:"/\\|?*\x00-\x1f]/;
-
 interface Entrant {
   id: number;
   gamerTag: string;
   prefix: string;
 }
 
-function assertValidDirectoryName(gamerTag: string): void {
-  if (INVALID_FILENAME_CHARS.test(gamerTag)) {
+function toDirectoryName(gamerTag: string): string {
+  const alphanumeric = gamerTag.replace(/[^a-zA-Z0-9]/g, "");
+  if (!alphanumeric) {
     throw new Error(
-      `gamerTag "${gamerTag}" contains characters not allowed in filenames on Windows/Linux`,
+      `gamerTag "${gamerTag}" has no alphanumeric characters to form a directory name`,
     );
   }
+  return alphanumeric;
 }
 
 function escapeXml(value: string): string {
@@ -70,9 +69,7 @@ await rm(outDir, { recursive: true, force: true });
 await mkdir(outDir, { recursive: true });
 
 for (const entrant of entrants) {
-  assertValidDirectoryName(entrant.gamerTag);
-
-  const profileDir = join(outDir, entrant.gamerTag);
+  const profileDir = join(outDir, toDirectoryName(entrant.gamerTag));
   await cp(templateDir, profileDir, { recursive: true });
 
   await Promise.all(
