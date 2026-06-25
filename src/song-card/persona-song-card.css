@@ -60,6 +60,55 @@
   overflow: hidden;
 }
 
+@keyframes personaCardEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.6) translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.entering .cardSlot {
+  animation: personaCardEnter 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.entering .cardSlot:nth-child(1) {
+  animation-delay: 0ms;
+}
+.entering .cardSlot:nth-child(2) {
+  animation-delay: 40ms;
+}
+.entering .cardSlot:nth-child(3) {
+  animation-delay: 80ms;
+}
+.entering .cardSlot:nth-child(4) {
+  animation-delay: 120ms;
+}
+.entering .cardSlot:nth-child(5) {
+  animation-delay: 160ms;
+}
+.entering .cardSlot:nth-child(6) {
+  animation-delay: 200ms;
+}
+.entering .cardSlot:nth-child(7) {
+  animation-delay: 240ms;
+}
+.entering .cardSlot:nth-child(8) {
+  animation-delay: 280ms;
+}
+.entering .cardSlot:nth-child(9) {
+  animation-delay: 320ms;
+}
+.entering .cardSlot:nth-child(10) {
+  animation-delay: 360ms;
+}
+.entering .cardSlot:nth-child(n + 11) {
+  animation-delay: 400ms;
+}
+
 .chart {
   display: flex !important;
   flex: 0 0 300px;
