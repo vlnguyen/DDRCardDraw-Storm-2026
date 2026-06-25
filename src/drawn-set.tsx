@@ -1,4 +1,5 @@
-import { memo } from "react";
+import { memo, useRef } from "react";
+import classNames from "classnames";
 import { ErrorBoundary } from "react-error-boundary";
 import { SongCard, PersonaSongCard } from "./song-card";
 import styles from "./drawn-set.css";
@@ -14,9 +15,20 @@ export type SongCardStyle = "default" | "persona";
  **/
 export function ChartList({ style = "default" }: { style?: SongCardStyle } = {}) {
   const charts = useDrawing((d) => d.charts);
+  const isPersona = style === "persona";
+
+  // seed as null (not `charts`) so a mount with already-resolved charts
+  // (e.g. OBS sources, which mount after the draw already happened) still counts as an entrance
+  const prevChartsRef = useRef<typeof charts>(null);
+  const isEntering = isPersona && prevChartsRef.current == null && charts != null;
+  prevChartsRef.current = charts;
+
   if (!charts) return null;
-  const chartListClass =
-    style === "persona" ? personaStyles.chartList : styles.chartList;
+
+  const chartListClass = classNames(
+    isPersona ? personaStyles.chartList : styles.chartList,
+    isEntering && personaStyles.entering,
+  );
   return (
     <div className={chartListClass}>
       {charts.map((c) => (
