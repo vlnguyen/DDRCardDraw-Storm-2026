@@ -1,24 +1,7 @@
 import { Button, Card, Checkbox, Dialog, DialogBody, FormGroup, H3, HTMLSelect, InputGroup, MenuItem } from "@blueprintjs/core";
-import { Edit, Minus, Person, Plus, Trash, Unlink } from "@blueprintjs/icons";
-import {
-  DndContext,
-  DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { Desktop, Edit, Minus, Person, Plus, Trash, Unlink } from "@blueprintjs/icons";
 import { Suggest } from "@blueprintjs/select";
-import { CSSProperties, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { PoolPlayer, PoolPlayerScore, PoolState } from "../../state/event.slice";
 import { toaster } from "../../toaster";
 import { eventSlice } from "../../state/event.slice";
@@ -111,6 +94,16 @@ export function Players() {
   const [cab1MachineId, setCab1MachineId] = useState(savedCab1MachineId);
   const [cab2MachineId, setCab2MachineId] = useState(savedCab2MachineId);
 
+  function getLobbyPlayerName(rowIndex: number): string {
+    if (!selectedLobby) return "--";
+    const machineId = rowIndex < 2 ? cab1MachineId : cab2MachineId;
+    if (!machineId) return "--";
+    const machine = selectedLobby.machines[machineId];
+    if (!machine) return "--";
+    const player = rowIndex % 2 === 0 ? machine.player1 : machine.player2;
+    return player?.profileName ?? "--";
+  }
+
   const [poolState, setPoolState] = useState<PoolState>(() => ({
     ...savedPoolState,
     players: padToPlayerCount(
@@ -140,32 +133,6 @@ export function Players() {
     setEditingLocalScore({ exScore: 0, ...playersRef.current[playerIndex]?.scores[songIndex] });
   }, [editingScore]);
 
-  // Stable IDs that follow rows as they are reordered
-  const nextIdRef = useRef(0);
-  const idsRef = useRef<string[]>([]);
-  while (idsRef.current.length < players.length) {
-    idsRef.current.push(String(nextIdRef.current++));
-  }
-  idsRef.current = idsRef.current.slice(0, players.length);
-  const ids = idsRef.current;
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  );
-
-  function handleDragEnd({ active, over }: DragEndEvent) {
-    if (!over || active.id === over.id) return;
-    const fromIndex = ids.indexOf(String(active.id));
-    const toIndex = ids.indexOf(String(over.id));
-    if (fromIndex === -1 || toIndex === -1) return;
-    idsRef.current = arrayMove(idsRef.current, fromIndex, toIndex);
-    setPoolState((prev) => ({
-      ...prev,
-      players: arrayMove(prev.players ?? [], fromIndex, toIndex),
-    }));
-  }
-
   function handleSubmit() {
     dispatch(eventSlice.actions.setPoolPlayers(players));
     dispatch(
@@ -177,11 +144,48 @@ export function Players() {
     toaster.show({ message: "Pool state updated.", intent: "success" });
   }
 
-  function handleReset() {
-    setPoolState({
+  function handleResetPlayers() {
+    setPoolState((prev) => ({
+      ...prev,
+      players: (prev.players ?? []).map((p) => ({
+        ...p,
+        entrantId: undefined,
+        gamerTag: undefined,
+        prefix: undefined,
+        isDisabled: false,
+      })),
+    }));
+  }
+
+  function handleMapPlayers() {
+    setPoolState((prev) => ({
+      ...prev,
+      players: (prev.players ?? []).map((p, i) => {
+        const lobbyName = getLobbyPlayerName(i);
+        const entrant = sortedEntrants.find(
+          (en) => en.gamerTag.toLowerCase() === lobbyName.toLowerCase(),
+        );
+        return entrant
+          ? {
+              ...p,
+              entrantId: entrant.id,
+              gamerTag: entrant.gamerTag,
+              prefix: entrant.prefix,
+            }
+          : { ...p, entrantId: undefined, gamerTag: undefined, prefix: undefined };
+      }),
+    }));
+  }
+
+  function handleResetSongs() {
+    setPoolState((prev) => ({
+      ...prev,
       songs: [],
-      players: padToPlayerCount([], 0),
-    });
+      players: (prev.players ?? []).map((p) => ({
+        ...p,
+        scores: [],
+      })),
+    }));
   }
 
   return (
@@ -224,20 +228,14 @@ export function Players() {
           </HTMLSelect>
         </FormGroup>
       </div>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <table className={styles.playersTable}>
-          <thead>
-            <tr>
-              <th></th>
-              <th className={styles.activeHeader}>✅</th>
-              <th>Player</th>
-              {songs.map((_, i) => (
-                <th key={i}>
-                  <div className={styles.songHeader}>
+      <table className={styles.playersTable}>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Player</th>
+            {songs.map((_, i) => (
+              <th key={i}>
+                <div className={styles.songHeader}>
                   <span>{`Song ${i + 1}`}</span>
                   <Button
                     icon={<Minus />}
@@ -252,99 +250,106 @@ export function Players() {
                       }))
                     }
                   />
-                  </div>
-                </th>
-              ))}
-              <th>
-                <Button
-                  icon={<Plus />}
-                  onClick={() =>
-                    setPoolState((prev) => ({
-                      ...prev,
-                      songs: [...(prev.songs ?? []), ""],
-                      players: (prev.players ?? []).map((p) => ({
-                        ...p,
-                        scores: [...p.scores, {}],
-                      })),
-                    }))
-                  }
-                />
+                </div>
               </th>
-            </tr>
-          </thead>
-          <tbody>
-            <SortableContext items={ids} strategy={verticalListSortingStrategy}>
-              {players.map((player, i) => (
-                <SortablePlayerRow
-                  key={ids[i]}
-                  id={ids[i]}
-                  cabLabel={CAB_LABELS[i]}
-                  player={player}
-                  songs={songs}
-                  onEditScore={(songIndex: number) =>
-                    setEditingScore({ playerIndex: i, songIndex })
-                  }
-                  onClearScore={(songIndex: number) =>
-                    setPoolState((prev) => ({
-                      ...prev,
-                      players: (prev.players ?? []).map((p, j) =>
-                        j !== i
-                          ? p
-                          : {
-                              ...p,
-                              scores: p.scores.map((s, k) =>
-                                k !== songIndex ? s : {},
-                              ),
-                            },
-                      ),
-                    }))
-                  }
-                  onToggleActive={(active) =>
-                    setPoolState((prev) => ({
-                      ...prev,
-                      players: (prev.players ?? []).map((p, j) =>
-                        j !== i ? p : { ...p, isDisabled: !active },
-                      ),
-                    }))
-                  }
-                  onPlayerSelect={(option) => {
-                    const entrant = sortedEntrants.find(
-                      (en) => en.id === option.value,
-                    );
-                    if (!entrant) return;
-                    setPoolState((prev) => ({
-                      ...prev,
-                      players: (prev.players ?? []).map((p, j) =>
-                        j !== i
-                          ? p
-                          : {
-                              ...p,
-                              entrantId: entrant.id,
-                              gamerTag: entrant.gamerTag,
-                              prefix: entrant.prefix,
-                            },
-                      ),
-                    }));
-                  }}
-                />
-              ))}
-            </SortableContext>
-            <tr>
-              <td></td>
-              <td></td>
-              <td className={styles.submitCell}>
-                <Button onClick={handleReset}>Reset</Button>{" "}
-                <Button onClick={handleSubmit}>Submit</Button>
-              </td>
-              {songs.map((_, si) => (
-                <td key={si}></td>
-              ))}
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </DndContext>
-      <pre>{JSON.stringify(poolState, null, 2)}</pre>
+            ))}
+            <th>
+              <Button
+                icon={<Plus />}
+                onClick={() =>
+                  setPoolState((prev) => ({
+                    ...prev,
+                    songs: [...(prev.songs ?? []), ""],
+                    players: (prev.players ?? []).map((p) => ({
+                      ...p,
+                      scores: [...p.scores, {}],
+                    })),
+                  }))
+                }
+              />{" "}
+              <Button disabled={songs.length === 0} onClick={handleResetSongs}>
+                Reset Songs
+              </Button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {players.map((player, i) => (
+            <PlayerRow
+              key={i}
+              cabLabel={CAB_LABELS[i]}
+              lobbyPlayerName={getLobbyPlayerName(i)}
+              player={player}
+              songs={songs}
+              onEditScore={(songIndex: number) =>
+                setEditingScore({ playerIndex: i, songIndex })
+              }
+              onClearScore={(songIndex: number) =>
+                setPoolState((prev) => ({
+                  ...prev,
+                  players: (prev.players ?? []).map((p, j) =>
+                    j !== i
+                      ? p
+                      : {
+                          ...p,
+                          scores: p.scores.map((s, k) =>
+                            k !== songIndex ? s : {},
+                          ),
+                        },
+                  ),
+                }))
+              }
+              onToggleActive={(active) =>
+                setPoolState((prev) => ({
+                  ...prev,
+                  players: (prev.players ?? []).map((p, j) =>
+                    j !== i ? p : { ...p, isDisabled: !active },
+                  ),
+                }))
+              }
+              onPlayerSelect={(option) => {
+                const entrant = sortedEntrants.find(
+                  (en) => en.id === option.value,
+                );
+                if (!entrant) return;
+                setPoolState((prev) => ({
+                  ...prev,
+                  players: (prev.players ?? []).map((p, j) =>
+                    j !== i
+                      ? p
+                      : {
+                          ...p,
+                          entrantId: entrant.id,
+                          gamerTag: entrant.gamerTag,
+                          prefix: entrant.prefix,
+                        },
+                  ),
+                }));
+              }}
+            />
+          ))}
+          <tr>
+            <td></td>
+            <td className={styles.submitCell}>
+              <Button
+                disabled={
+                  players.every((p) => p.entrantId == null) &&
+                  players.every((p) => !p.isDisabled)
+                }
+                onClick={handleResetPlayers}
+              >
+                Reset Players
+              </Button>{" "}
+              <Button onClick={handleMapPlayers}>Map</Button>{" "}
+              <Button onClick={handleSubmit}>Submit</Button>
+            </td>
+            {songs.map((_, si) => (
+              <td key={si}></td>
+            ))}
+            <td className={styles.resetSongsColumn}></td>
+          </tr>
+        </tbody>
+      </table>
       <Dialog
         isOpen={editingScore !== null}
         onClose={() => setEditingScore(null)}
@@ -427,9 +432,9 @@ export function Players() {
   );
 }
 
-interface SortablePlayerRowProps {
-  id: string;
+interface PlayerRowProps {
   cabLabel: string;
+  lobbyPlayerName: string;
   player: PoolPlayer;
   songs: string[];
   onEditScore(songIndex: number): void;
@@ -438,68 +443,76 @@ interface SortablePlayerRowProps {
   onPlayerSelect(option: EntrantOption): void;
 }
 
-function SortablePlayerRow({
-  id,
+function PlayerRow({
   cabLabel,
+  lobbyPlayerName,
   player,
   songs,
   onEditScore,
   onClearScore,
   onToggleActive,
   onPlayerSelect,
-}: SortablePlayerRowProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-
-  const style: CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.4 : 1,
-  };
-
+}: PlayerRowProps) {
   return (
-    <tr ref={setNodeRef} {...attributes}>
+    <tr>
       <td>{cabLabel}</td>
-      <td className={styles.rowActions} style={style}>
-        <span className={styles.dragHandle} {...listeners}>
-          ⠿
-        </span>
-        <Checkbox
-          checked={!player.isDisabled}
-          onChange={(e) => onToggleActive(e.target.checked)}
-        />
-      </td>
-      <td style={style}>
-        <Suggest<EntrantOption>
-          items={options}
-          inputProps={{ leftIcon: <Person /> }}
-          selectedItem={
-            options.find((o) => o.value === player.entrantId) ?? null
-          }
-          itemPredicate={(query, item) => fuzzyMatch(query, item)}
-          itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
+      <td>
+        <div className={styles.rowActions}>
+          <Checkbox
+            checked={!player.isDisabled}
+            onChange={(e) => onToggleActive(e.target.checked)}
+          />
+          <div className={styles.entrantSuggest}>
+            <Suggest<EntrantOption>
+              fill
+              disabled={player.isDisabled}
+              items={options}
+              inputProps={{
+                leftIcon: <Person />,
+                placeholder: player.isDisabled ? "n/a" : undefined,
+              }}
+              selectedItem={
+                player.isDisabled
+                  ? null
+                  : options.find((o) => o.value === player.entrantId) ?? null
+              }
+              itemPredicate={(query, item) => fuzzyMatch(query, item)}
+              itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
+                <MenuItem
+                  key={item.value}
+                  text={item.label}
+                  active={modifiers.active}
+                  disabled={modifiers.disabled}
+                  onClick={handleClick}
+                  onFocus={handleFocus}
+                />
+              )}
+              onItemSelect={onPlayerSelect}
+              inputValueRenderer={(item) => item.label}
+              noResults={<MenuItem disabled text="No matching players" />}
+            />
+          </div>
+        </div>
+        <Suggest<string>
+          className={styles.lobbyPlayerSuggest}
+          disabled
+          items={[]}
+          inputProps={{ leftIcon: <Desktop /> }}
+          selectedItem={lobbyPlayerName}
+          itemRenderer={(item, { handleClick, modifiers }) => (
             <MenuItem
-              key={item.value}
-              text={item.label}
+              key={item}
+              text={item}
               active={modifiers.active}
-              disabled={modifiers.disabled}
               onClick={handleClick}
-              onFocus={handleFocus}
             />
           )}
-          onItemSelect={onPlayerSelect}
-          inputValueRenderer={(item) => item.label}
-          noResults={<MenuItem disabled text="No matching players" />}
+          onItemSelect={() => {}}
+          inputValueRenderer={(item) => item}
         />
       </td>
       {songs.map((_, si) => (
-        <td key={si} className={styles.scoreCell} style={style}>
+        <td key={si} className={styles.scoreCell}>
           {player.scores[si]?.exScore != null
             ? `${player.scores[si].scoreId == null ? "*" : ""}${player.scores[si].exScore.toFixed(2)}%`
             : "--.--%"}
@@ -509,7 +522,7 @@ function SortablePlayerRow({
           <Button icon={<Trash />} onClick={() => onClearScore(si)} />
         </td>
       ))}
-      <td style={style}></td>
+      <td className={styles.resetSongsColumn}></td>
     </tr>
   );
 }
