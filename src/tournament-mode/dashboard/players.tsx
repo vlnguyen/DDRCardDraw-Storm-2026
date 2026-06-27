@@ -32,6 +32,7 @@ const sortedEntrants = [...entrants].sort((a, b) =>
 );
 
 const PLAYER_COUNT = 4;
+const CAB_LABELS = ["Cab 1 [P1]", "Cab 1 [P2]", "Cab 2 [P1]", "Cab 2 [P2]"];
 
 function makeEmptyPlayer(scoreCount: number): PoolPlayer {
   return {
@@ -151,6 +152,7 @@ export function Players() {
         <table className={styles.playersTable}>
           <thead>
             <tr>
+              <th></th>
               <th className={styles.activeHeader}>✅</th>
               <th>Player</th>
               {songs.map((_, i) => (
@@ -196,6 +198,7 @@ export function Players() {
                 <SortablePlayerRow
                   key={ids[i]}
                   id={ids[i]}
+                  cabLabel={CAB_LABELS[i]}
                   player={player}
                   songs={songs}
                   onEditScore={(songIndex: number) =>
@@ -247,6 +250,7 @@ export function Players() {
               ))}
             </SortableContext>
             <tr>
+              <td></td>
               <td></td>
               <td className={styles.submitCell}>
                 <Button onClick={handleReset}>Reset</Button>{" "}
@@ -345,6 +349,7 @@ export function Players() {
 
 interface SortablePlayerRowProps {
   id: string;
+  cabLabel: string;
   player: PoolPlayer;
   songs: string[];
   onEditScore(songIndex: number): void;
@@ -355,6 +360,7 @@ interface SortablePlayerRowProps {
 
 function SortablePlayerRow({
   id,
+  cabLabel,
   player,
   songs,
   onEditScore,
@@ -378,8 +384,9 @@ function SortablePlayerRow({
   };
 
   return (
-    <tr ref={setNodeRef} style={style} {...attributes}>
-      <td className={styles.rowActions}>
+    <tr ref={setNodeRef} {...attributes}>
+      <td>{cabLabel}</td>
+      <td className={styles.rowActions} style={style}>
         <span className={styles.dragHandle} {...listeners}>
           ⠿
         </span>
@@ -388,7 +395,7 @@ function SortablePlayerRow({
           onChange={(e) => onToggleActive(e.target.checked)}
         />
       </td>
-      <td>
+      <td style={style}>
         <Suggest<EntrantOption>
           items={options}
           selectedItem={
@@ -411,7 +418,7 @@ function SortablePlayerRow({
         />
       </td>
       {songs.map((_, si) => (
-        <td key={si} className={styles.scoreCell}>
+        <td key={si} className={styles.scoreCell} style={style}>
           {player.scores[si]?.exScore != null
             ? `${player.scores[si].scoreId == null ? "*" : ""}${player.scores[si].exScore.toFixed(2)}%`
             : "--.--%"}
@@ -421,7 +428,7 @@ function SortablePlayerRow({
           <Button icon={<Trash />} onClick={() => onClearScore(si)} />
         </td>
       ))}
-      <td></td>
+      <td style={style}></td>
     </tr>
   );
 }
