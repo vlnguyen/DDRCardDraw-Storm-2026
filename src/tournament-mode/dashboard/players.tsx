@@ -1,13 +1,15 @@
-import { Button, Card, Checkbox, Dialog, DialogBody, FormGroup, H3, HTMLSelect, InputGroup, MenuItem } from "@blueprintjs/core";
-import { Desktop, Edit, Minus, Person, Plus, Trash, Unlink } from "@blueprintjs/icons";
+import { AnchorButton, Button, Card, Checkbox, Dialog, DialogBody, FormGroup, H3, HTMLSelect, InputGroup, MenuItem, Tooltip } from "@blueprintjs/core";
+import { Desktop, Duplicate, Edit, Minus, Person, Plus, Trash, Unlink } from "@blueprintjs/icons";
 import { Suggest } from "@blueprintjs/select";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useHref } from "react-router-dom";
 import { PoolPlayer, PoolPlayerScore, PoolState } from "../../state/event.slice";
 import { toaster } from "../../toaster";
 import { eventSlice } from "../../state/event.slice";
 import { useAppDispatch, useAppState } from "../../state/store";
 import entrants from "../../assets/entrants.json";
 import { useLiveRankings } from "../../obs-sources/useLiveRankings";
+import { copyObsSource, routableStepStatsPath } from "../copy-obs-source";
 import { MatchLog } from "./match-log";
 import { LobbyStateView } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
@@ -278,6 +280,8 @@ export function Players() {
             <PlayerRow
               key={i}
               cabLabel={CAB_LABELS[i]}
+              cabNumber={i < 2 ? 1 : 2}
+              playerNumber={i % 2 === 0 ? 1 : 2}
               lobbyPlayerName={getLobbyPlayerName(i)}
               player={player}
               songs={songs}
@@ -434,6 +438,8 @@ export function Players() {
 
 interface PlayerRowProps {
   cabLabel: string;
+  cabNumber: 1 | 2;
+  playerNumber: 1 | 2;
   lobbyPlayerName: string;
   player: PoolPlayer;
   songs: string[];
@@ -445,6 +451,8 @@ interface PlayerRowProps {
 
 function PlayerRow({
   cabLabel,
+  cabNumber,
+  playerNumber,
   lobbyPlayerName,
   player,
   songs,
@@ -453,9 +461,26 @@ function PlayerRow({
   onToggleActive,
   onPlayerSelect,
 }: PlayerRowProps) {
+  const stepStatsHref = useHref(routableStepStatsPath(cabNumber, playerNumber));
+
   return (
     <tr>
-      <td>{cabLabel}</td>
+      <td>
+        {cabLabel}
+        <div className={styles.stepStatsButton}>
+          <Tooltip content="Step Stats">
+            <AnchorButton
+              size="small"
+              icon={<Duplicate />}
+              href={stepStatsHref}
+              onClick={(e) => {
+                e.preventDefault();
+                copyObsSource(new URL(stepStatsHref, document.location.href).href);
+              }}
+            />
+          </Tooltip>
+        </div>
+      </td>
       <td>
         <div className={styles.rowActions}>
           <Checkbox
