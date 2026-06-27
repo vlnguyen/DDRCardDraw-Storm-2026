@@ -1,4 +1,4 @@
-import { Button, Card, Dialog, DialogBody, FormGroup, H3, InputGroup, MenuItem } from "@blueprintjs/core";
+import { Button, Card, Checkbox, Dialog, DialogBody, FormGroup, H3, InputGroup, MenuItem } from "@blueprintjs/core";
 import { Edit, Minus, Plus, Trash, Unlink } from "@blueprintjs/icons";
 import {
   DndContext,
@@ -31,6 +31,27 @@ const sortedEntrants = [...entrants].sort((a, b) =>
   a.gamerTag.localeCompare(b.gamerTag),
 );
 
+const PLAYER_COUNT = 4;
+
+function makeEmptyPlayer(scoreCount: number): PoolPlayer {
+  return {
+    scores: Array.from({ length: scoreCount }, (): PoolPlayerScore => ({})),
+    isEliminated: false,
+    isDisabled: false,
+  };
+}
+
+function padToPlayerCount(
+  players: PoolPlayer[],
+  scoreCount: number,
+): PoolPlayer[] {
+  const padded = players.slice(0, PLAYER_COUNT);
+  while (padded.length < PLAYER_COUNT) {
+    padded.push(makeEmptyPlayer(scoreCount));
+  }
+  return padded;
+}
+
 type EntrantOption = { value: number; label: string };
 
 const options: EntrantOption[] = sortedEntrants.map((e) => ({
@@ -53,7 +74,13 @@ export function Players() {
   const savedPoolState = useAppState(
     (s) => s.event.tournament.poolState ?? {},
   );
-  const [poolState, setPoolState] = useState<PoolState>(savedPoolState);
+  const [poolState, setPoolState] = useState<PoolState>(() => ({
+    ...savedPoolState,
+    players: padToPlayerCount(
+      savedPoolState.players ?? [],
+      (savedPoolState.songs ?? []).length,
+    ),
+  }));
 
   const players = poolState.players ?? [];
   const songs = poolState.songs ?? [];
@@ -182,10 +209,12 @@ export function Players() {
                       ),
                     }))
                   }
-                  onRemove={() =>
+                  onToggleActive={(active) =>
                     setPoolState((prev) => ({
                       ...prev,
-                      players: (prev.players ?? []).filter((_, j) => j !== i),
+                      players: (prev.players ?? []).map((p, j) =>
+                        j !== i ? p : { ...p, isDisabled: !active },
+                      ),
                     }))
                   }
                   onPlayerSelect={(option) => {
@@ -211,27 +240,7 @@ export function Players() {
               ))}
             </SortableContext>
             <tr>
-              <td>
-                <Button
-                  icon={<Plus />}
-                  onClick={() =>
-                    setPoolState((prev) => ({
-                      ...prev,
-                      players: [
-                        ...(prev.players ?? []),
-                        {
-                          scores: Array.from(
-                            { length: songs.length },
-                            (): PoolPlayerScore => ({}),
-                          ),
-                          isEliminated: false,
-                          isDisabled: false,
-                        },
-                      ],
-                    }))
-                  }
-                />
-              </td>
+              <td></td>
               <td className={styles.submitCell}>
                 <Button onClick={handleSubmit}>Submit</Button>
               </td>
@@ -332,7 +341,7 @@ interface SortablePlayerRowProps {
   songs: string[];
   onEditScore(songIndex: number): void;
   onClearScore(songIndex: number): void;
-  onRemove(): void;
+  onToggleActive(active: boolean): void;
   onPlayerSelect(option: EntrantOption): void;
 }
 
@@ -342,7 +351,7 @@ function SortablePlayerRow({
   songs,
   onEditScore,
   onClearScore,
-  onRemove,
+  onToggleActive,
   onPlayerSelect,
 }: SortablePlayerRowProps) {
   const {
@@ -366,7 +375,11 @@ function SortablePlayerRow({
         <span className={styles.dragHandle} {...listeners}>
           ⠿
         </span>
-        <Button icon={<Minus />} onClick={onRemove} />
+        <Checkbox
+          checked={!player.isDisabled}
+          label="Active"
+          onChange={(e) => onToggleActive(e.target.checked)}
+        />
       </td>
       <td>
         <Suggest<EntrantOption>
