@@ -1,5 +1,5 @@
 import { Button, Card, Checkbox, Dialog, DialogBody, FormGroup, H3, InputGroup, MenuItem } from "@blueprintjs/core";
-import { Edit, Minus, Plus, Trash, Unlink } from "@blueprintjs/icons";
+import { Edit, Minus, Person, Plus, Trash, Unlink } from "@blueprintjs/icons";
 import {
   DndContext,
   DragEndEvent,
@@ -24,7 +24,10 @@ import { toaster } from "../../toaster";
 import { eventSlice } from "../../state/event.slice";
 import { useAppDispatch, useAppState } from "../../state/store";
 import entrants from "../../assets/entrants.json";
+import { useLiveRankings } from "../../obs-sources/useLiveRankings";
 import { MatchLog } from "./match-log";
+import { LobbyStateView } from "./lobbies";
+import { useLobbiesStore } from "./lobbies.store";
 import styles from "./players.css";
 
 const sortedEntrants = [...entrants].sort((a, b) =>
@@ -75,6 +78,22 @@ export function Players() {
   const savedPoolState = useAppState(
     (s) => s.event.tournament.poolState ?? {},
   );
+
+  const lobbyConnection = useAppState(
+    (s) => s.event.tournament?.lobbyConnection,
+  );
+  const lobbies = useLobbiesStore((s) => s.lobbies);
+  const fetchLobbies = useLobbiesStore((s) => s.fetchLobbies);
+  useEffect(() => {
+    fetchLobbies();
+  }, [fetchLobbies]);
+  const selectedLobby = lobbies.find((l) => l.code === lobbyConnection?.code);
+  const gameState = useLiveRankings({
+    name: "Players Dashboard",
+    code: selectedLobby?.code ?? "",
+    password: selectedLobby?.password,
+  });
+
   const [poolState, setPoolState] = useState<PoolState>(() => ({
     ...savedPoolState,
     players: padToPlayerCount(
@@ -144,6 +163,14 @@ export function Players() {
 
   return (
     <>
+      <div className={styles.lobbyState}>
+        <H3>Selected Lobby{selectedLobby && ` (${selectedLobby.code})`}</H3>
+        {selectedLobby ? (
+          <LobbyStateView gameState={gameState} />
+        ) : (
+          <p>No lobby selected.</p>
+        )}
+      </div>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -398,6 +425,7 @@ function SortablePlayerRow({
       <td style={style}>
         <Suggest<EntrantOption>
           items={options}
+          inputProps={{ leftIcon: <Person /> }}
           selectedItem={
             options.find((o) => o.value === player.entrantId) ?? null
           }

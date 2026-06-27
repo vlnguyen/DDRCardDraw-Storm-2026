@@ -2,7 +2,7 @@ import { AnchorButton, Button, Card, H3, H4, Tooltip } from "@blueprintjs/core";
 import { Duplicate, Refresh } from "@blueprintjs/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHref } from "react-router-dom";
-import { Lobby, Player, ServerMessage } from "../../obs-sources/lobby.types";
+import { Lobby, LobbyStatePayload, Player, ServerMessage } from "../../obs-sources/lobby.types";
 import { useLiveRankings } from "../../obs-sources/useLiveRankings";
 import {
   SYNCSTART_PORT,
@@ -47,6 +47,16 @@ export function Lobbies() {
   useEffect(() => {
     fetchLobbies();
   }, [fetchLobbies]);
+
+  const hasAutoSelectedRef = useRef(false);
+  useEffect(() => {
+    if (hasAutoSelectedRef.current || !lobbyConnection?.code) return;
+    const match = lobbies.find((l) => l.code === lobbyConnection.code);
+    if (match) {
+      setSelectedLobby(match);
+      hasAutoSelectedRef.current = true;
+    }
+  }, [lobbies, lobbyConnection]);
 
   useEffect(() => {
     const socket = new WebSocket(`ws://${SYNCSTART_URL}:${SYNCSTART_PORT}`);
@@ -189,12 +199,26 @@ export function Lobbies() {
             </Tooltip>
           )}
         </H3>
-        {gameState?.songInfo && (
-          <p>
-            {gameState.songInfo.title}
-            {gameState.songInfo.artist && ` - ${gameState.songInfo.artist}`}
-          </p>
-        )}
+        <LobbyStateView gameState={gameState} />
+      </section>
+    </div>
+  );
+}
+
+export function LobbyStateView({
+  gameState,
+}: {
+  gameState: LobbyStatePayload | null;
+}) {
+  return (
+    <>
+      {gameState?.songInfo && (
+        <p>
+          {gameState.songInfo.title}
+          {gameState.songInfo.artist && ` - ${gameState.songInfo.artist}`}
+        </p>
+      )}
+      <div className={styles.machineStates}>
         {groupPlayersByMachine(gameState?.players).map(
           ({ socketId, players }) => (
             <MachineStateCard
@@ -204,8 +228,8 @@ export function Lobbies() {
             />
           ),
         )}
-      </section>
-    </div>
+      </div>
+    </>
   );
 }
 
