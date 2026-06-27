@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Dialog, DialogBody, FormGroup, H3, InputGroup, MenuItem } from "@blueprintjs/core";
+import { Button, Card, Checkbox, Dialog, DialogBody, FormGroup, H3, HTMLSelect, InputGroup, MenuItem } from "@blueprintjs/core";
 import { Edit, Minus, Person, Plus, Trash, Unlink } from "@blueprintjs/icons";
 import {
   DndContext,
@@ -94,6 +94,23 @@ export function Players() {
     password: selectedLobby?.password,
   });
 
+  const machineIds = selectedLobby ? Object.keys(selectedLobby.machines) : [];
+  const machineLabel = (id: string) => {
+    const machine = selectedLobby?.machines[id];
+    const names = [machine?.player1?.profileName, machine?.player2?.profileName].filter(
+      (name): name is string => !!name,
+    );
+    return names.length ? names.join(", ") : id;
+  };
+  const savedCab1MachineId = useAppState(
+    (s) => s.event.tournament?.machineCodeCab1 ?? "",
+  );
+  const savedCab2MachineId = useAppState(
+    (s) => s.event.tournament?.machineCodeCab2 ?? "",
+  );
+  const [cab1MachineId, setCab1MachineId] = useState(savedCab1MachineId);
+  const [cab2MachineId, setCab2MachineId] = useState(savedCab2MachineId);
+
   const [poolState, setPoolState] = useState<PoolState>(() => ({
     ...savedPoolState,
     players: padToPlayerCount(
@@ -151,6 +168,12 @@ export function Players() {
 
   function handleSubmit() {
     dispatch(eventSlice.actions.setPoolPlayers(players));
+    dispatch(
+      eventSlice.actions.setCabMachines({
+        cab1: cab1MachineId,
+        cab2: cab2MachineId,
+      }),
+    );
     toaster.show({ message: "Pool state updated.", intent: "success" });
   }
 
@@ -170,6 +193,36 @@ export function Players() {
         ) : (
           <p>No lobby selected.</p>
         )}
+      </div>
+      <div className={styles.cabSelects}>
+        <FormGroup label={<strong>Cab 1 Machine</strong>}>
+          <HTMLSelect
+            className={styles.cabSelect}
+            value={cab1MachineId}
+            onChange={(e) => setCab1MachineId(e.target.value)}
+          >
+            <option value="">--</option>
+            {machineIds.map((id) => (
+              <option key={id} value={id}>
+                {machineLabel(id)}
+              </option>
+            ))}
+          </HTMLSelect>
+        </FormGroup>
+        <FormGroup label={<strong>Cab 2 Machine</strong>}>
+          <HTMLSelect
+            className={styles.cabSelect}
+            value={cab2MachineId}
+            onChange={(e) => setCab2MachineId(e.target.value)}
+          >
+            <option value="">--</option>
+            {machineIds.map((id) => (
+              <option key={id} value={id}>
+                {machineLabel(id)}
+              </option>
+            ))}
+          </HTMLSelect>
+        </FormGroup>
       </div>
       <DndContext
         sensors={sensors}

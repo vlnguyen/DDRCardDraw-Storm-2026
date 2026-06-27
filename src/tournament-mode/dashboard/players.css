@@ -2,6 +2,22 @@
   margin-bottom: 1rem;
 }
 
+.cabSelects {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cabSelects > * {
+  flex: 0 1 240px;
+}
+
+.cabSelect select {
+  padding-right: 30px;
+}
+
 .playersTable {
   border-collapse: collapse;
   border-style: hidden;

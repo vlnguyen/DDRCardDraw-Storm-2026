@@ -66,6 +66,8 @@ interface TournamentState {
     password?: string;
   };
   poolState?: PoolState;
+  machineCodeCab1?: string;
+  machineCodeCab2?: string;
 }
 
 
@@ -163,6 +165,16 @@ export const eventSlice = createSlice({
         state.tournament = {};
       }
       state.tournament.lobbyConnection = action.payload;
+    },
+    setCabMachines(
+      state,
+      action: PayloadAction<{ cab1: string; cab2: string }>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      state.tournament.machineCodeCab1 = action.payload.cab1;
+      state.tournament.machineCodeCab2 = action.payload.cab2;
     },
   },
   extraReducers(builder) {
