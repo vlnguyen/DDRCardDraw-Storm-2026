@@ -146,7 +146,7 @@ function MatchCard({
         <tbody>
           {sortedScores.map((score) => (
             <tr
-              key={score.playerId}
+              key={score.id}
               className={!score.isValid ? styles.invalidRow : undefined}
             >
               <td>

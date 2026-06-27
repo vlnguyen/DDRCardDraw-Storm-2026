@@ -134,6 +134,13 @@ export function Players() {
     toaster.show({ message: "Pool state updated.", intent: "success" });
   }
 
+  function handleReset() {
+    setPoolState({
+      songs: [],
+      players: padToPlayerCount([], 0),
+    });
+  }
+
   return (
     <>
       <DndContext
@@ -144,7 +151,7 @@ export function Players() {
         <table className={styles.playersTable}>
           <thead>
             <tr>
-              <th></th>
+              <th className={styles.activeHeader}>✅</th>
               <th>Player</th>
               {songs.map((_, i) => (
                 <th key={i}>
@@ -242,6 +249,7 @@ export function Players() {
             <tr>
               <td></td>
               <td className={styles.submitCell}>
+                <Button onClick={handleReset}>Reset</Button>{" "}
                 <Button onClick={handleSubmit}>Submit</Button>
               </td>
               {songs.map((_, si) => (
@@ -377,7 +385,6 @@ function SortablePlayerRow({
         </span>
         <Checkbox
           checked={!player.isDisabled}
-          label="Active"
           onChange={(e) => onToggleActive(e.target.checked)}
         />
       </td>

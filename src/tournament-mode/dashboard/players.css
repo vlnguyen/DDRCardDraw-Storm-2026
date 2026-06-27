@@ -22,6 +22,11 @@
   text-align: right;
 }
 
+.playersTable th.activeHeader {
+  padding-right: 14px;
+  text-align: right;
+}
+
 .songHeader {
   display: flex;
   justify-content: space-between;
