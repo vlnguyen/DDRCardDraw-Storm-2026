@@ -15,3 +15,4 @@ node_modules
 scripts/scraping/textage/**
 scripts/scraping/sanbai/**
 .env
+oh_scores.csv
