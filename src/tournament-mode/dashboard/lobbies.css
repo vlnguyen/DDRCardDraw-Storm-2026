@@ -57,3 +57,9 @@
 .playerNameCell {
   width: 200px;
 }
+
+.machineStates {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

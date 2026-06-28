@@ -1,3 +1,34 @@
+.lobbyState {
+  margin-bottom: 1rem;
+}
+
+.cabSelects {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cabSelects > * {
+  flex: 0 1 240px;
+}
+
+.cabSelect select {
+  min-width: 150px;
+  padding-right: 30px;
+}
+
+.lobbyPlayerSuggest {
+  display: block;
+  margin-top: 4px;
+}
+
+.stepStatsButton {
+  text-align: center;
+  margin-top: 4px;
+}
+
 .playersTable {
   border-collapse: collapse;
   border-style: hidden;
@@ -22,6 +53,12 @@
   text-align: right;
 }
 
+.playersTable td.resetSongsColumn {
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+}
+
 .songHeader {
   display: flex;
   justify-content: space-between;
@@ -40,22 +77,12 @@
   gap: 4px;
 }
 
+.entrantSuggest {
+  flex: 1;
+}
+
 .currentScoreGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 8px;
-}
-
-.dragHandle {
-  cursor: grab;
-  padding: 0 4px;
-  opacity: 0.4;
-  font-size: 1.2em;
-  line-height: 1;
-  user-select: none;
-}
-
-.dragHandle:active {
-  cursor: grabbing;
-  opacity: 0.8;
 }
