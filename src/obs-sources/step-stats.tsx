@@ -41,6 +41,14 @@ const JUDGMENT_FIELDS: Array<{ key: keyof Judgments; className: string }> = [
   { key: "misses", className: matchLogStyles.miss },
 ];
 
+// Mirrors players.tsx's CAB_LABELS ordering: cab 1 [P1, P2], then cab 2 [P1, P2].
+const ROSTER_SLOTS: Array<{ cabNum: 1 | 2; playerSlot: "P1" | "P2" }> = [
+  { cabNum: 1, playerSlot: "P1" },
+  { cabNum: 1, playerSlot: "P2" },
+  { cabNum: 2, playerSlot: "P1" },
+  { cabNum: 2, playerSlot: "P2" },
+];
+
 export function StepStats() {
   const [searchParams] = useSearchParams();
   const cab = searchParams.get("cab") === "2" ? "2" : "1";
@@ -49,11 +57,10 @@ export function StepStats() {
   const lobbyConnection = useAppState(
     (s) => s.event.tournament?.lobbyConnection,
   );
-  const machineId = useAppState((s) =>
-    cab === "2"
-      ? s.event.tournament?.machineCodeCab2
-      : s.event.tournament?.machineCodeCab1,
-  );
+  const cab1MachineId = useAppState((s) => s.event.tournament?.machineCodeCab1);
+  const cab2MachineId = useAppState((s) => s.event.tournament?.machineCodeCab2);
+  const machineId = cab === "2" ? cab2MachineId : cab1MachineId;
+  const poolPlayers = useAppState((s) => s.event.tournament?.poolState?.players) ?? [];
 
   const gameState = useLiveRankings({
     name: `OBS Step Stats (Cab ${cab}, ${playerId})`,
@@ -70,11 +77,26 @@ export function StepStats() {
     minimumFractionDigits: 2,
   });
 
-  const lobbyScores = gameState?.players.map((p) => p.exScore ?? 0) ?? [];
+  const rowIndex = ROSTER_SLOTS.findIndex(
+    (slot) => `${slot.cabNum}` === cab && slot.playerSlot === playerId,
+  );
+  const isSelfDisabled = poolPlayers[rowIndex]?.isDisabled ?? false;
+
+  const eligibleScores = ROSTER_SLOTS.filter(
+    (_, i) => !poolPlayers[i]?.isDisabled,
+  ).map((slot) => {
+    const slotMachineId = slot.cabNum === 1 ? cab1MachineId : cab2MachineId;
+    const slotPlayer = gameState?.players.find(
+      (p) => p.socketId === slotMachineId && p.playerId === slot.playerSlot,
+    );
+    return slotPlayer?.exScore ?? 0;
+  });
+
   const myScore = player?.exScore ?? 0;
-  const currentRank: number | undefined = lobbyScores.length
-    ? lobbyScores.filter((score) => score > myScore).length + 1
-    : undefined;
+  const currentRank: number | undefined =
+    isSelfDisabled || eligibleScores.length === 0
+      ? undefined
+      : eligibleScores.filter((score) => score > myScore).length + 1;
 
   return (
     <div className={styles.list}>
