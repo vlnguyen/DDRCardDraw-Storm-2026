@@ -5,6 +5,7 @@ export type EventKey =
   | "rip135"
   | "rip14"
   | "rip15"
+  | "panini2023"
   | "panini2024"
   | "panini2025"
   | "itl2023"
@@ -48,6 +49,7 @@ export const entrantsMap: Record<number, {
     membersId: 173716,
     entrantPlacements: {
       rip15: 17,
+      panini2025: 13,
       itl2023: 183,
       itl2024: 214,
       itl2025: 110,
@@ -73,6 +75,7 @@ export const entrantsMap: Record<number, {
     membersId: 61697,
     entrantPlacements: {
       rip135: 29,
+      panini2024: 13,
       itl2023: 143,
       itl2024: 157,
       itl2025: 184,
@@ -132,6 +135,9 @@ export const entrantsMap: Record<number, {
       rip135: 3,
       rip14: 5,
       rip15: 1,
+      panini2023: 3,
+      panini2024: 1,
+      panini2025: 1,
       itl2023: 5,
       itl2024: 2,
       itl2025: 1,
@@ -253,6 +259,7 @@ export const entrantsMap: Record<number, {
       ceo2023: 5,
       ceo2024: 5,
       ceo2025: 7,
+      panini2025: 7,
       itl2023: 18,
       itl2024: 19,
       itl2025: 24,
@@ -438,6 +445,7 @@ export const entrantsMap: Record<number, {
       ceo2025: 9,
       rip14: 5,
       rip15: 13,
+      panini2025: 5,
       itl2023: 15,
       itl2024: 14,
       itl2025: 28,
@@ -456,6 +464,7 @@ export const entrantsMap: Record<number, {
     membersId: 174515,
     entrantPlacements: {
       rip15: 17,
+      panini2025: 9,
       itl2024: 65,
       itl2025: 241,
       itl2026: 43,
@@ -548,6 +557,7 @@ export const entrantsMap: Record<number, {
       rip135: 1,
       rip14: 1,
       rip15: 2,
+      panini2025: 2,
       itl2023: 6,
       itl2024: 6,
       itl2025: 5,
@@ -640,6 +650,7 @@ export const entrantsMap: Record<number, {
       rip135: 5,
       rip14: 7,
       rip15: 9,
+      panini2025: 9,
       itl2023: 44,
       itl2024: 44,
       itl2025: 32,
@@ -744,6 +755,8 @@ export const entrantsMap: Record<number, {
       ceo2025: 5,
       rip14: 2,
       rip15: 9,
+      panini2023: 1,
+      panini2025: 4,
       itl2023: 8,
       itl2024: 10,
       itl2025: 12,
@@ -788,6 +801,8 @@ export const entrantsMap: Record<number, {
       ceo2025: 9,
       rip14: 9,
       rip15: 21,
+      panini2024: 5,
+      panini2025: 9,
       itl2023: 77,
       itl2024: 42,
       itl2025: 62,
@@ -800,6 +815,8 @@ export const entrantsMap: Record<number, {
     discriminator: "1ee0ca7e",
     membersId: 170806,
     entrantPlacements: {
+      panini2024: 7,
+      panini2025: 13,
       itl2023: 237,
       itl2024: 83,
       itl2025: 137,
