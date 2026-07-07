@@ -21,7 +21,7 @@ const entrantsMap: Record<number, {
     discriminator: "d4495286",
     membersId: 175571
   },
-  // CarterTheQ
+  // CarterTheQ [DDRIllini]
   [12877]: {
     id: 12877,
     discriminator: "db47f574",
@@ -39,7 +39,7 @@ const entrantsMap: Record<number, {
     discriminator: "9ab67a73",
     membersId: 1
   },
-  // Chief Skittles
+  // Chief Skittles [STORM]
   [2099374]: {
     id: 2099374,
     discriminator: "04153250",
@@ -106,9 +106,9 @@ const entrantsMap: Record<number, {
     membersId: 35701
   },
   // PenguinMessiah
-  [3063330]: {
-    id: 3063330,
-    discriminator: "0ab07a0f",
+  [3291058]: {
+    id: 3291058,
+    discriminator: "d3ca308a",
     membersId: 188718
   },
   // PolloxX
@@ -165,7 +165,7 @@ const entrantsMap: Record<number, {
     discriminator: "226cd505",
     membersId: 65671
   },
-  // VivaLaMoo
+  // VivaLaMoo [STORM]
   [143547]: {
     id: 143547,
     discriminator: "3aadda80",
