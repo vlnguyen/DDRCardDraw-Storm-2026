@@ -10,7 +10,18 @@ export type EventKey =
   | "itl2023"
   | "itl2024"
   | "itl2025"
-  | "itl2026";
+  | "itl2026"
+  | "bhop1"
+  | "bhop2"
+  | "bhop3"
+  | "bhop4"
+  | "dd2025"
+  | "shine2024"
+  | "shine2025"
+  | "bite6"
+  | "bite7"
+  | "bite8"
+  | "wg2024";
 
 export const entrantsMap: Record<number, {
   id: number;
@@ -104,6 +115,10 @@ export const entrantsMap: Record<number, {
       itl2024: 398,
       itl2025: 1558,
       itl2026: 788,
+      bhop2: 7,
+      bhop3: 13,
+      bhop4: 13,
+      dd2025: 13,
     },
   },
   // Chance R.
@@ -121,6 +136,10 @@ export const entrantsMap: Record<number, {
       itl2024: 2,
       itl2025: 1,
       itl2026: 2,
+      bhop4: 1,
+      shine2024: 2,
+      shine2025: 3,
+      wg2024: 5,
     },
   },
   // cheesecake [HFIL]
@@ -190,6 +209,9 @@ export const entrantsMap: Record<number, {
       itl2024: 187,
       itl2025: 144,
       itl2026: 172,
+      bhop3: 17,
+      bhop4: 13,
+      dd2025: 13,
     },
   },
   // EvilDave219 [TBD]
@@ -235,6 +257,8 @@ export const entrantsMap: Record<number, {
       itl2024: 19,
       itl2025: 24,
       itl2026: 40,
+      bite8: 4,
+      wg2024: 2,
     },
   },
   // Flip
@@ -269,6 +293,11 @@ export const entrantsMap: Record<number, {
       itl2024: 122,
       itl2025: 39,
       itl2026: 16,
+      bhop1: 5,
+      bhop2: 5,
+      bhop3: 9,
+      bhop4: 5,
+      dd2025: 7,
     },
   },
   // HeavyMode
@@ -282,6 +311,7 @@ export const entrantsMap: Record<number, {
       itl2024: 194,
       itl2025: 143,
       itl2026: 134,
+      dd2025: 17,
     },
   },
   // Higgy
@@ -412,6 +442,11 @@ export const entrantsMap: Record<number, {
       itl2024: 14,
       itl2025: 28,
       itl2026: 10,
+      bhop2: 3,
+      bhop3: 3,
+      bhop4: 4,
+      dd2025: 5,
+      bite8: 5,
     },
   },
   // mdx
@@ -449,6 +484,10 @@ export const entrantsMap: Record<number, {
       itl2024: 72,
       itl2025: 27,
       itl2026: 17,
+      bhop2: 4,
+      bhop3: 7,
+      dd2025: 5,
+      shine2025: 7,
     },
   },
   // Miligram
@@ -513,6 +552,14 @@ export const entrantsMap: Record<number, {
       itl2024: 6,
       itl2025: 5,
       itl2026: 5,
+      bhop1: 1,
+      bhop2: 2,
+      bhop3: 2,
+      bhop4: 2,
+      dd2025: 1,
+      shine2024: 6,
+      shine2025: 1,
+      bite8: 1,
     },
   },
   // Ryuguu
@@ -566,6 +613,11 @@ export const entrantsMap: Record<number, {
       itl2024: 1149,
       itl2025: 550,
       itl2026: 463,
+      bhop1: 13,
+      bhop2: 27,
+      bhop3: 33,
+      bhop4: 29,
+      dd2025: 33,
     },
   },
   // SpeakEZ
@@ -592,6 +644,7 @@ export const entrantsMap: Record<number, {
       itl2024: 44,
       itl2025: 32,
       itl2026: 20,
+      shine2025: 4,
     },
   },
   // T. Swag
@@ -634,6 +687,8 @@ export const entrantsMap: Record<number, {
       itl2024: 87,
       itl2025: 76,
       itl2026: 92,
+      bhop3: 13,
+      dd2025: 9,
     },
   },
   // Ty
@@ -675,6 +730,8 @@ export const entrantsMap: Record<number, {
       itl2024: 17,
       itl2025: 30,
       itl2026: 68,
+      bhop3: 5,
+      dd2025: 7,
     },
   },
   // VivaLaMoo [STORM]
@@ -691,6 +748,13 @@ export const entrantsMap: Record<number, {
       itl2024: 10,
       itl2025: 12,
       itl2026: 7,
+      bhop3: 1,
+      bhop4: 5,
+      dd2025: 2,
+      shine2024: 3,
+      bite7: 3,
+      bite8: 2,
+      wg2024: 4,
     },
   },
   // WDRM
@@ -700,6 +764,7 @@ export const entrantsMap: Record<number, {
     membersId: 180548,
     entrantPlacements: {
       itl2024: 487,
+      bhop3: 13,
     },
   },
   // X!!
