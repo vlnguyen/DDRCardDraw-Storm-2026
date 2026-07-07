@@ -2,6 +2,7 @@ export type EventKey =
   | "ceo2023"
   | "ceo2024"
   | "ceo2025"
+  | "rip135"
   | "rip14"
   | "rip15"
   | "panini2024"
@@ -35,6 +36,7 @@ export const entrantsMap: Record<number, {
     discriminator: "e9b9f217",
     membersId: 173716,
     entrantPlacements: {
+      rip15: 17,
       itl2023: 183,
       itl2024: 214,
       itl2025: 110,
@@ -59,6 +61,7 @@ export const entrantsMap: Record<number, {
     discriminator: "bdbeaaf0",
     membersId: 61697,
     entrantPlacements: {
+      rip135: 29,
       itl2023: 143,
       itl2024: 157,
       itl2025: 184,
@@ -94,6 +97,9 @@ export const entrantsMap: Record<number, {
     discriminator: "db47f574",
     membersId: 128275,
     entrantPlacements: {
+      rip135: 21,
+      rip14: 17,
+      rip15: 37,
       itl2023: 153,
       itl2024: 398,
       itl2025: 1558,
@@ -108,6 +114,9 @@ export const entrantsMap: Record<number, {
     entrantPlacements: {
       ceo2024: 5,
       ceo2025: 1,
+      rip135: 3,
+      rip14: 5,
+      rip15: 1,
       itl2023: 5,
       itl2024: 2,
       itl2025: 1,
@@ -139,6 +148,8 @@ export const entrantsMap: Record<number, {
     discriminator: "04153250",
     membersId: 66673,
     entrantPlacements: {
+      rip14: 13,
+      rip15: 25,
       itl2023: 66,
       itl2024: 75,
       itl2025: 83,
@@ -174,6 +185,7 @@ export const entrantsMap: Record<number, {
     discriminator: "d9a6772f",
     membersId: 147676,
     entrantPlacements: {
+      rip15: 45,
       itl2023: 144,
       itl2024: 187,
       itl2025: 144,
@@ -251,6 +263,9 @@ export const entrantsMap: Record<number, {
     discriminator: "5392e440",
     membersId: 178749,
     entrantPlacements: {
+      rip135: 45,
+      rip14: 21,
+      rip15: 17,
       itl2024: 122,
       itl2025: 39,
       itl2026: 16,
@@ -262,6 +277,7 @@ export const entrantsMap: Record<number, {
     discriminator: "3d399b44",
     membersId: 175406,
     entrantPlacements: {
+      rip15: 29,
       itl2023: 411,
       itl2024: 194,
       itl2025: 143,
@@ -274,6 +290,7 @@ export const entrantsMap: Record<number, {
     discriminator: "8f9d2f17",
     membersId: 171721,
     entrantPlacements: {
+      rip135: 13,
       itl2023: 53,
       itl2024: 78,
       itl2025: 61,
@@ -331,6 +348,7 @@ export const entrantsMap: Record<number, {
     discriminator: "d1207fcb",
     membersId: 177112,
     entrantPlacements: {
+      rip15: 57,
       itl2024: 395,
       itl2025: 274,
       itl2026: 256,
@@ -388,6 +406,8 @@ export const entrantsMap: Record<number, {
       ceo2023: 9,
       ceo2024: 7,
       ceo2025: 9,
+      rip14: 5,
+      rip15: 13,
       itl2023: 15,
       itl2024: 14,
       itl2025: 28,
@@ -400,6 +420,7 @@ export const entrantsMap: Record<number, {
     discriminator: "76f9d3bd",
     membersId: 174515,
     entrantPlacements: {
+      rip15: 17,
       itl2024: 65,
       itl2025: 241,
       itl2026: 43,
@@ -421,6 +442,9 @@ export const entrantsMap: Record<number, {
     discriminator: "649127bf",
     membersId: 175365,
     entrantPlacements: {
+      rip135: 17,
+      rip14: 17,
+      rip15: 5,
       itl2023: 117,
       itl2024: 72,
       itl2025: 27,
@@ -482,6 +506,9 @@ export const entrantsMap: Record<number, {
       ceo2023: 1,
       ceo2024: 2,
       ceo2025: 4,
+      rip135: 1,
+      rip14: 1,
+      rip15: 2,
       itl2023: 6,
       itl2024: 6,
       itl2025: 5,
@@ -503,6 +530,7 @@ export const entrantsMap: Record<number, {
     discriminator: "1ec6593b",
     membersId: 173554,
     entrantPlacements: {
+      rip135: 33,
       itl2023: 308,
       itl2024: 477,
       itl2025: 656,
@@ -532,6 +560,9 @@ export const entrantsMap: Record<number, {
     discriminator: "3c532367",
     membersId: 178992,
     entrantPlacements: {
+      rip135: 61,
+      rip14: 73,
+      rip15: 61,
       itl2024: 1149,
       itl2025: 550,
       itl2026: 463,
@@ -543,6 +574,7 @@ export const entrantsMap: Record<number, {
     discriminator: "03229ef1",
     membersId: 188881,
     entrantPlacements: {
+      rip15: 69,
       itl2025: 1041,
       itl2026: 745,
     },
@@ -553,6 +585,9 @@ export const entrantsMap: Record<number, {
     discriminator: "a24fd984",
     membersId: 36049,
     entrantPlacements: {
+      rip135: 5,
+      rip14: 7,
+      rip15: 9,
       itl2023: 44,
       itl2024: 44,
       itl2025: 32,
@@ -565,6 +600,8 @@ export const entrantsMap: Record<number, {
     discriminator: "2ddd55d0",
     membersId: 8349,
     entrantPlacements: {
+      rip14: 13,
+      rip15: 37,
       itl2023: 61,
       itl2024: 1398,
       itl2025: 85,
@@ -577,6 +614,8 @@ export const entrantsMap: Record<number, {
     discriminator: "ea646ec3",
     membersId: 50287,
     entrantPlacements: {
+      rip135: 25,
+      rip15: 45,
       itl2023: 120,
       itl2024: 139,
       itl2025: 236,
@@ -589,6 +628,8 @@ export const entrantsMap: Record<number, {
     discriminator: "75cf6b41",
     membersId: 66784,
     entrantPlacements: {
+      rip135: 9,
+      rip15: 21,
       itl2023: 67,
       itl2024: 87,
       itl2025: 76,
@@ -627,6 +668,9 @@ export const entrantsMap: Record<number, {
     membersId: 65671,
     entrantPlacements: {
       ceo2025: 9,
+      rip135: 9,
+      rip14: 9,
+      rip15: 21,
       itl2023: 29,
       itl2024: 17,
       itl2025: 30,
@@ -641,6 +685,8 @@ export const entrantsMap: Record<number, {
     entrantPlacements: {
       ceo2023: 3,
       ceo2025: 5,
+      rip14: 2,
+      rip15: 9,
       itl2023: 8,
       itl2024: 10,
       itl2025: 12,
@@ -675,6 +721,8 @@ export const entrantsMap: Record<number, {
     membersId: 173043,
     entrantPlacements: {
       ceo2025: 9,
+      rip14: 9,
+      rip15: 21,
       itl2023: 77,
       itl2024: 42,
       itl2025: 62,
@@ -698,6 +746,10 @@ export const entrantsMap: Record<number, {
     id: 231774,
     discriminator: "1336c4bf",
     membersId: 6911,
-    entrantPlacements: {},
+    entrantPlacements: {
+      rip135: 13,
+      rip14: 21,
+      rip15: 25,
+    },
   }
 }
