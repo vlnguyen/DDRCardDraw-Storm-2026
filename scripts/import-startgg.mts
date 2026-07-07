@@ -19,6 +19,10 @@ const ENTRANTS_QUERY = `
             id
             gamerTag
             prefix
+            user {
+              id
+              discriminator
+            }
           }
         }
       }
@@ -27,15 +31,18 @@ const ENTRANTS_QUERY = `
 `;
 
 interface Participant {
-  id: string;
+  entrantId: string;
   gamerTag: string;
   prefix: string;
+  id: string | null;
+  discriminator: string | null;
 }
 
 interface RawParticipant {
   id: string;
   gamerTag: string;
   prefix: string | null;
+  user: { id: string; discriminator: string } | null;
 }
 
 interface EventEntrantsResponse {
@@ -101,7 +108,13 @@ async function fetchAllParticipants(token: string, slug: string): Promise<Partic
 
     for (const entrant of event.entrants.nodes) {
       const participant = entrant.participants[0];
-      participants.push({ ...participant, prefix: participant.prefix ?? "" });
+      participants.push({
+        id: participant.user?.id ?? null,
+        discriminator: participant.user?.discriminator ?? null,
+        gamerTag: participant.gamerTag,
+        prefix: participant.prefix ?? "",
+        entrantId: participant.id,
+      });
     }
     totalPages = event.entrants.pageInfo.totalPages;
     page++;
@@ -112,9 +125,11 @@ async function fetchAllParticipants(token: string, slug: string): Promise<Partic
 
 const eventUrl = process.argv[2];
 if (!eventUrl) {
-  console.error("Usage: yarn import:startgg <start.gg event URL>");
+  console.error("Usage: yarn import:startgg <start.gg event URL> [output name]");
   process.exit(1);
 }
+
+const outputName = process.argv[3] ?? "entrants";
 
 const token = process.env.STARTGG_TOKEN;
 if (!token) {
@@ -130,6 +145,6 @@ for (const participant of participants) {
   console.log(`${participant.id}\t${participant.prefix}\t${participant.gamerTag}`);
 }
 
-const outputPath = "src/assets/entrants.json";
+const outputPath = `src/assets/${outputName}.json`;
 await writeFile(outputPath, JSON.stringify(participants, null, 2));
 console.log(`Wrote ${outputPath}`);
