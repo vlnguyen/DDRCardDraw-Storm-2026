@@ -7,7 +7,7 @@ import { PoolPlayer, PoolPlayerScore, PoolState } from "../../state/event.slice"
 import { toaster } from "../../toaster";
 import { eventSlice } from "../../state/event.slice";
 import { useAppDispatch, useAppState } from "../../state/store";
-import entrants from "../../assets/entrants.json";
+import entrants from "../../assets/entrants/entrants.json";
 import { useLiveRankings } from "../../obs-sources/useLiveRankings";
 import { copyObsSource, routableStepStatsPath } from "../copy-obs-source";
 import { MatchLog } from "./match-log";

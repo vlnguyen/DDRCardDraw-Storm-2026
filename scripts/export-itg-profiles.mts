@@ -11,7 +11,7 @@ const templateDir = join(
   projectRoot,
   "src/assets/LocalProfiles/Project Storm",
 );
-const entrantsFile = join(projectRoot, "src/assets/entrants.json");
+const entrantsFile = join(projectRoot, "src/assets/entrants/entrants.json");
 const outDir = join(projectRoot, "out/LocalProfiles");
 
 const LAST_PLAYED_DATE = "2026-08-14 00:00:00";
