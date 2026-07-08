@@ -1,10 +1,10 @@
-export type EventKey = 
-  | "ceo2023"
-  | "ceo2024"
-  | "ceo2025"
-  | "rip135"
-  | "rip14"
-  | "rip15"
+export type EventKey =
+  | "ceo2023" // https://www.start.gg/tournament/ceo-2023-3/event/in-the-groove-2-sm5/brackets/1399203/2122916
+  | "ceo2024" // https://www.start.gg/tournament/ceo-2024-6/events/in-the-groove-2-sm5-1/brackets/1583769/2372293/standings
+  | "ceo2025" // https://www.start.gg/tournament/ceo-2025-6/event/itgmania/brackets/1999140/2930433
+  | "rip135" // https://www.start.gg/tournament/rumble-in-the-prairie-13-5/event/itg-tech-singles/standings
+  | "rip14" // https://www.start.gg/tournament/rumble-in-the-prairie-14/event/itg-tech-singles/standings
+  | "rip15" // https://www.start.gg/tournament/rumble-in-the-prairie-15/event/itg-tech-singles/standings
   | "panini2023"
   | "panini2024"
   | "panini2025"
@@ -12,17 +12,17 @@ export type EventKey =
   | "itl2024"
   | "itl2025"
   | "itl2026"
-  | "bhop1"
-  | "bhop2"
-  | "bhop3"
-  | "bhop4"
-  | "dd2025"
+  | "bhop1" // https://www.start.gg/tournament/bhop-ball/event/itg-tech-bracket/standings
+  | "bhop2" // https://www.start.gg/tournament/bhop-ball-2/event/itg-tech-bracket/standings
+  | "bhop3" // https://www.start.gg/tournament/bhop-ball-3/event/itg-tech-singles/standings
+  | "bhop4" // https://www.start.gg/tournament/bhop-ball-4/event/itg-tech-singles/standings
+  | "dd2025" // https://www.start.gg/tournament/dash-dance/event/itg-tech-singles/
   | "shine2024"
   | "shine2025"
-  | "bite6"
-  | "bite7"
-  | "bite8"
-  | "wg2024";
+  | "bite6" // https://www.start.gg/tournament/the-beast-in-the-east-6/event/itg-customs/brackets/1448507/2194521
+  | "bite7" // https://www.start.gg/tournament/beast-in-the-east-7/event/in-the-groove-stepmania/brackets/1729799/2569227
+  | "bite8" // https://www.start.gg/tournament/beast-in-the-east-8/event/itgmania-main-event/brackets/2054340/3006840
+  | "wg2024"; // https://www.start.gg/tournament/winter-groove-2024-itg-tournament/event/itg-tech-singles/brackets/1553467/2332620
 
 export const entrantsMap: Record<number, {
   id: number;
