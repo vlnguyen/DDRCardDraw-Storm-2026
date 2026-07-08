@@ -5,20 +5,20 @@ export type EventKey =
   | "rip135" // https://www.start.gg/tournament/rumble-in-the-prairie-13-5/event/itg-tech-singles/standings
   | "rip14" // https://www.start.gg/tournament/rumble-in-the-prairie-14/event/itg-tech-singles/standings
   | "rip15" // https://www.start.gg/tournament/rumble-in-the-prairie-15/event/itg-tech-singles/standings
-  | "panini2023"
-  | "panini2024"
-  | "panini2025"
-  | "itl2023"
-  | "itl2024"
-  | "itl2025"
-  | "itl2026"
+  | "panini2023" // https://ddrcommunity.com/panini-fest-2023-tournament-results/
+  | "panini2024" // https://challonge.com/paninifest2024_itgtop16/standings
+  | "panini2025" // https://challonge.com/paninifest2025_itg_top16
+  | "itl2023" // https://itl2023.groovestats.com/finalRankings
+  | "itl2024" // https://itl2024.groovestats.com/finalRankings
+  | "itl2025" // https://itl2025.groovestats.com/finalRankings
+  | "itl2026" // https://itl2026.groovestats.com/finalRankings
   | "bhop1" // https://www.start.gg/tournament/bhop-ball/event/itg-tech-bracket/standings
   | "bhop2" // https://www.start.gg/tournament/bhop-ball-2/event/itg-tech-bracket/standings
   | "bhop3" // https://www.start.gg/tournament/bhop-ball-3/event/itg-tech-singles/standings
   | "bhop4" // https://www.start.gg/tournament/bhop-ball-4/event/itg-tech-singles/standings
   | "dd2025" // https://www.start.gg/tournament/dash-dance/event/itg-tech-singles/
-  | "shine2024"
-  | "shine2025"
+  | "shine2024" // https://ddrcommunity.com/shine-tournament-results/
+  | "shine2025" // https://ddrcommunity.com/shine-invitational-2025-tournament-results/
   | "bite6" // https://www.start.gg/tournament/the-beast-in-the-east-6/event/itg-customs/brackets/1448507/2194521
   | "bite7" // https://www.start.gg/tournament/beast-in-the-east-7/event/in-the-groove-stepmania/brackets/1729799/2569227
   | "bite8" // https://www.start.gg/tournament/beast-in-the-east-8/event/itgmania-main-event/brackets/2054340/3006840
