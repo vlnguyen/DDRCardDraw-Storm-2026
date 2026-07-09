@@ -64,6 +64,19 @@ function slugFromUrl(url: string): string {
   return pathname.replace(/^\/+|\/+$/g, "");
 }
 
+function csvField(value: string | null): string {
+  const str = value ?? "";
+  return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+}
+
+function toCsv(participants: Participant[]): string {
+  const header = ["id", "prefix", "gamerTag", "discriminator", "entrantId"];
+  const rows = participants.map((p) =>
+    [p.id, p.prefix, p.gamerTag, p.discriminator, p.entrantId].map(csvField).join(","),
+  );
+  return [header.join(","), ...rows].join("\n");
+}
+
 async function fetchEntrantsPage(
   token: string,
   slug: string,
@@ -123,13 +136,26 @@ async function fetchAllParticipants(token: string, slug: string): Promise<Partic
   return participants;
 }
 
-const eventUrl = process.argv[2];
-if (!eventUrl) {
-  console.error("Usage: yarn import:startgg <start.gg event URL> [output name]");
-  process.exit(1);
+function getArg(name: string): string | undefined {
+  const prefix = `--${name}=`;
+  const args = process.argv.slice(2);
+
+  const inlineArg = args.find((arg) => arg.startsWith(prefix));
+  if (inlineArg) {
+    return inlineArg.slice(prefix.length);
+  }
+
+  const flagIndex = args.indexOf(`--${name}`);
+  if (flagIndex !== -1) {
+    return args[flagIndex + 1];
+  }
+
+  return undefined;
 }
 
-const outputName = process.argv[3] ?? "entrants";
+const eventUrl = getArg("url") ?? "https://www.start.gg/tournament/ceo-2026/event/itgmania/";
+
+const outputName = getArg("name") ?? "entrants";
 
 const token = process.env.STARTGG_TOKEN;
 if (!token) {
@@ -145,6 +171,12 @@ for (const participant of participants) {
   console.log(`${participant.id}\t${participant.prefix}\t${participant.gamerTag}`);
 }
 
-const outputPath = `src/assets/${outputName}.json`;
-await writeFile(outputPath, JSON.stringify(participants, null, 2));
-console.log(`Wrote ${outputPath}`);
+const outputPath = `src/assets/entrants/${outputName}`;
+
+const jsonPath = `${outputPath}.json`;
+await writeFile(jsonPath, JSON.stringify(participants, null, 2));
+console.log(`Wrote ${jsonPath}`);
+
+const csvPath = `${outputPath}.csv`;
+await writeFile(csvPath, toCsv(participants));
+console.log(`Wrote ${csvPath}`);

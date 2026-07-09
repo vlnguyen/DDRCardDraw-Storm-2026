@@ -208,6 +208,20 @@ export const entrantsMap: Record<number, {
       rip15: 17,
     },
   },
+  // baraka
+  [473954]: {
+    id: 473954,
+    discriminator: "9d0dfc93",
+    membersId: 8181,
+    entrantPlacements: {
+      ceo2023: 5,
+      ceo2025: 9,
+      itl2023: 11,
+      itl2024: 22,
+      itl2025: 31,
+      itl2026: 50,
+    },
+  },
   // BigYama
   [1956381]: {
     id: 1956381,
