@@ -188,16 +188,18 @@ module.exports = function (env = {}, argv = {}) {
           isProd ? "production" : "development",
         ),
         "process.env.DATA_FILES": JSON.stringify(
-          fs.readdirSync(resolve(__dirname, "src/songs")).map((file) => {
-            const fileContents = JSON.parse(
-              fs.readFileSync(resolve(__dirname, "src/songs", file)),
-            );
-            return {
-              name: basename(file, ".json"),
-              display: fileContents.i18n.en.name,
-              parent: fileContents.meta.menuParent || "",
-            };
-          }),
+          fs.readdirSync(resolve(__dirname, "src/songs"))
+            .filter((file) => file.endsWith(".json"))
+            .map((file) => {
+              const fileContents = JSON.parse(
+                fs.readFileSync(resolve(__dirname, "src/songs", file)),
+              );
+              return {
+                name: basename(file, ".json"),
+                display: fileContents.i18n.en.name,
+                parent: fileContents.meta.menuParent || "",
+              };
+            }),
         ),
         "process.env.STARTGG_TOKEN": JSON.stringify(process.env.STARTGG_TOKEN),
         "process.env.SYNCSTART_URL": JSON.stringify(process.env.SYNCSTART_URL),
