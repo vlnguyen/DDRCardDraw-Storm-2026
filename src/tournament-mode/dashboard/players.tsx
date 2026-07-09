@@ -9,7 +9,11 @@ import { eventSlice } from "../../state/event.slice";
 import { useAppDispatch, useAppState } from "../../state/store";
 import entrants from "../../assets/entrants/entrants.json";
 import { useLiveRankings } from "../../obs-sources/useLiveRankings";
-import { copyObsSource, routableStepStatsPath } from "../copy-obs-source";
+import {
+  copyObsSource,
+  routablePoolsPath,
+  routableStepStatsPath,
+} from "../copy-obs-source";
 import { MatchLog } from "./match-log";
 import { LobbyStateView } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
@@ -60,6 +64,7 @@ function fuzzyMatch(query: string, item: EntrantOption): boolean {
 
 export function Players() {
   const dispatch = useAppDispatch();
+  const poolsHref = useHref(routablePoolsPath());
   const savedPoolState = useAppState(
     (s) => s.event.tournament.poolState ?? {},
   );
@@ -233,7 +238,19 @@ export function Players() {
       <table className={styles.playersTable}>
         <thead>
           <tr>
-            <th></th>
+            <th className={styles.poolsResultsCell}>
+              <Tooltip content="Pools Results">
+                <AnchorButton
+                  size="small"
+                  icon={<Duplicate />}
+                  href={poolsHref}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    copyObsSource(new URL(poolsHref, document.location.href).href);
+                  }}
+                />
+              </Tooltip>
+            </th>
             <th>Player</th>
             {songs.map((_, i) => (
               <th key={i}>
