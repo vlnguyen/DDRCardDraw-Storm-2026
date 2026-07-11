@@ -154,8 +154,7 @@ export function Pools() {
       <table className={styles.poolsScoresTable}>
         <thead>
           <tr>
-            <th></th>
-            <th>
+            <th className={styles.playersHeader}>
               <h3>Players</h3>
             </th>
           </tr>
@@ -164,10 +163,7 @@ export function Pools() {
           {poolPlayersResults.map((player, poolPlayerResultIndex) => {
             return (
               <tr key={poolPlayerResultIndex}>
-                <td className={getRankClassName(player.rank)}>
-                  {player.rank}
-                </td>
-                <td className={styles.playerName}>
+                <td className={styles.playerNameCentered}>
                   <PlayerName player={player} />
                 </td>
               </tr>
