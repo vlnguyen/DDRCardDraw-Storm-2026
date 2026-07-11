@@ -313,7 +313,7 @@ function ObsSource() {
   }
   return (
     <Provider store={store}>
-      <PartySocketManager roomName={params.roomName}>
+      <PartySocketManager roomName={params.roomName} hideConnectingState>
         <IntlProvider>
           <ObsStyles />
           <Outlet />
