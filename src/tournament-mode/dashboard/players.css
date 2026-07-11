@@ -29,6 +29,10 @@
   margin-top: 4px;
 }
 
+.playersTable th.poolsResultsCell {
+  text-align: center;
+}
+
 .playersTable {
   border-collapse: collapse;
   border-style: hidden;

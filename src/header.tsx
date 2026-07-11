@@ -13,6 +13,7 @@ import {
   Menu as MenuIcon,
   Help,
   Control,
+  Layers,
 } from "@blueprintjs/icons";
 import { JSX, useCallback, useState } from "react";
 import { About } from "./about";
@@ -80,6 +81,14 @@ export function HamburgerMenu() {
 
   const menu = (
     <Menu>
+      <MenuItem
+        icon={<Layers />}
+        text="Draws"
+        onClick={(e) => {
+          e.preventDefault();
+          navigate("");
+        }}
+      />
       <MenuItem
         icon={<Control />}
         text="Stream Dashboard"
