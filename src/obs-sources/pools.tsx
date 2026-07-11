@@ -220,7 +220,9 @@ export function Pools() {
               {scores.map((score, scoreIndex) => (
                 <td key={scoreIndex}>
                   {getDisplayScore(score.exScore ?? 0)}
-                  {wins[scoreIndex] > 0 && ` (+${wins[scoreIndex]})`}
+                  <div className={styles.avg}>
+                    <div>{wins[scoreIndex] > 0 && ` +${wins[scoreIndex]}`}</div>
+                  </div>
                 </td>
               ))}
               <td>
