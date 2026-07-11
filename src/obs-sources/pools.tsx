@@ -14,11 +14,37 @@ function sum(prevSum: number, currentValue: number): number {
   return prevSum + currentValue;
 }
 
-function formatName(player: PoolPlayer): string {
-  if (!player.gamerTag) return "--";
-  return player.prefix
-    ? `${player.gamerTag} [${player.prefix}]`
-    : player.gamerTag;
+function getRankClassName(rank: number): string {
+  switch (rank) {
+    case 1:
+      return `${styles.rank} ${styles.rankFirst}`;
+    case 2:
+      return `${styles.rank} ${styles.rankSecond}`;
+    case 3:
+      return `${styles.rank} ${styles.rankThird}`;
+    default:
+      return styles.rank;
+  }
+}
+
+function PlayerName({
+  player,
+  medal,
+}: {
+  player: PoolPlayer;
+  medal?: string | null;
+}) {
+  if (!player.gamerTag) return <>--</>;
+  return (
+    <>
+      <span className={styles.gamerTag}>
+        {player.gamerTag} {medal}
+      </span>
+      {player.prefix && (
+        <div className={styles.prefix}>{player.prefix}</div>
+      )}
+    </>
+  );
 }
 
 function getPoolPlayersResults(poolPlayers: PoolPlayer[]): PoolPlayerResult[] {
@@ -128,6 +154,7 @@ export function Pools() {
       <table className={styles.poolsScoresTable}>
         <thead>
           <tr>
+            <th></th>
             <th>
               <h3>Players</h3>
             </th>
@@ -137,7 +164,12 @@ export function Pools() {
           {poolPlayersResults.map((player, poolPlayerResultIndex) => {
             return (
               <tr key={poolPlayerResultIndex}>
-                <td>{formatName(player)}</td>
+                <td className={getRankClassName(player.rank)}>
+                  {player.rank}
+                </td>
+                <td className={styles.playerName}>
+                  <PlayerName player={player} />
+                </td>
               </tr>
             );
           })}
@@ -151,12 +183,13 @@ export function Pools() {
       <thead>
         <tr>
           <th></th>
+          <th></th>
           {Array.from({ length: numSongs }).map((_, index) => (
             <th key={index}>
-              <h3>Song {index + 1}</h3>
+              <h3 className={styles.rank}>Song {index + 1}</h3>
             </th>
           ))}
-          <th>Wins</th>
+          <th className={styles.rank}>Wins</th>
         </tr>
       </thead>
       <tbody>
@@ -180,10 +213,12 @@ export function Pools() {
 
           return (
             <tr key={poolPlayerResultIndex}>
-              <td>
-                {medal}{" "}
+              <td className={getRankClassName(rank)}>
+                <b>{rank}</b>
+              </td>
+              <td className={styles.playerName}>
                 <b>
-                  {rank}. {formatName(player)}
+                  <PlayerName player={player} medal={medal} />
                 </b>
               </td>
               {scores.map((score, scoreIndex) => (
@@ -193,8 +228,10 @@ export function Pools() {
                 </td>
               ))}
               <td>
-                <b>{wins.reduce(sum, 0)} wins</b> (
-                <i>Avg. {getDisplayScore(averageEx)}</i>)
+                <b>{wins.reduce(sum, 0)} wins</b>
+                <div className={styles.avg}>
+                  <i>Avg. {getDisplayScore(averageEx)}</i>
+                </div>
               </td>
             </tr>
           );
