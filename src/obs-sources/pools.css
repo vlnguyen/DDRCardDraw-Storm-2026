@@ -12,11 +12,21 @@
   src: url("../assets/font/chiarostd_b.otf") format("opentype");
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .poolsScoresTable {
   height: 100vh;
   text-align: center;
   font-family: "Chiaro Std";
   font-size: 32px;
+  animation: fadeIn 0.5s ease;
 }
 
 .rank {

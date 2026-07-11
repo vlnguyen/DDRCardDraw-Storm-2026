@@ -12,6 +12,7 @@ import { PARTYKIT_HOST } from "./host";
 export function PartySocketManager(props: {
   roomName?: string;
   children: React.ReactNode;
+  hideConnectingState?: boolean;
 }) {
   const dispatch = useAppDispatch();
   // TODO move this state to redux???
@@ -67,6 +68,9 @@ export function PartySocketManager(props: {
   }, [socket]);
 
   if (!ready) {
+    if (props.hideConnectingState) {
+      return null;
+    }
     return (
       <section
         style={{ display: "flex", justifyContent: "center", marginTop: "15vh" }}
