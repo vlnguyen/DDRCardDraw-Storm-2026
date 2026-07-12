@@ -10,3 +10,13 @@
   display: flex;
   justify-content: space-between;
 }
+
+.chartLeaderboardRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chartLeaderboardInput {
+  width: 320px;
+}

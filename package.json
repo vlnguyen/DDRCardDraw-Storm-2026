@@ -30,6 +30,7 @@
     "import:eventList": "node scripts/event-filter.mjs",
     "import:startgg": "node --experimental-strip-types scripts/import-startgg.mts",
     "export:itg-profiles": "node --experimental-strip-types scripts/export-itg-profiles.mts",
+    "generate:scores": "node --experimental-strip-types scripts/generate-scores.mts --path src/assets/entrants/scores.csv",
     "validate": "run-p 'validate:*'",
     "validate:lint": "oxlint",
     "validate:format": "oxfmt --check",

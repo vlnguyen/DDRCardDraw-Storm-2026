@@ -7,13 +7,16 @@ import {
   Dialog,
   DialogBody,
   DialogFooter,
+  Divider,
   FormGroup,
   H3,
   H4,
   InputGroup,
+  MenuItem,
   Tab,
   Tabs,
 } from "@blueprintjs/core";
+import { Suggest } from "@blueprintjs/select";
 import { Add, Duplicate, Edit, FloppyDisk } from "@blueprintjs/icons";
 import { css } from "@codemirror/lang-css";
 import ReactCodeMirror from "@uiw/react-codemirror";
@@ -21,9 +24,14 @@ import { nanoid } from "nanoid";
 import React, { useRef, useState } from "react";
 import { useHref } from "react-router-dom";
 import { eventSlice } from "../../state/event.slice";
+import { useStockGameData } from "../../state/game-data.atoms";
 import { useAppDispatch, useAppState } from "../../state/store";
 import { useTheme } from "../../theme-toggle";
-import { copyObsSource, routableGlobalSourcePath } from "../copy-obs-source";
+import {
+  copyObsSource,
+  routableChartLeaderboardPath,
+  routableGlobalSourcePath,
+} from "../copy-obs-source";
 import styles from "./dashboard.css";
 import { Lobbies } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
@@ -38,14 +46,14 @@ import {
 import { Players } from "./players";
 
 type DashboardTabId =
-  | "obs-text-sources"
+  | "sources"
   | "lobbies"
   | "match-log"
   | "players";
 
 export function Dashboard() {
   const [currentTab, setCurrentTab] =
-    useState<DashboardTabId>("obs-text-sources");
+    useState<DashboardTabId>("sources");
   const matchCount = useMatchLogStore((s) => s.matches.length);
   const lobbyCount = useLobbiesStore((s) => s.lobbies.length);
 
@@ -57,8 +65,8 @@ export function Dashboard() {
         selectedTabId={currentTab}
         onChange={(newTabId: DashboardTabId) => setCurrentTab(newTabId)}
       >
-        <Tab id="obs-text-sources" panel={<ObsTextSources />}>
-          OBS Text Sources
+        <Tab id="sources" panel={<Sources />}>
+          Sources
         </Tab>
         <Tab id="players" panel={<Players />}>
           Players
@@ -74,7 +82,7 @@ export function Dashboard() {
   );
 }
 
-function ObsTextSources() {
+function Sources() {
   const [currentEdit, setCurrentEdit] = useState<string | null>(null);
   const labels = useAppState((s) => s.event.obsLabels);
 
@@ -83,7 +91,7 @@ function ObsTextSources() {
       <section style={{ maxWidth: "600px" }}>
         <EditDialog sourceId={currentEdit} close={() => setCurrentEdit(null)} />
         <H3>
-          OBS Text Sources{" "}
+          Sources{" "}
           <Button
             icon={<Add />}
             onClick={() => setCurrentEdit(nanoid())}
@@ -101,8 +109,93 @@ function ObsTextSources() {
           ))}
         </CardList>
       </section>
+      <section>
+        <ChartLeaderboardSelect />
+      </section>
+      <Divider />
       <CssEditor />
     </>
+  );
+}
+
+type SongOption = { value: string; label: string };
+
+function fuzzyMatch(query: string, item: SongOption): boolean {
+  const q = query.toLowerCase();
+  const s = item.label.toLowerCase();
+  let qi = 0;
+  for (let si = 0; si < s.length && qi < q.length; si++) {
+    if (s[si] === q[qi]) qi++;
+  }
+  return qi === q.length;
+}
+
+function ChartLeaderboardSelect() {
+  const dispatch = useAppDispatch();
+  const gameData = useStockGameData("storm2026");
+  const savedChartLeaderboard = useAppState(
+    (s) => s.event.tournament?.chartLeaderboard ?? "",
+  );
+  const [localChartLeaderboard, setLocalChartLeaderboard] = useState(
+    savedChartLeaderboard,
+  );
+  const isDirty = localChartLeaderboard !== savedChartLeaderboard;
+  const href = useHref(routableChartLeaderboardPath());
+
+  const songOptions: SongOption[] = (gameData?.songs ?? [])
+    .filter((song) => song.folder)
+    .map((song) => ({
+      value: song.folder!,
+      label: song.name_translation || song.name,
+    }));
+
+  return (
+    <FormGroup label="Chart Leaderboard">
+      <div className={styles.chartLeaderboardRow}>
+        <Suggest<SongOption>
+          items={songOptions}
+          resetOnClose
+          inputProps={{ className: styles.chartLeaderboardInput }}
+          selectedItem={
+            songOptions.find((option) => option.value === localChartLeaderboard) ??
+            null
+          }
+          itemPredicate={(query, item) => fuzzyMatch(query, item)}
+          itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
+            <MenuItem
+              key={item.value}
+              text={item.label}
+              active={modifiers.active}
+              disabled={modifiers.disabled}
+              onClick={handleClick}
+              onFocus={handleFocus}
+            />
+          )}
+          onItemSelect={(item) => setLocalChartLeaderboard(item.value)}
+          inputValueRenderer={(item) => item.label}
+          noResults={<MenuItem disabled text="No matching songs" />}
+        />
+        <Button
+          disabled={!isDirty}
+          intent={isDirty ? "primary" : undefined}
+          onClick={() =>
+            dispatch(
+              eventSlice.actions.setChartLeaderboard(localChartLeaderboard),
+            )
+          }
+        >
+          Submit
+        </Button>
+        <AnchorButton
+          icon={<Duplicate />}
+          onClick={(e) => {
+            e.preventDefault();
+            copyObsSource(new URL(href, document.location.href).href);
+          }}
+          href={href}
+        />
+      </div>
+    </FormGroup>
   );
 }
 

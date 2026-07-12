@@ -1,0 +1,60 @@
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.container {
+  border-collapse: collapse;
+  font-family: "Chiaro Std";
+}
+
+.row {
+  animation: slideDown 0.4s ease both;
+}
+
+.rank {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+  font-family: "FOT-Rodin Pro";
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.name {
+  text-align: left;
+}
+
+.gamerTag {
+  font-family: "FOT-Rodin Pro";
+}
+
+.prefix {
+  font-size: 0.75em;
+}
+
+.percent {
+  text-align: right;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}

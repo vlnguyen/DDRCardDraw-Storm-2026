@@ -68,6 +68,7 @@ interface TournamentState {
   poolState?: PoolState;
   machineCodeCab1?: string;
   machineCodeCab2?: string;
+  chartLeaderboard?: string;
 }
 
 
@@ -175,6 +176,12 @@ export const eventSlice = createSlice({
       }
       state.tournament.machineCodeCab1 = action.payload.cab1;
       state.tournament.machineCodeCab2 = action.payload.cab2;
+    },
+    setChartLeaderboard(state, action: PayloadAction<string>) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      state.tournament.chartLeaderboard = action.payload;
     },
   },
   extraReducers(builder) {
