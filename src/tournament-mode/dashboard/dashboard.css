@@ -10,3 +10,7 @@
   display: flex;
   justify-content: space-between;
 }
+
+.chartLeaderboardSelect select {
+  min-width: 320px;
+}

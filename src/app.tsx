@@ -184,6 +184,21 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/chart-leaderboard",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { ChartLeaderboard } = await import(
+            "./obs-sources/chart-leaderboard"
+          );
+          return { Component: ChartLeaderboard };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/persona-3-circle",
     element: <ObsSource />,
     children: [

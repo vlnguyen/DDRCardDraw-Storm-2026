@@ -7,9 +7,11 @@ import {
   Dialog,
   DialogBody,
   DialogFooter,
+  Divider,
   FormGroup,
   H3,
   H4,
+  HTMLSelect,
   InputGroup,
   Tab,
   Tabs,
@@ -21,9 +23,14 @@ import { nanoid } from "nanoid";
 import React, { useRef, useState } from "react";
 import { useHref } from "react-router-dom";
 import { eventSlice } from "../../state/event.slice";
+import { useStockGameData } from "../../state/game-data.atoms";
 import { useAppDispatch, useAppState } from "../../state/store";
 import { useTheme } from "../../theme-toggle";
-import { copyObsSource, routableGlobalSourcePath } from "../copy-obs-source";
+import {
+  copyObsSource,
+  routableChartLeaderboardPath,
+  routableGlobalSourcePath,
+} from "../copy-obs-source";
 import styles from "./dashboard.css";
 import { Lobbies } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
@@ -101,8 +108,63 @@ function Sources() {
           ))}
         </CardList>
       </section>
+      <section>
+        <ChartLeaderboardSelect />
+      </section>
+      <Divider />
       <CssEditor />
     </>
+  );
+}
+
+function ChartLeaderboardSelect() {
+  const dispatch = useAppDispatch();
+  const gameData = useStockGameData("storm2026");
+  const savedChartLeaderboard = useAppState(
+    (s) => s.event.tournament?.chartLeaderboard ?? "",
+  );
+  const [localChartLeaderboard, setLocalChartLeaderboard] = useState(
+    savedChartLeaderboard,
+  );
+  const isDirty = localChartLeaderboard !== savedChartLeaderboard;
+  const href = useHref(routableChartLeaderboardPath());
+
+  return (
+    <FormGroup label="Chart Leaderboard">
+      <HTMLSelect
+        className={styles.chartLeaderboardSelect}
+        value={localChartLeaderboard}
+        onChange={(e) => setLocalChartLeaderboard(e.target.value)}
+      >
+        <option value="">--</option>
+        {gameData?.songs
+          .filter((song) => song.folder)
+          .map((song) => (
+            <option key={song.folder} value={song.folder}>
+              {song.name_translation || song.name}
+            </option>
+          ))}
+      </HTMLSelect>{" "}
+      <Button
+        disabled={!isDirty}
+        intent={isDirty ? "primary" : undefined}
+        onClick={() =>
+          dispatch(
+            eventSlice.actions.setChartLeaderboard(localChartLeaderboard),
+          )
+        }
+      >
+        Submit
+      </Button>{" "}
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          copyObsSource(new URL(href, document.location.href).href);
+        }}
+        href={href}
+      />
+    </FormGroup>
   );
 }
 
