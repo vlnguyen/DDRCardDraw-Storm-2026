@@ -142,6 +142,7 @@ export function Players() {
 
   function handleSubmit() {
     dispatch(eventSlice.actions.setPoolPlayers(players));
+    dispatch(eventSlice.actions.setPoolSongs(songs));
     dispatch(
       eventSlice.actions.setCabMachines({
         cab1: cab1MachineId,

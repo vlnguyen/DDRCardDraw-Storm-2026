@@ -10,7 +10,7 @@ import { detectedLanguage } from "../../utils";
 import { ChartLevel } from "../chart-level";
 import styles from "../song-card.css";
 import { useConfigState } from "../../state/hooks";
-import type { PlayerIdx } from "../song-card";
+import type { PlayerId } from "../song-card";
 
 const isJapanese = detectedLanguage === "ja";
 
@@ -23,7 +23,7 @@ export interface CardContentsProps {
 /** Props passed to child components that get to customize card center and footer content */
 export interface CardSectionProps {
   chart: EligibleChart | DrawnChart | PlayerPickPlaceholder;
-  winner?: PlayerIdx | null;
+  winner?: PlayerId | null;
 }
 
 export function baseChartValues(

@@ -8,7 +8,7 @@ import vetoIcon from "../assets/img/veto.svg";
 import coffinBlueIcon from "../assets/img/coffin-blue.svg";
 import { getJacketUrl } from "../utils/jackets";
 import { useChartRandomSelected } from "../tournament-mode/highlight-random";
-import { usePlayerLabelForIndex } from "./use-player-label";
+import { usePlayerLabelForId } from "./use-player-label";
 
 import { baseChartValues } from "./variants";
 import { type SongCardBaseProps as Props } from "./song-card";
@@ -45,7 +45,7 @@ export function PersonaSongCard(props: Props) {
   const isVetoed = vetoedBy !== undefined;
   const headerPlayer = vetoedBy ?? protectedBy ?? replacedBy;
   const hasHeaderPlayer = headerPlayer !== undefined;
-  const headerLabel = usePlayerLabelForIndex(headerPlayer ?? 0);
+  const headerLabel = usePlayerLabelForId(headerPlayer ?? "");
   const headerVisibility = hasHeaderPlayer ? "visible" : "hidden";
 
   let jacketBg = {};
