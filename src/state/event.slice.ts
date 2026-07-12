@@ -162,6 +162,12 @@ export const eventSlice = createSlice({
       }
       state.tournament.poolState.players = action.payload;
     },
+    setPoolSongs(state, action: PayloadAction<string[]>) {
+      if (!state.tournament.poolState) {
+        state.tournament.poolState = {};
+      }
+      state.tournament.poolState.songs = action.payload;
+    },
     updateLobbyConnection(
       state,
       action: PayloadAction<{
