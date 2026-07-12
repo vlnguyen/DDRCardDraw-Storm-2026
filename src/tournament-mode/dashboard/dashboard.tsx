@@ -38,14 +38,14 @@ import {
 import { Players } from "./players";
 
 type DashboardTabId =
-  | "obs-text-sources"
+  | "sources"
   | "lobbies"
   | "match-log"
   | "players";
 
 export function Dashboard() {
   const [currentTab, setCurrentTab] =
-    useState<DashboardTabId>("obs-text-sources");
+    useState<DashboardTabId>("sources");
   const matchCount = useMatchLogStore((s) => s.matches.length);
   const lobbyCount = useLobbiesStore((s) => s.lobbies.length);
 
@@ -57,8 +57,8 @@ export function Dashboard() {
         selectedTabId={currentTab}
         onChange={(newTabId: DashboardTabId) => setCurrentTab(newTabId)}
       >
-        <Tab id="obs-text-sources" panel={<ObsTextSources />}>
-          OBS Text Sources
+        <Tab id="sources" panel={<Sources />}>
+          Sources
         </Tab>
         <Tab id="players" panel={<Players />}>
           Players
@@ -74,7 +74,7 @@ export function Dashboard() {
   );
 }
 
-function ObsTextSources() {
+function Sources() {
   const [currentEdit, setCurrentEdit] = useState<string | null>(null);
   const labels = useAppState((s) => s.event.obsLabels);
 
@@ -83,7 +83,7 @@ function ObsTextSources() {
       <section style={{ maxWidth: "600px" }}>
         <EditDialog sourceId={currentEdit} close={() => setCurrentEdit(null)} />
         <H3>
-          OBS Text Sources{" "}
+          Sources{" "}
           <Button
             icon={<Add />}
             onClick={() => setCurrentEdit(nanoid())}
