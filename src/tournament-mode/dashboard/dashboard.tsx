@@ -11,11 +11,12 @@ import {
   FormGroup,
   H3,
   H4,
-  HTMLSelect,
   InputGroup,
+  MenuItem,
   Tab,
   Tabs,
 } from "@blueprintjs/core";
+import { Suggest } from "@blueprintjs/select";
 import { Add, Duplicate, Edit, FloppyDisk } from "@blueprintjs/icons";
 import { css } from "@codemirror/lang-css";
 import ReactCodeMirror from "@uiw/react-codemirror";
@@ -117,6 +118,18 @@ function Sources() {
   );
 }
 
+type SongOption = { value: string; label: string };
+
+function fuzzyMatch(query: string, item: SongOption): boolean {
+  const q = query.toLowerCase();
+  const s = item.label.toLowerCase();
+  let qi = 0;
+  for (let si = 0; si < s.length && qi < q.length; si++) {
+    if (s[si] === q[qi]) qi++;
+  }
+  return qi === q.length;
+}
+
 function ChartLeaderboardSelect() {
   const dispatch = useAppDispatch();
   const gameData = useStockGameData("storm2026");
@@ -129,41 +142,59 @@ function ChartLeaderboardSelect() {
   const isDirty = localChartLeaderboard !== savedChartLeaderboard;
   const href = useHref(routableChartLeaderboardPath());
 
+  const songOptions: SongOption[] = (gameData?.songs ?? [])
+    .filter((song) => song.folder)
+    .map((song) => ({
+      value: song.folder!,
+      label: song.name_translation || song.name,
+    }));
+
   return (
     <FormGroup label="Chart Leaderboard">
-      <HTMLSelect
-        className={styles.chartLeaderboardSelect}
-        value={localChartLeaderboard}
-        onChange={(e) => setLocalChartLeaderboard(e.target.value)}
-      >
-        <option value="">--</option>
-        {gameData?.songs
-          .filter((song) => song.folder)
-          .map((song) => (
-            <option key={song.folder} value={song.folder}>
-              {song.name_translation || song.name}
-            </option>
-          ))}
-      </HTMLSelect>{" "}
-      <Button
-        disabled={!isDirty}
-        intent={isDirty ? "primary" : undefined}
-        onClick={() =>
-          dispatch(
-            eventSlice.actions.setChartLeaderboard(localChartLeaderboard),
-          )
-        }
-      >
-        Submit
-      </Button>{" "}
-      <AnchorButton
-        icon={<Duplicate />}
-        onClick={(e) => {
-          e.preventDefault();
-          copyObsSource(new URL(href, document.location.href).href);
-        }}
-        href={href}
-      />
+      <div className={styles.chartLeaderboardRow}>
+        <Suggest<SongOption>
+          items={songOptions}
+          resetOnClose
+          inputProps={{ className: styles.chartLeaderboardInput }}
+          selectedItem={
+            songOptions.find((option) => option.value === localChartLeaderboard) ??
+            null
+          }
+          itemPredicate={(query, item) => fuzzyMatch(query, item)}
+          itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
+            <MenuItem
+              key={item.value}
+              text={item.label}
+              active={modifiers.active}
+              disabled={modifiers.disabled}
+              onClick={handleClick}
+              onFocus={handleFocus}
+            />
+          )}
+          onItemSelect={(item) => setLocalChartLeaderboard(item.value)}
+          inputValueRenderer={(item) => item.label}
+          noResults={<MenuItem disabled text="No matching songs" />}
+        />
+        <Button
+          disabled={!isDirty}
+          intent={isDirty ? "primary" : undefined}
+          onClick={() =>
+            dispatch(
+              eventSlice.actions.setChartLeaderboard(localChartLeaderboard),
+            )
+          }
+        >
+          Submit
+        </Button>
+        <AnchorButton
+          icon={<Duplicate />}
+          onClick={(e) => {
+            e.preventDefault();
+            copyObsSource(new URL(href, document.location.href).href);
+          }}
+          href={href}
+        />
+      </div>
     </FormGroup>
   );
 }

@@ -11,6 +11,12 @@
   justify-content: space-between;
 }
 
-.chartLeaderboardSelect select {
-  min-width: 320px;
+.chartLeaderboardRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chartLeaderboardInput {
+  width: 320px;
 }
