@@ -1,7 +1,7 @@
 import { detectedLanguage } from "../../utils";
 import styles from "../persona-song-card.css";
 import winnerIcon from "../../assets/img/winner.svg";
-import { usePlayerLabelForIndex } from "../use-player-label";
+import { usePlayerLabelForId } from "../use-player-label";
 import {
   baseChartValues,
   type BaseFooterProps,
@@ -30,7 +30,7 @@ export function PersonaBaseCardCenter(props: CardSectionProps) {
 export function PersonaBaseCardFooter(props: BaseFooterProps) {
   const { winner } = props;
   const hasWinner = winner !== undefined && winner !== null;
-  const winnerLabel = usePlayerLabelForIndex(winner ?? 0);
+  const winnerLabel = usePlayerLabelForId(winner ?? "");
   const visibility = hasWinner ? "visible" : "hidden";
   return (
     <div className={styles.cardFooter}>
