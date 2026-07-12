@@ -125,6 +125,7 @@ let totalScores = 0;
 
 for (const row of data) {
   const score = {
+    id: Number(row.scores_id),
     name: row.members_name,
     memberId: Number(row.scores_member_id),
     chartHash: row.scores_chart_hash,

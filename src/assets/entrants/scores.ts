@@ -1,6 +1,7 @@
 import scoresData from "./scores.json";
 
 export interface GrooveStatsScore {
+  id: number;
   name: string;
   memberId: number;
   chartHash: string;
