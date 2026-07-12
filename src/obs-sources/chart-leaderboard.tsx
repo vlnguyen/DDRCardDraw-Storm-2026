@@ -6,20 +6,23 @@ import { useStockGameData } from "../state/game-data.atoms";
 import { useAppState } from "../state/store";
 import styles from "./chart-leaderboard.css";
 
-const validMemberIds = new Set(
-  Object.values(entrantsMap)
-    .filter((entrant) => entrant != null)
-    .map((entrant) => entrant.membersId),
-);
-
-const startggIdByMemberId = new Map(
-  Object.values(entrantsMap)
-    .filter((entrant) => entrant != null)
-    .map((entrant) => [entrant.membersId, entrant.id] as const),
-);
-
 const entrantByStartggId = new Map(
   entrants.map((entrant) => [entrant.id, entrant]),
+);
+
+const memberIdsByStartggId = new Map(
+  entrants
+    .map((entrant) => [entrant.id, entrantsMap[entrant.id]?.membersId] as const)
+    .filter((entry): entry is [number, number] => entry[1] != null),
+);
+
+const validMemberIds = new Set(memberIdsByStartggId.values());
+
+const startggIdByMemberId = new Map(
+  [...memberIdsByStartggId.entries()].map(([startggId, memberId]) => [
+    memberId,
+    startggId,
+  ]),
 );
 
 function EntrantName({
