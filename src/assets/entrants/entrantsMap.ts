@@ -623,6 +623,17 @@ export const entrantsMap: Record<number, {
       rip15: 13,
     },
   },
+  // Matty Ice
+  [231774]: {
+    id: 231774,
+    discriminator: "1336c4bf",
+    membersId: 6911,
+    entrantPlacements: {
+      rip135: 13,
+      rip14: 21,
+      rip15: 25,
+    },
+  },
   // mdx
   [605243]: {
     id: 605243,
@@ -989,15 +1000,4 @@ export const entrantsMap: Record<number, {
       panini2025: 13,
     },
   },
-  // Yung Buttcoin
-  [231774]: {
-    id: 231774,
-    discriminator: "1336c4bf",
-    membersId: 6911,
-    entrantPlacements: {
-      rip135: 13,
-      rip14: 21,
-      rip15: 25,
-    },
-  }
 }
