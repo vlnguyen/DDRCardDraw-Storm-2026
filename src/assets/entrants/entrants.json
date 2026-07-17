@@ -1,5 +1,19 @@
 [
   {
+    "id": 2403703,
+    "discriminator": "5392e440",
+    "gamerTag": "Goomba Roomba",
+    "prefix": "Bhop",
+    "entrantId": 22104132
+  },
+  {
+    "id": 3065163,
+    "discriminator": "a4c7a09f",
+    "gamerTag": "GlitchedGoddess",
+    "prefix": "Twitch",
+    "entrantId": 22100165
+  },
+  {
     "id": 473954,
     "discriminator": "9d0dfc93",
     "gamerTag": "baraka",
@@ -79,7 +93,7 @@
   {
     "id": 231774,
     "discriminator": "1336c4bf",
-    "gamerTag": "Yung Buttcoin",
+    "gamerTag": "Matty Ice",
     "prefix": "",
     "entrantId": 21175052
   },
