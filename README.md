@@ -1,62 +1,32 @@
-# DDR Tools
+# DDR Tools (Storm 2026)
 
-[![Discord](https://img.shields.io/discord/1013159796024823898?label=discord&style=flat-square)](https://discord.gg/QPyEATsbP7)
-[![GitHub contributors](https://img.shields.io/github/contributors/noahm/ddrcarddraw?style=flat-square)](https://github.com/noahm/DDRCardDraw/graphs/contributors)
-[![GitHub branch checks state](https://img.shields.io/github/checks-status/noahm/ddrcarddraw/main?style=flat-square)](https://github.com/noahm/DDRCardDraw/actions/workflows/pr-checks.yml)
-[![GitHub last commit](https://img.shields.io/github/last-commit/noahm/ddrcarddraw?style=flat-square)](https://github.com/noahm/DDRCardDraw/commits/main/)
+This is a fork of [ddr.tools](https://ddr.tools) used locally for ITG Singles at Project Storm 2026.
 
-The official build is available at [https://ddr.tools/](https://ddr.tools/)
+# Dependencies
 
-Read all about what the app can do [in the user manual](https://github.com/noahm/DDRCardDraw/blob/main/docs/readme.md)
+## syncstart
+[vlnguyen/syncstart](https://github.com/vlnguyen/syncstart) - a fork of GrooveStats syncstart service which is required for match logging. Clone the repository, `npm install` to install dependencies, then `npm run start:dev` to host the server locally.
 
-## Customizing / Contributing
+## Simply Love v5.9.0
+[vlnguyen/Simply-Love-SM5](github.com/vlnguyen/Simply-Love-SM5) - a fork of Simply Love v5.9.0 which adds a module to enforce the usage of online lobbies. Edit `SL-OnlineHelpers.lua` and change `local host` to point to your syncstart instance.
 
-This app can be easily customized for novel formats a tournament might use. If you have feature requests or ideas, you're welcome reach out on our [Discord server](https://discord.gg/QPyEATsbP7), [Facebook messenger](https://m.me/noah.manneschmidt), or [on Bluesky](https://bsky.app/profile/noahm.omg.lol).
+# Installation
 
-If you want to take a stab at developing on the app yourself, you will need have node.js >= 22.0.0 installed along with [yarn](https://yarnpkg.com/). Some familarity with React will also help.
+- Install dependencies with `yarn install`
+- Start partykit with `yarn start:backend`
+- Create a `.env` file and add keys `SYNCSTART_URL` and `SYNCSTART_PORT` to point to your syncstart service (example in `.env.template`)
+- Launch app with `yarn start:frontend`
 
-Fork this repo to your account and then clone the fork to your computer. Then the following commands will be useful:
+# Usage 
 
-```sh
-# Before running anything else, do this!
-# It's a one-time local install of dependencies needed to build the app.
-yarn install
+Most OBS sources are exposed through the UI with "Copy link to clipboard" buttons throughout the stream dashboard. A few assets are not linked on the app yet at the time of writing.
+- `/e/:roomName/persona-3-circle` - displays a circle asset with a text rotating around the perimeter. This is implemented as `persona-3-circle.tsx` and is customizable, this source expects a 4K viewport.
+- `/e/:roomName/triangles` - an animated background inspired by Persona, this also expects a 4K viewport.
 
-# local development will start, with app running at http://localhost:8080/
-# edits to the files in ./src/ will automatically reload the browser
-yarn start
-
-# if you make changes to any game/song data in ./src/songs/ this will give
-# a basic sanity check on the format and contents of it
-yarn validate:json
-
-# build a zipped, standalone copy of the app that runs entirely offline,
-# jacket images and all! simply unzip somewhere and open index.html
-yarn build:zip
-```
-
-## Data imports
-
-There are some other useful scripts in `scripts/` that help in maintaining data integrity and pulling in new song data. Several have top-level aliases so you can conveniently update song data: (must have node and yarn installed, and run `yarn install` once, as above)
-
-```sh
-# download latest StepManiaX song data and jackets
-yarn import:smx
-
-# download latest DDR song data and jackets (blends data from KONAMI official site, 3icecream, RemyWiki and ZIv)
-yarn import:ddr
-
-# import an ITG/StepMania song pack into card draw
-yarn import:itg path/to/pack/folder some-stub-name
-
-# import the latest Pump it Up data using a data dump found here:
-# https://github.com/AnyhowStep/pump-out-sqlite3-dump/
-yarn import:pump path/to/pumpout/db
-```
 
 ## Deployment
 
-As mentioned above, running `yarn build` will create a distribution of the application with static content that can be used in a production environment in a multitude of ways. The following are options for deployment
+Running `yarn build` will create a distribution of the application with static content that can be used in a production environment in a multitude of ways. The following are options for deployment
 
 ### Local
 
