@@ -123,6 +123,10 @@ function Sources() {
   );
 }
 
+function isCardDrawPhase(value: string): value is CardDrawPhase {
+  return value === "pools" || value === "de";
+}
+
 function CardDrawPhaseSelect() {
   const dispatch = useAppDispatch();
   const savedPhase = useAppState((s) => s.event.tournament?.cardDrawPhase);
@@ -135,9 +139,12 @@ function CardDrawPhaseSelect() {
         <RadioGroup
           inline
           selectedValue={localPhase}
-          onChange={(e) =>
-            setLocalPhase(e.currentTarget.value as CardDrawPhase)
-          }
+          onChange={(e) => {
+            const { value } = e.currentTarget;
+            if (isCardDrawPhase(value)) {
+              setLocalPhase(value);
+            }
+          }}
         >
           <Radio label="Pools" value="pools" />
           <Radio label="Double Elimination" value="de" />
