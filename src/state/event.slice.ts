@@ -57,6 +57,8 @@ export interface PoolState {
   players?: PoolPlayer[];
 }
 
+export type CardDrawPhase = "pools" | "de";
+
 /**
  * Event state properties that are unique to use at Project Storm
  */
@@ -69,6 +71,7 @@ interface TournamentState {
   machineCodeCab1?: string;
   machineCodeCab2?: string;
   chartLeaderboard?: string;
+  cardDrawPhase?: CardDrawPhase;
 }
 
 
@@ -195,6 +198,12 @@ export const eventSlice = createSlice({
         state.tournament = {};
       }
       state.tournament.chartLeaderboard = action.payload;
+    },
+    setCardDrawPhase(state, action: PayloadAction<CardDrawPhase>) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      state.tournament.cardDrawPhase = action.payload;
     },
   },
   extraReducers(builder) {

@@ -13,6 +13,8 @@ import {
   H4,
   InputGroup,
   MenuItem,
+  Radio,
+  RadioGroup,
   Tab,
   Tabs,
 } from "@blueprintjs/core";
@@ -23,7 +25,7 @@ import ReactCodeMirror from "@uiw/react-codemirror";
 import { nanoid } from "nanoid";
 import React, { useRef, useState } from "react";
 import { useHref } from "react-router-dom";
-import { eventSlice } from "../../state/event.slice";
+import { type CardDrawPhase, eventSlice } from "../../state/event.slice";
 import { useStockGameData } from "../../state/game-data.atoms";
 import { useAppDispatch, useAppState } from "../../state/store";
 import { useTheme } from "../../theme-toggle";
@@ -110,11 +112,47 @@ function Sources() {
         </CardList>
       </section>
       <section>
+        <CardDrawPhaseSelect />
+      </section>
+      <section>
         <ChartLeaderboardSelect />
       </section>
       <Divider />
       <CssEditor />
     </>
+  );
+}
+
+function CardDrawPhaseSelect() {
+  const dispatch = useAppDispatch();
+  const savedPhase = useAppState((s) => s.event.tournament?.cardDrawPhase);
+  const [localPhase, setLocalPhase] = useState(savedPhase);
+  const isDirty = localPhase !== savedPhase;
+
+  return (
+    <FormGroup label="Card Draw Phase">
+      <div className={styles.formRow}>
+        <RadioGroup
+          inline
+          selectedValue={localPhase}
+          onChange={(e) =>
+            setLocalPhase(e.currentTarget.value as CardDrawPhase)
+          }
+        >
+          <Radio label="Pools" value="pools" />
+          <Radio label="Double Elimination" value="de" />
+        </RadioGroup>
+        <Button
+          disabled={!isDirty}
+          intent={isDirty ? "primary" : undefined}
+          onClick={() =>
+            dispatch(eventSlice.actions.setCardDrawPhase(localPhase!))
+          }
+        >
+          Submit
+        </Button>
+      </div>
+    </FormGroup>
   );
 }
 
@@ -151,7 +189,7 @@ function ChartLeaderboardSelect() {
 
   return (
     <FormGroup label="Chart Leaderboard">
-      <div className={styles.chartLeaderboardRow}>
+      <div className={styles.formRow}>
         <Suggest<SongOption>
           items={songOptions}
           resetOnClose

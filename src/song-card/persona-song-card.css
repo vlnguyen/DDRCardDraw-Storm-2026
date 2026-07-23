@@ -48,7 +48,7 @@
 
 .cardSlot {
   display: flex;
-  flex: 0 0 auto;
+  flex: 0 0 300px;
   position: relative;
 }
 
@@ -56,7 +56,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 10px;
+  padding: 18px;
+  gap: 16px;
   overflow: hidden;
 }
 
@@ -124,7 +125,6 @@
   font-family:
     Evogria, "Russo One", Arial, "Helvetica Neue", Helvetica, sans-serif;
   -webkit-tap-highlight-color: transparent;
-  margin: 8px;
   word-wrap: break-word;
   overflow: hidden;
   transition: transform ease 0.3s;

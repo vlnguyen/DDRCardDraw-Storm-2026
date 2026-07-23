@@ -5,16 +5,24 @@ import { SongCard, PersonaSongCard } from "./song-card";
 import styles from "./drawn-set.css";
 import personaStyles from "./song-card/persona-song-card.css";
 import { useDrawing } from "./drawing-context";
+import { useAppState } from "./state/store";
 import { DrawingActions } from "./tournament-mode/drawing-actions";
 import { ErrorFallback } from "./utils/error-fallback";
 
 export type SongCardStyle = "default" | "persona";
 
+const POOLS_PHASE_FIRST_ROW_SIZE = 6;
+
 /**
  * expects a drawing context wrapper
  **/
-export function ChartList({ style = "default" }: { style?: SongCardStyle } = {}) {
+export function ChartList({
+  style = "default",
+}: {
+  style?: SongCardStyle;
+} = {}) {
   const charts = useDrawing((d) => d.charts);
+  const phase = useAppState((s) => s.event.tournament?.cardDrawPhase ?? "de");
   const isPersona = style === "persona";
 
   // seed as null (not `charts`) so a mount with already-resolved charts
@@ -29,6 +37,29 @@ export function ChartList({ style = "default" }: { style?: SongCardStyle } = {})
     isPersona ? personaStyles.chartList : styles.chartList,
     isEntering && personaStyles.entering,
   );
+
+  if (isPersona && phase === "pools") {
+    const firstRow = charts.slice(0, POOLS_PHASE_FIRST_ROW_SIZE);
+    const remainingRows = charts.slice(POOLS_PHASE_FIRST_ROW_SIZE);
+    return (
+      <>
+        {/* forced to a single unwrapped line so it always holds exactly 6, regardless of container width */}
+        <div className={chartListClass} style={{ flexWrap: "nowrap" }}>
+          {firstRow.map((c) => (
+            <ChartFromContext key={c.id} chartId={c.id} style={style} />
+          ))}
+        </div>
+        {remainingRows.length > 0 && (
+          <div className={chartListClass}>
+            {remainingRows.map((c) => (
+              <ChartFromContext key={c.id} chartId={c.id} style={style} />
+            ))}
+          </div>
+        )}
+      </>
+    );
+  }
+
   return (
     <div className={chartListClass}>
       {charts.map((c) => (
