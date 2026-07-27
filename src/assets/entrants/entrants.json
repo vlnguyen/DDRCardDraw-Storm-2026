@@ -1,10 +1,38 @@
 [
   {
-    "id": 524519,
-    "discriminator": "ab781167",
-    "gamerTag": "FNM04",
-    "prefix": "BGR",
-    "entrantId": 22172059
+    "id": 2652265,
+    "discriminator": "b6af19a7",
+    "gamerTag": "Darkstar",
+    "prefix": "",
+    "entrantId": 22204745
+  },
+  {
+    "id": 3439532,
+    "discriminator": "73b1897a",
+    "gamerTag": "Crash Cringle",
+    "prefix": "",
+    "entrantId": 22201357
+  },
+  {
+    "id": 3439497,
+    "discriminator": "7df3718e",
+    "gamerTag": "BadAntelope",
+    "prefix": "",
+    "entrantId": 22200904
+  },
+  {
+    "id": 3374222,
+    "discriminator": "5d3ec0fc",
+    "gamerTag": "Taraun Anderson",
+    "prefix": "",
+    "entrantId": 22194382
+  },
+  {
+    "id": 3156620,
+    "discriminator": "ca5e2ab0",
+    "gamerTag": "ReformedSho#TWT",
+    "prefix": "",
+    "entrantId": 22178094
   },
   {
     "id": 3396838,
@@ -47,13 +75,6 @@
     "gamerTag": "itgalex",
     "prefix": "",
     "entrantId": 22036411
-  },
-  {
-    "id": 498791,
-    "discriminator": "9e90235e",
-    "gamerTag": "leontwix",
-    "prefix": "",
-    "entrantId": 22001631
   },
   {
     "id": 2214618,
