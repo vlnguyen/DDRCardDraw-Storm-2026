@@ -369,6 +369,31 @@ export const entrantsMap: Record<number, {
       itl2026: 454,
     },
   },
+  // Crash Cringle
+  [3439532]: {
+    id: 3439532,
+    discriminator: "73b1897a",
+    membersId: 74441,
+    entrantPlacements: {
+      itl2023: 554,
+      itl2024: 283,
+      itl2025: 290,
+      itl2026: 382,
+    },
+  },
+  // Darkstar
+  [2652265]: {
+    id: 2652265,
+    discriminator: "b6af19a7",
+    membersId: 4730,
+    entrantPlacements: {
+      itl2023: 50,
+      itl2024: 64,
+      itl2025: 29,
+      itl2026: 28,
+      dd2025: 9,
+    },
+  },
   // DomDeeKong
   [488761]: {
     id: 488761,
