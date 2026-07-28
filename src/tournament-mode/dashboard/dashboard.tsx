@@ -33,6 +33,9 @@ import {
   copyObsSource,
   routableChartLeaderboardPath,
   routableGlobalSourcePath,
+  routablePersona3CirclePath,
+  routableTrianglesPath,
+  routableVsMeterPath,
 } from "../copy-obs-source";
 import styles from "./dashboard.css";
 import { Lobbies } from "./lobbies";
@@ -90,7 +93,7 @@ function Sources() {
 
   return (
     <>
-      <section style={{ maxWidth: "600px" }}>
+      <section className={styles.autoWidthSection}>
         <EditDialog sourceId={currentEdit} close={() => setCurrentEdit(null)} />
         <H3>
           Sources{" "}
@@ -119,6 +122,7 @@ function Sources() {
       </section>
       <Divider />
       <CssEditor />
+      <OtherSources />
     </>
   );
 }
@@ -452,5 +456,35 @@ function CssEditor() {
         }}
       />
     </section>
+  );
+}
+
+function OtherSources() {
+  return (
+    <section className={styles.autoWidthSection}>
+      <H3>Other Sources</H3>
+      <CardList>
+        <OtherSourceCard label="Persona 3 Circle (3840x2160)" path={routablePersona3CirclePath()} />
+        <OtherSourceCard label="Triangles (3840x2160)" path={routableTrianglesPath()} />
+        <OtherSourceCard label="VS Meter (EX Delta) (3840x2160)" path={routableVsMeterPath()} />
+      </CardList>
+    </section>
+  );
+}
+
+function OtherSourceCard(props: { label: string; path: string }) {
+  const href = useHref(props.path);
+  return (
+    <Card className={styles.otherSourceCard}>
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          copyObsSource(new URL(href, document.location.href).href);
+        }}
+        href={href}
+      />
+      <p>{props.label}</p>
+    </Card>
   );
 }

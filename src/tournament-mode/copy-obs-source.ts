@@ -10,6 +10,9 @@ export const routableStepStatsPath = (cab: 1 | 2, player: 1 | 2) =>
   `../step-stats?cab=${cab}&player=${player}`;
 export const routablePoolsPath = () => `../pools`;
 export const routableChartLeaderboardPath = () => `../chart-leaderboard`;
+export const routablePersona3CirclePath = () => `../persona-3-circle`;
+export const routableTrianglesPath = () => `../triangles`;
+export const routableVsMeterPath = () => `../vs-meter`;
 
 export function copyObsSource(href: string) {
   void copyPlainTextToClipboard(href, "Copied OBS source URL to clipboard");
