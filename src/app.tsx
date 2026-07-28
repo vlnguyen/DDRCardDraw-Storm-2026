@@ -225,6 +225,19 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/vs-meter",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { VsMeter } = await import("./obs-sources/vs-meter");
+          return { Component: VsMeter };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/cab/:cabId/source",
     element: <ObsSource />,
     children: [

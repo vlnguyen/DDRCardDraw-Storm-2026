@@ -1,0 +1,63 @@
+.canvas {
+  position: relative;
+  width: 3840px;
+  height: 2160px;
+  --p1-color: red;
+  --p2-color: green;
+}
+
+.line {
+  position: absolute;
+  top: 50%;
+  left: 120px;
+  right: 120px;
+  width: auto;
+  height: 100px;
+  border-radius: 50px;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 16px solid white;
+}
+
+.lineP1 {
+  position: absolute;
+  left: 0;
+  width: 50%; 
+  height: 100%;
+  background-color: var(--p1-color);
+}
+
+.lineP2 {
+  position: absolute;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background-color: var(--p2-color);
+}
+
+.dimmed {
+  filter: brightness(0.375) saturate(0.65);
+}
+
+.verticalLine {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 100%;
+  background-color: white;
+  z-index: 1;
+}
+
+.circle {
+  position: absolute;
+  top: 50%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background-color: black;
+  border: 8px solid white;
+  box-sizing: border-box;
+  transition: left 0.5s ease-out, transform 0.5s ease-out;
+}

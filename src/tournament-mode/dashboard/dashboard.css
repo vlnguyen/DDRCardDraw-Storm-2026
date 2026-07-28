@@ -9,6 +9,18 @@
 .textSourceCard {
   display: flex;
   justify-content: space-between;
+  gap: 1rem;
+}
+
+.otherSourceCard {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.autoWidthSection {
+  width: fit-content;
 }
 
 .formRow {
