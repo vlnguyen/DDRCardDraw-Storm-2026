@@ -661,6 +661,20 @@ export const entrantsMap: Record<number, {
       rip15: 13,
     },
   },
+  // Malia
+  [627949]: {
+    id: 627949,
+    discriminator: "114a6fea",
+    membersId: 136487,
+    entrantPlacements: {
+      bhop4: 37,
+      dd2025: 29,
+      itl2023: 542,
+      itl2024: 385,
+      itl2025: 483,
+      itl2026: 471,
+    },
+  },
   // Matty Ice
   [231774]: {
     id: 231774,
