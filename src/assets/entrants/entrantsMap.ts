@@ -561,6 +561,17 @@ export const entrantsMap: Record<number, {
       itl2026: 12,
     },
   },
+  // Jhennyinthecup
+  [781642]: {
+    id: 781642,
+    discriminator: "05b58e89",
+    membersId: 128840,
+    entrantPlacements: {
+      itl2023: 74,
+      itl2024: 92,
+      itl2025: 1505,
+    },
+  },
   // JONBUDDY [OCG]
   [746713]: {
     id: 746713,
