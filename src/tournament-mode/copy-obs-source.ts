@@ -13,6 +13,7 @@ export const routableChartLeaderboardPath = () => `../chart-leaderboard`;
 export const routablePersona3CirclePath = () => `../persona-3-circle`;
 export const routableTrianglesPath = () => `../triangles`;
 export const routableVsMeterPath = () => `../vs-meter`;
+export const routableLowerThirdPath = () => `../lower-third`;
 
 export function copyObsSource(href: string) {
   void copyPlainTextToClipboard(href, "Copied OBS source URL to clipboard");

@@ -33,6 +33,7 @@ import {
   copyObsSource,
   routableChartLeaderboardPath,
   routableGlobalSourcePath,
+  routableLowerThirdPath,
   routablePersona3CirclePath,
   routableTrianglesPath,
   routableVsMeterPath,
@@ -119,6 +120,9 @@ function Sources() {
       </section>
       <section>
         <ChartLeaderboardSelect />
+      </section>
+      <section>
+        <LowerThirdEditor />
       </section>
       <Divider />
       <CssEditor />
@@ -245,6 +249,86 @@ function ChartLeaderboardSelect() {
         />
       </div>
     </FormGroup>
+  );
+}
+
+function LowerThirdEditor() {
+  const dispatch = useAppDispatch();
+  const saved = useAppState(
+    (s) =>
+      s.event.tournament?.lowerThird ?? { title: "", line1: "", line2: "" },
+  );
+  const [title, setTitle] = useState(saved.title);
+  const [line1, setLine1] = useState(saved.line1);
+  const [line2, setLine2] = useState(saved.line2);
+  const isDirty =
+    title !== saved.title || line1 !== saved.line1 || line2 !== saved.line2;
+  const href = useHref(routableLowerThirdPath());
+  const toggled = useAppState(
+    (s) => s.event.tournament?.toggleLowerThird ?? false,
+  );
+
+  const submit = () => {
+    dispatch(eventSlice.actions.updateLowerThird({ title, line1, line2 }));
+  };
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.key === "Enter" && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey) {
+      submit();
+    }
+  };
+
+  return (
+    <>
+      <H3>
+        Lower Third{" "}
+        <AnchorButton
+          icon={<Duplicate />}
+          onClick={(e) => {
+            e.preventDefault();
+            copyObsSource(new URL(href, document.location.href).href);
+          }}
+          href={href}
+        />
+      </H3>
+      <div className={styles.formRow}>
+        <FormGroup label="Title">
+          <InputGroup
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        </FormGroup>
+        <FormGroup label="Line 1">
+          <InputGroup
+            value={line1}
+            onChange={(e) => setLine1(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        </FormGroup>
+        <FormGroup label="Line 2">
+          <InputGroup
+            value={line2}
+            onChange={(e) => setLine2(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        </FormGroup>
+        <Button
+          disabled={!isDirty}
+          intent={isDirty ? "primary" : undefined}
+          onClick={submit}
+        >
+          Submit
+        </Button>
+        <Button
+          onClick={() =>
+            dispatch(eventSlice.actions.setToggleLowerThird(!toggled))
+          }
+        >
+          Show
+        </Button>
+      </div>
+    </>
   );
 }
 

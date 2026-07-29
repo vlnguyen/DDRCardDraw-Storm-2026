@@ -238,6 +238,19 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/lower-third",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { LowerThird } = await import("./obs-sources/lower-third");
+          return { Component: LowerThird };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/cab/:cabId/source",
     element: <ObsSource />,
     children: [

@@ -59,6 +59,12 @@ export interface PoolState {
 
 export type CardDrawPhase = "pools" | "de";
 
+export interface LowerThirdState {
+  title: string;
+  line1: string;
+  line2: string;
+}
+
 /**
  * Event state properties that are unique to use at Project Storm
  */
@@ -72,6 +78,8 @@ interface TournamentState {
   machineCodeCab2?: string;
   chartLeaderboard?: string;
   cardDrawPhase?: CardDrawPhase;
+  lowerThird?: LowerThirdState;
+  toggleLowerThird?: boolean;
 }
 
 
@@ -204,6 +212,18 @@ export const eventSlice = createSlice({
         state.tournament = {};
       }
       state.tournament.cardDrawPhase = action.payload;
+    },
+    updateLowerThird(state, action: PayloadAction<LowerThirdState>) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      state.tournament.lowerThird = action.payload;
+    },
+    setToggleLowerThird(state, action: PayloadAction<boolean>) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      state.tournament.toggleLowerThird = action.payload;
     },
   },
   extraReducers(builder) {
