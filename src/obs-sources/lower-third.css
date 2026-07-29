@@ -17,13 +17,6 @@
   gap: 8px;
 }
 
-.accentBar {
-  width: 120px;
-  height: 12px;
-  background-color: #00a2fe;
-  margin-bottom: 16px;
-}
-
 .title {
   margin: 0;
   font-size: 96px;
