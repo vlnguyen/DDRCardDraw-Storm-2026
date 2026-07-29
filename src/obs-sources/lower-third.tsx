@@ -16,9 +16,9 @@ export function LowerThird() {
       <div className={styles.lowerThird}>
         {title && (
           <div className={styles.titleWrap}>
-            <div aria-hidden="true" className={styles.titleStroke}>
+            <h1 aria-hidden="true" className={styles.titleStroke}>
               {title}
-            </div>
+            </h1>
             <h1 className={styles.title}>{title}</h1>
           </div>
         )}
