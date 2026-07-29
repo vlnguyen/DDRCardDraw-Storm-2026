@@ -14,9 +14,16 @@ export function LowerThird() {
   return (
     <div className={styles.canvas}>
       <div className={styles.lowerThird}>
-        {title && <h1 className={styles.title}>{title}</h1>}
-        {line1 && <p className={styles.line1}>{line1}</p>}
-        {line2 && <p className={styles.line2}>{line2}</p>}
+        {title && (
+          <div className={styles.titleWrap}>
+            <div aria-hidden="true" className={styles.titleStroke}>
+              {title}
+            </div>
+            <h1 className={styles.title}>{title}</h1>
+          </div>
+        )}
+        {line1 && <p className={styles.line}>{line1}</p>}
+        {line2 && <p className={styles.line}>{line2}</p>}
       </div>
     </div>
   );
