@@ -264,6 +264,9 @@ function LowerThirdEditor() {
   const isDirty =
     title !== saved.title || line1 !== saved.line1 || line2 !== saved.line2;
   const href = useHref(routableLowerThirdPath());
+  const toggled = useAppState(
+    (s) => s.event.tournament?.toggleLowerThird ?? false,
+  );
 
   const submit = () => {
     dispatch(eventSlice.actions.updateLowerThird({ title, line1, line2 }));
@@ -316,6 +319,13 @@ function LowerThirdEditor() {
           onClick={submit}
         >
           Submit
+        </Button>
+        <Button
+          onClick={() =>
+            dispatch(eventSlice.actions.setToggleLowerThird(!toggled))
+          }
+        >
+          Show
         </Button>
       </div>
     </>

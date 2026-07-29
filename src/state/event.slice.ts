@@ -79,6 +79,7 @@ interface TournamentState {
   chartLeaderboard?: string;
   cardDrawPhase?: CardDrawPhase;
   lowerThird?: LowerThirdState;
+  toggleLowerThird?: boolean;
 }
 
 
@@ -217,6 +218,12 @@ export const eventSlice = createSlice({
         state.tournament = {};
       }
       state.tournament.lowerThird = action.payload;
+    },
+    setToggleLowerThird(state, action: PayloadAction<boolean>) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      state.tournament.toggleLowerThird = action.payload;
     },
   },
   extraReducers(builder) {
