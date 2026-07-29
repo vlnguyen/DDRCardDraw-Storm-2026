@@ -1,0 +1,46 @@
+.canvas {
+  position: relative;
+  width: 3840px;
+  height: 2160px;
+  overflow: hidden;
+  font-family: sans-serif;
+  color: white;
+}
+
+.lowerThird {
+  position: absolute;
+  left: 150px;
+  bottom: 220px;
+  max-width: 2200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.accentBar {
+  width: 120px;
+  height: 12px;
+  background-color: #00a2fe;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 96px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.line1,
+.line2 {
+  margin: 0;
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.line2 {
+  opacity: 0.85;
+}
