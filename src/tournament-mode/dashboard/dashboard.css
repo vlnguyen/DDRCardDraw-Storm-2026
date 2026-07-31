@@ -12,6 +12,10 @@
   gap: 1rem;
 }
 
+.textSourceValue {
+  white-space: pre-wrap;
+}
+
 .otherSourceCard {
   display: flex;
   align-items: center;

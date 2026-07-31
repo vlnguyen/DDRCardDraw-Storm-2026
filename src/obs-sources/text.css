@@ -1,3 +1,17 @@
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
 .fitText {
   position: absolute;
   top: 50%;
@@ -5,6 +19,27 @@
   transform: translate(-50%, -50%);
   width: fit-content;
   margin: 0;
-  white-space: nowrap;
+  white-space: pre;
   line-height: 1;
+  text-align: center;
+}
+
+.dialogFont {
+  font-family: "Chiaro Std";
+}
+
+.titleFont {
+  font-family: "FOT-Rodin Pro";
+}
+
+.alignLeft {
+  text-align: left;
+}
+
+.alignCenter {
+  text-align: center;
+}
+
+.alignRight {
+  text-align: right;
 }

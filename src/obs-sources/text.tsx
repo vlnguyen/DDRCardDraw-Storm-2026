@@ -1,5 +1,7 @@
+import classNames from "classnames";
 import { ReactNode } from "react";
 import { useParams } from "react-router-dom";
+import { ObsLabelType, ObsTextAlign } from "../state/event.slice";
 import { drawingsSlice } from "../state/drawings.slice";
 import { useAppState } from "../state/store";
 import { getAllPlayers } from "../models/Drawing";
@@ -7,10 +9,21 @@ import { formatDate, useCurrentTime } from "../hooks/useCurrentTime";
 import { useFitText } from "../hooks/useFitText";
 import styles from "./text.css";
 
-function FitH1({ children }: { children: ReactNode }) {
-  const ref = useFitText<HTMLHeadingElement>(children);
+function FitH1({
+  children,
+  fontClassName = styles.dialogFont,
+  alignClassName = styles.alignCenter,
+}: {
+  children: ReactNode;
+  fontClassName?: string;
+  alignClassName?: string;
+}) {
+  const ref = useFitText<HTMLHeadingElement>(children, fontClassName);
   return (
-    <h1 ref={ref} className={styles.fitText}>
+    <h1
+      ref={ref}
+      className={classNames(styles.fitText, fontClassName, alignClassName)}
+    >
       {children}
     </h1>
   );
@@ -21,15 +34,32 @@ export function CurrentTime() {
   return <FitH1>{formatDate(now, "currentTime")}</FitH1>;
 }
 
+const labelTypeFont: Record<ObsLabelType, string> = {
+  dialog: styles.dialogFont,
+  title: styles.titleFont,
+};
+
+const textAlignClass: Record<ObsTextAlign, string> = {
+  left: styles.alignLeft,
+  center: styles.alignCenter,
+  right: styles.alignRight,
+};
+
 export function GlobalLabel() {
   const params = useParams<"roomName" | "labelId">();
-  const text = useAppState((s) => {
-    if (!params.labelId) return null;
-    const label = s.event.obsLabels[params.labelId];
-    if (!label) return null;
-    return label.value;
-  });
-  return <FitH1>{text}</FitH1>;
+  const label = useAppState((s) =>
+    params.labelId ? (s.event.obsLabels[params.labelId] ?? null) : null,
+  );
+  const labelType = label?.labelType ?? "dialog";
+  const textAlign = label?.textAlign ?? "center";
+  return (
+    <FitH1
+      fontClassName={labelTypeFont[labelType]}
+      alignClassName={textAlignClass[textAlign]}
+    >
+      {label?.value}
+    </FitH1>
+  );
 }
 
 export function CabTitle() {

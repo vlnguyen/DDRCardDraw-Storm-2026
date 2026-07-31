@@ -5,11 +5,15 @@ const MIN_FONT_SIZE = 1;
 /**
  * Binary-searches the largest font-size (in px) that keeps the element's
  * content box within the current viewport, then keeps it in sync on resize
- * and whenever `content` changes. The element must not stretch to fill its
- * flex/grid container's cross axis (e.g. `width: fit-content`) or the
- * measured box will always equal the container size.
+ * and whenever `content` (or any extra dep, e.g. a font-family switch) changes.
+ * The element must not stretch to fill its flex/grid container's cross axis
+ * (e.g. `width: fit-content`) or the measured box will always equal the
+ * container size.
  */
-export function useFitText<T extends HTMLElement>(content: unknown) {
+export function useFitText<T extends HTMLElement>(
+  content: unknown,
+  ...extraDeps: unknown[]
+) {
   const ref = useRef<T>(null);
 
   useLayoutEffect(() => {
@@ -39,7 +43,8 @@ export function useFitText<T extends HTMLElement>(content: unknown) {
     fit();
     window.addEventListener("resize", fit);
     return () => window.removeEventListener("resize", fit);
-  }, [content]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content, ...extraDeps]);
 
   return ref;
 }

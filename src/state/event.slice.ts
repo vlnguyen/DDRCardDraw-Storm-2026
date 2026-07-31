@@ -10,11 +10,19 @@ export interface CabInfo {
   id: string;
 }
 
+export type ObsLabelType = "dialog" | "title";
+export type ObsTextAlign = "left" | "center" | "right";
+
 interface EventState {
   eventName: string;
   cabs: Record<string, CabInfo>;
   tournament: TournamentState;
-  obsLabels: Record<string, { label: string; value: string }>;
+  obsLabels: Record<string, {
+    label: string;
+    value: string;
+    labelType?: ObsLabelType;
+    textAlign?: ObsTextAlign;
+  }>;
   obsCss: string;
 }
 
@@ -23,7 +31,7 @@ export interface PoolPlayerScore {
    * The scoreId from a specific match or undefined if the 
    * score is not associated with a specific match.
    * 
-   * If the scoreId is defined then the exScore and judgement counts
+  * If the scoreId is defined then the exScore and judgement counts
    * can be populated from the match data, otherwise the scoreId can 
    * remain null and the judgement counts can be entered manually.
    */
@@ -154,11 +162,19 @@ export const eventSlice = createSlice({
     },
     updateLabel(
       state,
-      action: PayloadAction<{ id: string; value: string; label: string }>,
+      action: PayloadAction<{
+        id: string;
+        value: string;
+        label: string;
+        labelType?: ObsLabelType;
+        textAlign?: ObsTextAlign;
+      }>,
     ) {
       state.obsLabels[action.payload.id] = {
         label: action.payload.label,
         value: action.payload.value,
+        labelType: action.payload.labelType,
+        textAlign: action.payload.textAlign,
       };
     },
     removeLabel(state, action: PayloadAction<{ id: string }>) {
