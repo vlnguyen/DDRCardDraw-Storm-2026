@@ -1,7 +1,25 @@
+import { ReactNode } from "react";
 import { useParams } from "react-router-dom";
 import { drawingsSlice } from "../state/drawings.slice";
 import { useAppState } from "../state/store";
 import { getAllPlayers } from "../models/Drawing";
+import { formatDate, useCurrentTime } from "../hooks/useCurrentTime";
+import { useFitText } from "../hooks/useFitText";
+import styles from "./text.css";
+
+function FitH1({ children }: { children: ReactNode }) {
+  const ref = useFitText<HTMLHeadingElement>(children);
+  return (
+    <h1 ref={ref} className={styles.fitText}>
+      {children}
+    </h1>
+  );
+}
+
+export function CurrentTime() {
+  const now = useCurrentTime();
+  return <FitH1>{formatDate(now, "currentTime")}</FitH1>;
+}
 
 export function GlobalLabel() {
   const params = useParams<"roomName" | "labelId">();
@@ -11,7 +29,7 @@ export function GlobalLabel() {
     if (!label) return null;
     return label.value;
   });
-  return <h1>{text}</h1>;
+  return <FitH1>{text}</FitH1>;
 }
 
 export function CabTitle() {
@@ -23,7 +41,7 @@ export function CabTitle() {
     if (!parent) return null;
     return parent.meta.title;
   });
-  return <h1>{text}</h1>;
+  return <FitH1>{text}</FitH1>;
 }
 
 export function CabPlayers() {
@@ -35,7 +53,7 @@ export function CabPlayers() {
     if (!parent) return null;
     return getAllPlayers(parent).join(", ");
   });
-  return <h1>{text}</h1>;
+  return <FitH1>{text}</FitH1>;
 }
 
 export function toDisplayType(input: string | undefined) {
@@ -73,7 +91,7 @@ export function CabPlayer(props: {
     }
     return `${name} (${score})`;
   });
-  return <h1>{text}</h1>;
+  return <FitH1>{text}</FitH1>;
 }
 
 export function PhaseName() {
@@ -86,5 +104,5 @@ export function PhaseName() {
     return parent.meta.type === "startgg" ? parent.meta.phaseName : null;
   });
 
-  return <h1>{text}</h1>;
+  return <FitH1>{text}</FitH1>;
 }
