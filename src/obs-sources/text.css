@@ -1,3 +1,17 @@
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
 .fitText {
   position: absolute;
   top: 50%;
@@ -7,4 +21,12 @@
   margin: 0;
   white-space: nowrap;
   line-height: 1;
+}
+
+.dialogFont {
+  font-family: "Chiaro Std";
+}
+
+.titleFont {
+  font-family: "FOT-Rodin Pro";
 }

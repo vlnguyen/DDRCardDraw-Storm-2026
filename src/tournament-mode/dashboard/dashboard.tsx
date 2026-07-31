@@ -11,6 +11,7 @@ import {
   FormGroup,
   H3,
   H4,
+  HTMLSelect,
   InputGroup,
   MenuItem,
   Radio,
@@ -25,7 +26,11 @@ import ReactCodeMirror from "@uiw/react-codemirror";
 import { nanoid } from "nanoid";
 import React, { useRef, useState } from "react";
 import { useHref } from "react-router-dom";
-import { type CardDrawPhase, eventSlice } from "../../state/event.slice";
+import {
+  type CardDrawPhase,
+  type ObsLabelType,
+  eventSlice,
+} from "../../state/event.slice";
 import { useStockGameData } from "../../state/game-data.atoms";
 import { useAppDispatch, useAppState } from "../../state/store";
 import { useTheme } from "../../theme-toggle";
@@ -371,10 +376,13 @@ function EditDialog({
 }) {
   const label = useAppState((s) =>
     sourceId ? s.event.obsLabels[sourceId] : null
-  ) || { label: "", value: "" };
+  ) || { label: "", value: "", labelType: undefined };
   const dispatch = useAppDispatch();
   const nameInput = useRef<HTMLInputElement>(null);
   const valueInput = useRef<HTMLInputElement>(null);
+  const [labelType, setLabelType] = useState<ObsLabelType>(
+    label.labelType ?? "dialog",
+  );
   if (!label || !sourceId) {
     return null;
   }
@@ -384,6 +392,7 @@ function EditDialog({
         id: sourceId,
         label: nameInput.current?.value || "",
         value: valueInput.current?.value || "",
+        labelType,
       })
     );
     close();
@@ -418,6 +427,15 @@ function EditDialog({
               defaultValue={label.value}
               onKeyDown={handleInputKeydown}
             />
+          </FormGroup>
+          <FormGroup label="Type">
+            <HTMLSelect
+              value={labelType}
+              onChange={(e) => setLabelType(e.target.value as ObsLabelType)}
+            >
+              <option value="dialog">Dialog</option>
+              <option value="title">Title</option>
+            </HTMLSelect>
           </FormGroup>
         </form>
       </DialogBody>
