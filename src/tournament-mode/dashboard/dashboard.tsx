@@ -18,6 +18,7 @@ import {
   RadioGroup,
   Tab,
   Tabs,
+  TextArea,
 } from "@blueprintjs/core";
 import { Suggest } from "@blueprintjs/select";
 import { Add, Duplicate, Edit, FloppyDisk } from "@blueprintjs/icons";
@@ -29,6 +30,7 @@ import { useHref } from "react-router-dom";
 import {
   type CardDrawPhase,
   type ObsLabelType,
+  type ObsTextAlign,
   eventSlice,
 } from "../../state/event.slice";
 import { useStockGameData } from "../../state/game-data.atoms";
@@ -111,12 +113,13 @@ function Sources() {
           ></Button>
         </H3>
         <CardList>
-          {Object.entries(labels).map(([id, { label, value }]) => (
+          {Object.entries(labels).map(([id, { label, value, labelType }]) => (
             <LabelCard
               key={id}
               id={id}
               label={label}
               value={value}
+              labelType={labelType}
               onEdit={() => setCurrentEdit(id)}
             />
           ))}
@@ -343,14 +346,17 @@ function LabelCard(props: {
   id: string;
   label: string;
   value: string;
+  labelType?: ObsLabelType;
   onEdit(this: void): void;
 }) {
   const href = useHref(routableGlobalSourcePath(props.id));
   return (
     <Card className={styles.textSourceCard}>
       <div>
-        <p>{props.label}</p>
-        <H4>{props.value}</H4>
+        <p>
+          {props.label} [{props.labelType ?? "dialog"}]
+        </p>
+        <H4 className={styles.textSourceValue}>{props.value}</H4>
       </div>
       <ButtonGroup>
         <Button icon={<Edit />} onClick={props.onEdit} />
@@ -376,12 +382,15 @@ function EditDialog({
 }) {
   const label = useAppState((s) =>
     sourceId ? s.event.obsLabels[sourceId] : null
-  ) || { label: "", value: "", labelType: undefined };
+  ) || { label: "", value: "", labelType: undefined, textAlign: undefined };
   const dispatch = useAppDispatch();
   const nameInput = useRef<HTMLInputElement>(null);
-  const valueInput = useRef<HTMLInputElement>(null);
+  const valueInput = useRef<HTMLTextAreaElement>(null);
   const [labelType, setLabelType] = useState<ObsLabelType>(
     label.labelType ?? "dialog",
+  );
+  const [textAlign, setTextAlign] = useState<ObsTextAlign>(
+    label.textAlign ?? "center",
   );
   if (!label || !sourceId) {
     return null;
@@ -393,20 +402,16 @@ function EditDialog({
         label: nameInput.current?.value || "",
         value: valueInput.current?.value || "",
         labelType,
+        textAlign,
       })
     );
     close();
   };
-  const handleInputKeydown: React.KeyboardEventHandler<HTMLInputElement> = (
-    e
-  ) => {
-    if (
-      e.key === "Enter" &&
-      !e.altKey &&
-      !e.ctrlKey &&
-      !e.shiftKey &&
-      !e.metaKey
-    ) {
+  const handleInputKeydown: React.KeyboardEventHandler<
+    HTMLInputElement | HTMLTextAreaElement
+  > = (e) => {
+    if (e.key === "Enter" && e.ctrlKey) {
+      e.preventDefault();
       submit();
     }
   };
@@ -422,10 +427,12 @@ function EditDialog({
             />
           </FormGroup>
           <FormGroup label="Value">
-            <InputGroup
+            <TextArea
               inputRef={valueInput}
               defaultValue={label.value}
               onKeyDown={handleInputKeydown}
+              fill
+              autoResize
             />
           </FormGroup>
           <FormGroup label="Type">
@@ -435,6 +442,16 @@ function EditDialog({
             >
               <option value="dialog">Dialog</option>
               <option value="title">Title</option>
+            </HTMLSelect>
+          </FormGroup>
+          <FormGroup label="Alignment">
+            <HTMLSelect
+              value={textAlign}
+              onChange={(e) => setTextAlign(e.target.value as ObsTextAlign)}
+            >
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
             </HTMLSelect>
           </FormGroup>
         </form>

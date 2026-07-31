@@ -19,8 +19,9 @@
   transform: translate(-50%, -50%);
   width: fit-content;
   margin: 0;
-  white-space: nowrap;
+  white-space: pre;
   line-height: 1;
+  text-align: center;
 }
 
 .dialogFont {
@@ -29,4 +30,16 @@
 
 .titleFont {
   font-family: "FOT-Rodin Pro";
+}
+
+.alignLeft {
+  text-align: left;
+}
+
+.alignCenter {
+  text-align: center;
+}
+
+.alignRight {
+  text-align: right;
 }

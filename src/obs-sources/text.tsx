@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { ReactNode } from "react";
 import { useParams } from "react-router-dom";
-import { ObsLabelType } from "../state/event.slice";
+import { ObsLabelType, ObsTextAlign } from "../state/event.slice";
 import { drawingsSlice } from "../state/drawings.slice";
 import { useAppState } from "../state/store";
 import { getAllPlayers } from "../models/Drawing";
@@ -12,13 +12,18 @@ import styles from "./text.css";
 function FitH1({
   children,
   fontClassName = styles.dialogFont,
+  alignClassName = styles.alignCenter,
 }: {
   children: ReactNode;
   fontClassName?: string;
+  alignClassName?: string;
 }) {
   const ref = useFitText<HTMLHeadingElement>(children, fontClassName);
   return (
-    <h1 ref={ref} className={classNames(styles.fitText, fontClassName)}>
+    <h1
+      ref={ref}
+      className={classNames(styles.fitText, fontClassName, alignClassName)}
+    >
       {children}
     </h1>
   );
@@ -34,14 +39,26 @@ const labelTypeFont: Record<ObsLabelType, string> = {
   title: styles.titleFont,
 };
 
+const textAlignClass: Record<ObsTextAlign, string> = {
+  left: styles.alignLeft,
+  center: styles.alignCenter,
+  right: styles.alignRight,
+};
+
 export function GlobalLabel() {
   const params = useParams<"roomName" | "labelId">();
   const label = useAppState((s) =>
     params.labelId ? (s.event.obsLabels[params.labelId] ?? null) : null,
   );
   const labelType = label?.labelType ?? "dialog";
+  const textAlign = label?.textAlign ?? "center";
   return (
-    <FitH1 fontClassName={labelTypeFont[labelType]}>{label?.value}</FitH1>
+    <FitH1
+      fontClassName={labelTypeFont[labelType]}
+      alignClassName={textAlignClass[textAlign]}
+    >
+      {label?.value}
+    </FitH1>
   );
 }
 

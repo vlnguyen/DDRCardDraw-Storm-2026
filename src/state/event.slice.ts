@@ -11,6 +11,7 @@ export interface CabInfo {
 }
 
 export type ObsLabelType = "dialog" | "title";
+export type ObsTextAlign = "left" | "center" | "right";
 
 interface EventState {
   eventName: string;
@@ -20,6 +21,7 @@ interface EventState {
     label: string;
     value: string;
     labelType?: ObsLabelType;
+    textAlign?: ObsTextAlign;
   }>;
   obsCss: string;
 }
@@ -165,12 +167,14 @@ export const eventSlice = createSlice({
         value: string;
         label: string;
         labelType?: ObsLabelType;
+        textAlign?: ObsTextAlign;
       }>,
     ) {
       state.obsLabels[action.payload.id] = {
         label: action.payload.label,
         value: action.payload.value,
         labelType: action.payload.labelType,
+        textAlign: action.payload.textAlign,
       };
     },
     removeLabel(state, action: PayloadAction<{ id: string }>) {
