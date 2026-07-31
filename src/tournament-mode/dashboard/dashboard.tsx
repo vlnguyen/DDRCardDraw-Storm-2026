@@ -29,9 +29,11 @@ import { type CardDrawPhase, eventSlice } from "../../state/event.slice";
 import { useStockGameData } from "../../state/game-data.atoms";
 import { useAppDispatch, useAppState } from "../../state/store";
 import { useTheme } from "../../theme-toggle";
+import { formatDate, useCurrentTime } from "../../hooks/useCurrentTime";
 import {
   copyObsSource,
   routableChartLeaderboardPath,
+  routableCurrentTimePath,
   routableGlobalSourcePath,
   routableLowerThirdPath,
   routablePersona3CirclePath,
@@ -544,6 +546,8 @@ function CssEditor() {
 }
 
 function OtherSources() {
+  const now = useCurrentTime();
+
   return (
     <section className={styles.autoWidthSection}>
       <H3>Other Sources</H3>
@@ -551,6 +555,10 @@ function OtherSources() {
         <OtherSourceCard label="Persona 3 Circle (3840x2160)" path={routablePersona3CirclePath()} />
         <OtherSourceCard label="Triangles (3840x2160)" path={routableTrianglesPath()} />
         <OtherSourceCard label="VS Meter (EX Delta) (3840x2160)" path={routableVsMeterPath()} />
+        <OtherSourceCard
+          label={formatDate(now, "currentTime")}
+          path={routableCurrentTimePath()}
+        />
       </CardList>
     </section>
   );
