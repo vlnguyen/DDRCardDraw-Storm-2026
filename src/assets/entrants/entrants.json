@@ -1,5 +1,26 @@
 [
   {
+    "id": 3442890,
+    "discriminator": "49ee8d5d",
+    "gamerTag": "Itss2Eazyy",
+    "prefix": "",
+    "entrantId": 22236079
+  },
+  {
+    "id": 1630991,
+    "discriminator": "b3184096",
+    "gamerTag": "STILL Gigas",
+    "prefix": "",
+    "entrantId": 22234944
+  },
+  {
+    "id": 3441225,
+    "discriminator": "2b2eb2e3",
+    "gamerTag": "JeauxColorado",
+    "prefix": "",
+    "entrantId": 22228876
+  },
+  {
     "id": 3442088,
     "discriminator": "",
     "gamerTag": "kickinnc2",
@@ -250,13 +271,6 @@
     "gamerTag": "VincentITG",
     "prefix": "ROBERTO",
     "entrantId": 20864478
-  },
-  {
-    "id": 4634,
-    "discriminator": "473f3ee1",
-    "gamerTag": "fastboy",
-    "prefix": "pals",
-    "entrantId": 20864418
   },
   {
     "id": 1821389,
