@@ -39,6 +39,7 @@ import { useTheme } from "../../theme-toggle";
 import { formatDate, useCurrentTime } from "../../hooks/useCurrentTime";
 import {
   copyObsSource,
+  routableBracketPath,
   routableChartLeaderboardPath,
   routableCurrentTimePath,
   routableGlobalSourcePath,
@@ -594,6 +595,7 @@ function OtherSources() {
           label={formatDate(now, "currentTime")}
           path={routableCurrentTimePath()}
         />
+        <OtherSourceCard label="Bracket (3840x2160)" path={routableBracketPath()} />
       </CardList>
     </section>
   );
