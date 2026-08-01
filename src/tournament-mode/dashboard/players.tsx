@@ -1,8 +1,19 @@
 import { AnchorButton, Button, Card, Checkbox, Dialog, DialogBody, FormGroup, H3, HTMLSelect, InputGroup, MenuItem, Tooltip } from "@blueprintjs/core";
-import { Desktop, Duplicate, Edit, Minus, Person, Plus, Trash, Unlink } from "@blueprintjs/icons";
+import {
+  Desktop,
+  DragHandleVertical,
+  Duplicate,
+  Edit,
+  Minus,
+  Person,
+  Plus,
+  Trash,
+  Unlink,
+} from "@blueprintjs/icons";
 import { Suggest } from "@blueprintjs/select";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useHref } from "react-router-dom";
+import { List, arrayMove, type IItemProps } from "react-movable";
 import { PoolPlayer, PoolPlayerScore, PoolState } from "../../state/event.slice";
 import { toaster } from "../../toaster";
 import { eventSlice } from "../../state/event.slice";
@@ -23,7 +34,7 @@ const sortedEntrants = [...entrants].sort((a, b) =>
   a.gamerTag.localeCompare(b.gamerTag),
 );
 
-const PLAYER_COUNT = 4;
+const MIN_PLAYER_COUNT = 4;
 const CAB_LABELS = ["Cab 1 [P1]", "Cab 1 [P2]", "Cab 2 [P1]", "Cab 2 [P2]"];
 
 function makeEmptyPlayer(scoreCount: number): PoolPlayer {
@@ -38,8 +49,8 @@ function padToPlayerCount(
   players: PoolPlayer[],
   scoreCount: number,
 ): PoolPlayer[] {
-  const padded = players.slice(0, PLAYER_COUNT);
-  while (padded.length < PLAYER_COUNT) {
+  const padded = [...players];
+  while (padded.length < MIN_PLAYER_COUNT) {
     padded.push(makeEmptyPlayer(scoreCount));
   }
   return padded;
@@ -60,6 +71,37 @@ function fuzzyMatch(query: string, item: EntrantOption): boolean {
     if (s[si] === q[qi]) qi++;
   }
   return qi === q.length;
+}
+
+function CabCell({
+  cabLabel,
+  cabNumber,
+  playerNumber,
+}: {
+  cabLabel: string;
+  cabNumber: 1 | 2;
+  playerNumber: 1 | 2;
+}) {
+  const stepStatsHref = useHref(routableStepStatsPath(cabNumber, playerNumber));
+
+  return (
+    <td>
+      {cabLabel}
+      <div className={styles.stepStatsButton}>
+        <Tooltip content="Step Stats">
+          <AnchorButton
+            size="small"
+            icon={<Duplicate />}
+            href={stepStatsHref}
+            onClick={(e) => {
+              e.preventDefault();
+              copyObsSource(new URL(stepStatsHref, document.location.href).href);
+            }}
+          />
+        </Tooltip>
+      </div>
+    </td>
+  );
 }
 
 export function Players() {
@@ -185,6 +227,20 @@ export function Players() {
     }));
   }
 
+  function handleAddPlayer() {
+    setPoolState((prev) => ({
+      ...prev,
+      players: [...(prev.players ?? []), makeEmptyPlayer((prev.songs ?? []).length)],
+    }));
+  }
+
+  function handleRemovePlayer(index: number) {
+    setPoolState((prev) => ({
+      ...prev,
+      players: (prev.players ?? []).filter((_, j) => j !== index),
+    }));
+  }
+
   function handleResetSongs() {
     setPoolState((prev) => ({
       ...prev,
@@ -236,24 +292,55 @@ export function Players() {
           </HTMLSelect>
         </FormGroup>
       </div>
-      <table className={styles.playersTable}>
-        <thead>
-          <tr>
-            <th className={styles.poolsResultsCell}>
-              <Tooltip content="Pools Results">
-                <AnchorButton
-                  size="small"
-                  icon={<Duplicate />}
-                  href={poolsHref}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    copyObsSource(new URL(poolsHref, document.location.href).href);
-                  }}
-                />
-              </Tooltip>
-            </th>
-            <th>Player</th>
-            {songs.map((_, i) => (
+      <div className={styles.tablesRow}>
+        <table className={styles.cabTable}>
+          <thead>
+            <tr>
+              <th className={styles.poolsResultsCell}>
+                <Tooltip content="Pools Results">
+                  <AnchorButton
+                    size="small"
+                    icon={<Duplicate />}
+                    href={poolsHref}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      copyObsSource(new URL(poolsHref, document.location.href).href);
+                    }}
+                  />
+                </Tooltip>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {players.map((_, i) =>
+              i < CAB_LABELS.length ? (
+                <tr key={i}>
+                  <CabCell
+                    cabLabel={CAB_LABELS[i]}
+                    cabNumber={i < 2 ? 1 : 2}
+                    playerNumber={i % 2 === 0 ? 1 : 2}
+                  />
+                </tr>
+              ) : (
+                <tr key={i}>
+                  <td></td>
+                </tr>
+              ),
+            )}
+            <tr>
+              <td>
+                <Tooltip content="Add player">
+                  <Button icon={<Plus />} onClick={handleAddPlayer} />
+                </Tooltip>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table className={styles.playersTable}>
+          <thead>
+            <tr>
+              <th>Player</th>
+              {songs.map((_, i) => (
               <th key={i}>
                 <div className={styles.songHeader}>
                   <span>{`Song ${i + 1}`}</span>
@@ -293,85 +380,102 @@ export function Players() {
             </th>
           </tr>
         </thead>
-        <tbody>
-          {players.map((player, i) => (
-            <PlayerRow
-              key={i}
-              cabLabel={CAB_LABELS[i]}
-              cabNumber={i < 2 ? 1 : 2}
-              playerNumber={i % 2 === 0 ? 1 : 2}
-              lobbyPlayerName={getLobbyPlayerName(i)}
-              player={player}
-              songs={songs}
-              onEditScore={(songIndex: number) =>
-                setEditingScore({ playerIndex: i, songIndex })
-              }
-              onClearScore={(songIndex: number) =>
-                setPoolState((prev) => ({
-                  ...prev,
-                  players: (prev.players ?? []).map((p, j) =>
-                    j !== i
-                      ? p
-                      : {
-                          ...p,
-                          scores: p.scores.map((s, k) =>
-                            k !== songIndex ? s : {},
-                          ),
-                        },
-                  ),
-                }))
-              }
-              onToggleActive={(active) =>
-                setPoolState((prev) => ({
-                  ...prev,
-                  players: (prev.players ?? []).map((p, j) =>
-                    j !== i ? p : { ...p, isDisabled: !active },
-                  ),
-                }))
-              }
-              onPlayerSelect={(option) => {
-                const entrant = sortedEntrants.find(
-                  (en) => en.id === option.value,
-                );
-                if (!entrant) return;
-                setPoolState((prev) => ({
-                  ...prev,
-                  players: (prev.players ?? []).map((p, j) =>
-                    j !== i
-                      ? p
-                      : {
-                          ...p,
-                          entrantId: entrant.id,
-                          gamerTag: entrant.gamerTag,
-                          prefix: entrant.prefix,
-                        },
-                  ),
-                }));
-              }}
-            />
-          ))}
-          <tr>
-            <td></td>
-            <td className={styles.submitCell}>
-              <Button
-                disabled={
-                  players.every((p) => p.entrantId == null) &&
-                  players.every((p) => !p.isDisabled)
+        <List
+          lockVertically
+          values={players}
+          onChange={({ oldIndex, newIndex }) =>
+            setPoolState((prev) => ({
+              ...prev,
+              players: arrayMove(prev.players ?? [], oldIndex, newIndex),
+            }))
+          }
+          renderList={({ children, props: listProps }) => (
+            <tbody ref={listProps.ref}>
+              {children}
+              <tr>
+                <td className={styles.submitCell}>
+                  <Button
+                    disabled={
+                      players.every((p) => p.entrantId == null) &&
+                      players.every((p) => !p.isDisabled)
+                    }
+                    onClick={handleResetPlayers}
+                  >
+                    Reset Players
+                  </Button>{" "}
+                  <Button onClick={handleMapPlayers}>Map</Button>{" "}
+                  <Button onClick={handleSubmit}>Submit</Button>
+                </td>
+                {songs.map((_, si) => (
+                  <td key={si}></td>
+                ))}
+                <td className={styles.resetSongsColumn}></td>
+              </tr>
+            </tbody>
+          )}
+          renderItem={({ value: player, props: itemProps, index, isDragged }) => {
+            const i = index!;
+            return (
+              <PlayerRow
+                key={itemProps.key}
+                rowProps={itemProps}
+                isDragged={isDragged}
+                lobbyPlayerName={getLobbyPlayerName(i)}
+                player={player}
+                songs={songs}
+                canRemove={players.length > MIN_PLAYER_COUNT}
+                onRemove={() => handleRemovePlayer(i)}
+                onEditScore={(songIndex: number) =>
+                  setEditingScore({ playerIndex: i, songIndex })
                 }
-                onClick={handleResetPlayers}
-              >
-                Reset Players
-              </Button>{" "}
-              <Button onClick={handleMapPlayers}>Map</Button>{" "}
-              <Button onClick={handleSubmit}>Submit</Button>
-            </td>
-            {songs.map((_, si) => (
-              <td key={si}></td>
-            ))}
-            <td className={styles.resetSongsColumn}></td>
-          </tr>
-        </tbody>
-      </table>
+                onClearScore={(songIndex: number) =>
+                  setPoolState((prev) => ({
+                    ...prev,
+                    players: (prev.players ?? []).map((p, j) =>
+                      j !== i
+                        ? p
+                        : {
+                            ...p,
+                            scores: p.scores.map((s, k) =>
+                              k !== songIndex ? s : {},
+                            ),
+                          },
+                    ),
+                  }))
+                }
+                onToggleActive={(active) =>
+                  setPoolState((prev) => ({
+                    ...prev,
+                    players: (prev.players ?? []).map((p, j) =>
+                      j !== i ? p : { ...p, isDisabled: !active },
+                    ),
+                  }))
+                }
+                onPlayerSelect={(option) => {
+                  const entrant = sortedEntrants.find(
+                    (en) => en.id === option.value,
+                  );
+                  if (!entrant) return;
+                  setPoolState((prev) => ({
+                    ...prev,
+                    players: (prev.players ?? []).map((p, j) =>
+                      j !== i
+                        ? p
+                        : {
+                            ...p,
+                            entrantId: entrant.id,
+                            gamerTag: entrant.gamerTag,
+                            prefix: entrant.prefix,
+                          },
+                    ),
+                  }));
+                }}
+              />
+            );
+          }}
+        />
+        </table>
+      </div>
       <Dialog
         isOpen={editingScore !== null}
         onClose={() => setEditingScore(null)}
@@ -455,12 +559,13 @@ export function Players() {
 }
 
 interface PlayerRowProps {
-  cabLabel: string;
-  cabNumber: 1 | 2;
-  playerNumber: 1 | 2;
+  rowProps: IItemProps;
+  isDragged: boolean;
   lobbyPlayerName: string;
   player: PoolPlayer;
   songs: string[];
+  canRemove: boolean;
+  onRemove(): void;
   onEditScore(songIndex: number): void;
   onClearScore(songIndex: number): void;
   onToggleActive(active: boolean): void;
@@ -468,39 +573,41 @@ interface PlayerRowProps {
 }
 
 function PlayerRow({
-  cabLabel,
-  cabNumber,
-  playerNumber,
+  rowProps,
+  isDragged,
   lobbyPlayerName,
   player,
   songs,
+  canRemove,
+  onRemove,
   onEditScore,
   onClearScore,
   onToggleActive,
   onPlayerSelect,
 }: PlayerRowProps) {
-  const stepStatsHref = useHref(routableStepStatsPath(cabNumber, playerNumber));
+  const { key: _key, style, ...restRowProps } = rowProps;
 
   return (
-    <tr>
-      <td>
-        {cabLabel}
-        <div className={styles.stepStatsButton}>
-          <Tooltip content="Step Stats">
-            <AnchorButton
-              size="small"
-              icon={<Duplicate />}
-              href={stepStatsHref}
-              onClick={(e) => {
-                e.preventDefault();
-                copyObsSource(new URL(stepStatsHref, document.location.href).href);
-              }}
-            />
-          </Tooltip>
-        </div>
-      </td>
+    <tr
+      {...restRowProps}
+      style={{
+        ...style,
+        // The dragged "ghost" row is portaled to document.body; give it a
+        // z-index that clears Blueprint's overlay so it stays visible.
+        zIndex: isDragged ? 9999 : style?.zIndex,
+      }}
+    >
       <td>
         <div className={styles.rowActions}>
+          {!isDragged && (
+            <span
+              data-movable-handle
+              className={styles.dragHandle}
+              style={{ cursor: "grab" }}
+            >
+              <DragHandleVertical />
+            </span>
+          )}
           <Checkbox
             checked={!player.isDisabled}
             onChange={(e) => onToggleActive(e.target.checked)}
@@ -535,6 +642,9 @@ function PlayerRow({
               noResults={<MenuItem disabled text="No matching players" />}
             />
           </div>
+          <Tooltip content="Remove player">
+            <Button icon={<Trash />} disabled={!canRemove} onClick={onRemove} />
+          </Tooltip>
         </div>
         <Suggest<string>
           className={styles.lobbyPlayerSuggest}

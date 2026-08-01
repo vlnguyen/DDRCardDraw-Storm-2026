@@ -29,28 +29,71 @@
   margin-top: 4px;
 }
 
-.playersTable th.poolsResultsCell {
+.dragHandle {
+  display: flex;
+}
+
+.tablesRow {
+  display: flex;
+  align-items: flex-start;
+}
+
+.cabTable th.poolsResultsCell {
   text-align: center;
 }
 
+.cabTable,
 .playersTable {
   border-collapse: collapse;
   border-style: hidden;
 }
 
+.cabTable th,
+.cabTable td,
 .playersTable th,
 .playersTable td {
   border: 1px solid currentColor;
   padding: 4px 8px;
 }
 
+/* Both tables' leftmost column loses its left border: cabTable's because it's
+   the true left edge of the combined layout, playersTable's so the seam
+   between the two tables shows a single line instead of a doubled one. */
+.cabTable th:first-child,
+.cabTable td:first-child,
 .playersTable th:first-child,
 .playersTable td:first-child {
   border-left: none;
 }
 
+.cabTable th,
 .playersTable th {
   text-align: left;
+}
+
+/* cabTable and playersTable are independent tables, so their row heights
+   don't sync automatically; the entrant fields in playersTable's data rows
+   are taller than a cab cell's label + button, and its trailing
+   Reset/Map/Submit row is taller than cabTable's empty trailing cell.
+   Pin both tables' rows to the same explicit heights so they line up. */
+.cabTable thead tr,
+.playersTable thead tr {
+  height: 38.5px;
+}
+
+.cabTable tbody tr:not(:last-child),
+.playersTable tbody tr:not(:last-child) {
+  height: 73px;
+}
+
+.cabTable tbody tr:last-child,
+.playersTable tbody tr:last-child {
+  height: 39px;
+}
+
+.cabTable tbody tr:last-child td,
+.playersTable tbody tr:last-child td {
+  border: none;
 }
 
 .submitCell {
