@@ -132,6 +132,19 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/bracket",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { Bracket } = await import("./obs-sources/bracket");
+          return { Component: Bracket };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/obs-globals/:labelId",
     element: <ObsSource />,
     children: [

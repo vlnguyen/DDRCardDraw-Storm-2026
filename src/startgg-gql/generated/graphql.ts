@@ -156,6 +156,8 @@ export type ContactInfo = {
   nameFirst?: Maybe<Scalars['String']['output']>;
   /** Last Name */
   nameLast?: Maybe<Scalars['String']['output']>;
+  /** Phone number */
+  phoneNumber?: Maybe<Scalars['String']['output']>;
   /** Participant State Name */
   state?: Maybe<Scalars['String']['output']>;
   /** Participant State (region) id */
@@ -918,10 +920,9 @@ export type Participant = {
   /** Info for connected accounts to external services. */
   connectedAccounts?: Maybe<Scalars['JSON']['output']>;
   /**
-   * Contact Info selected during registration. Falls back to User.location and/or
-   * User.name if necessary. These fields are for admin use only. If you are not a
-   * tournament admin or the participant being queried, these fields will be null.
-   * Do not display this information publicly.
+   * Contact info for the user associated with this participant. These fields are
+   * for admin use only. If you are not a tournament admin or the participant being
+   * queried, these fields will be null. Do not display this information publicly.
    */
   contactInfo?: Maybe<ContactInfo>;
   /** Email of the user, only available to admins within 18 months of tournament completion for tournament administrators. */
@@ -1158,7 +1159,7 @@ export type Player = {
   gamerTag?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
   prefix?: Maybe<Scalars['String']['output']>;
-  /** Most recent active & published rankings */
+  /** Published rankings from the last 3 years, at most one per ranking series */
   rankings?: Maybe<Array<Maybe<PlayerRank>>>;
   /**
    * Recent sets for this player.
@@ -1188,7 +1189,11 @@ export type PlayerRecentSetsArgs = {
 
 /** A player */
 export type PlayerRecentStandingsArgs = {
+  endAt?: InputMaybe<Scalars['Timestamp']['input']>;
+  excludeOnlineEvents?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
+  onlySinglesEvents?: InputMaybe<Scalars['Boolean']['input']>;
+  startAt?: InputMaybe<Scalars['Timestamp']['input']>;
   videogameId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -1204,9 +1209,16 @@ export type PlayerSetsArgs = {
 export type PlayerRank = {
   __typename?: 'PlayerRank';
   id?: Maybe<Scalars['ID']['output']>;
+  images?: Maybe<Array<Maybe<Image>>>;
   /** The player's placement on the ranking */
   rank?: Maybe<Scalars['Int']['output']>;
   title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** A player's ranks */
+export type PlayerRankImagesArgs = {
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** An OAuth ProfileAuthorization object */
@@ -1499,6 +1511,7 @@ export type Seed = {
   /** Entrant's win/loss record for this standing. Scores do not include byes. */
   setRecordWithoutByes?: Maybe<Scalars['JSON']['output']>;
   standings?: Maybe<Array<Maybe<Standing>>>;
+  updatedAt?: Maybe<Scalars['Timestamp']['output']>;
 };
 
 
@@ -1769,14 +1782,8 @@ export type ShopLevel = {
   description?: Maybe<Scalars['String']['output']>;
   goalAmount?: Maybe<Scalars['Float']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
-  images?: Maybe<Array<Maybe<Image>>>;
+  images?: Maybe<Scalars['JSON']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-};
-
-
-/** A shop level */
-export type ShopLevelImagesArgs = {
-  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ShopLevelConnection = {
@@ -1856,6 +1863,8 @@ export type Standing = {
   placement?: Maybe<Scalars['Int']['output']>;
   /** The player(s) tied to this standing's entity */
   player?: Maybe<Player>;
+  /** Entrant's win/loss record for this standing */
+  setRecordWithoutByes?: Maybe<Scalars['JSON']['output']>;
   /** @deprecated The "placement" field is identical and will eventually replace "standing" */
   standing?: Maybe<Scalars['Int']['output']>;
   stats?: Maybe<StandingStats>;
@@ -2518,6 +2527,13 @@ export type EventListQueryVariables = Exact<{
 
 export type EventListQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', tournaments?: { __typename?: 'TournamentConnection', nodes?: Array<{ __typename?: 'Tournament', id?: string | null, name?: string | null, slug?: string | null, events?: Array<{ __typename?: 'Event', id?: string | null, name?: string | null, slug?: string | null } | null> | null } | null> | null, pageInfo?: { __typename?: 'PageInfo', total?: number | null, totalPages?: number | null, page?: number | null, perPage?: number | null } | null } | null } | null };
 
+export type PhaseGroupBracketQueryVariables = Exact<{
+  phaseGroupId: Scalars['ID']['input'];
+}>;
+
+
+export type PhaseGroupBracketQuery = { __typename?: 'Query', phaseGroup?: { __typename?: 'PhaseGroup', id?: string | null, displayIdentifier?: string | null, numRounds?: number | null, phase?: { __typename?: 'Phase', name?: string | null } | null, sets?: { __typename?: 'SetConnection', nodes?: Array<{ __typename?: 'Set', id?: string | null, identifier?: string | null, fullRoundText?: string | null, round?: number | null, state?: number | null, displayScore?: string | null, winnerId?: number | null, slots?: Array<{ __typename?: 'SetSlot', entrant?: { __typename?: 'Entrant', id?: string | null, name?: string | null, participants?: Array<{ __typename?: 'Participant', id?: string | null, gamerTag?: string | null, prefix?: string | null } | null> | null } | null, standing?: { __typename?: 'Standing', stats?: { __typename?: 'StandingStats', score?: { __typename?: 'Score', value?: number | null } | null } | null } | null } | null> | null } | null> | null } | null } | null };
+
 
 export const PlayerNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PlayerName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entrant"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<PlayerNameQuery, PlayerNameQueryVariables>;
 export const SetNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SetName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"set"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fullRoundText"}}]}}]}}]} as unknown as DocumentNode<SetNameQuery, SetNameQueryVariables>;
@@ -2525,3 +2541,4 @@ export const GauntletDivisionsDocument = {"kind":"Document","definitions":[{"kin
 export const EventSetsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EventSets"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pageNo"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"hideEmpty"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"Argument","name":{"kind":"Name","value":"perPage"},"value":{"kind":"IntValue","value":"100"}},{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pageNo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fullRoundText"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"slots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"prereqType"}},{"kind":"Field","name":{"kind":"Name","value":"prereqId"}},{"kind":"Field","name":{"kind":"Name","value":"prereqPlacement"}},{"kind":"Field","name":{"kind":"Name","value":"entrant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"phaseGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"phase"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"groupCount"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<EventSetsQuery, EventSetsQueryVariables>;
 export const ReportSetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ReportSet"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"setId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"winnerId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameData"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BracketSetGameDataInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reportBracketSet"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"setId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"setId"}}},{"kind":"Argument","name":{"kind":"Name","value":"winnerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"winnerId"}}},{"kind":"Argument","name":{"kind":"Name","value":"gameData"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameData"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}}]}}]}}]} as unknown as DocumentNode<ReportSetMutation, ReportSetMutationVariables>;
 export const EventListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"EventList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"perPage"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tournaments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"perPage"},"value":{"kind":"Variable","name":{"kind":"Name","value":"perPage"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"tournamentView"},"value":{"kind":"StringValue","value":"admin","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"events"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"perPage"}}]}}]}}]}}]}}]} as unknown as DocumentNode<EventListQuery, EventListQueryVariables>;
+export const PhaseGroupBracketDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PhaseGroupBracket"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"phaseGroupId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"phaseGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"phaseGroupId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayIdentifier"}},{"kind":"Field","name":{"kind":"Name","value":"numRounds"}},{"kind":"Field","name":{"kind":"Name","value":"phase"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"perPage"},"value":{"kind":"IntValue","value":"100"}},{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"sortType"},"value":{"kind":"EnumValue","value":"ROUND"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fullRoundText"}},{"kind":"Field","name":{"kind":"Name","value":"round"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"displayScore"}},{"kind":"Field","name":{"kind":"Name","value":"winnerId"}},{"kind":"Field","name":{"kind":"Name","value":"slots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entrant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"participants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"gamerTag"}},{"kind":"Field","name":{"kind":"Name","value":"prefix"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"standing"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"score"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<PhaseGroupBracketQuery, PhaseGroupBracketQueryVariables>;

@@ -6,6 +6,7 @@ import type {
   SetNameDocument,
   EventListDocument,
   GauntletDivisionsDocument,
+  PhaseGroupBracketDocument,
 } from "./generated/graphql";
 import { Client, fetchExchange, gql } from "@urql/core";
 import { cacheExchange } from "@urql/exchange-graphcache";
@@ -219,4 +220,67 @@ export function useCurrentUserEvents() {
       perPage: 25,
     },
   });
+}
+
+const PhaseGroupBracketDoc: typeof PhaseGroupBracketDocument = gql`
+  query PhaseGroupBracket($phaseGroupId: ID!) {
+    phaseGroup(id: $phaseGroupId) {
+      id
+      displayIdentifier
+      numRounds
+      phase {
+        name
+      }
+      sets(perPage: 100, page: 1, sortType: ROUND) {
+        nodes {
+          id
+          identifier
+          fullRoundText
+          round
+          state
+          displayScore
+          winnerId
+          slots {
+            entrant {
+              id
+              name
+              participants {
+                id
+                gamerTag
+                prefix
+              }
+            }
+            standing {
+              stats {
+                score {
+                  value
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export function useStartggBracket(phaseGroupId: string) {
+  return useQuery({
+    query: PhaseGroupBracketDoc,
+    variables: {
+      phaseGroupId,
+    },
+  });
+}
+
+/**
+ * Extracts the phase group id from a start.gg bracket URL, e.g.
+ * https://www.start.gg/tournament/x/event/y/brackets/{phaseId}/{phaseGroupId}
+ */
+export function phaseGroupIdFromBracketUrl(url: string): string {
+  const match = url.match(/\/brackets\/\d+\/(\d+)/);
+  if (!match) {
+    throw new Error(`Could not parse phase group id from bracket url: ${url}`);
+  }
+  return match[1];
 }

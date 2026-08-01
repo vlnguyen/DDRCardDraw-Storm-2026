@@ -1,0 +1,192 @@
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
+.canvas {
+  position: relative;
+  width: 3840px;
+  height: 2160px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  font-family: "Chiaro Std", sans-serif;
+  padding: 56px 96px;
+  box-sizing: border-box;
+}
+
+.sections {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionWinners {
+  flex: 2;
+}
+
+.sectionLosers {
+  flex: 1;
+}
+
+.sectionLabel {
+  margin: 0 0 20px;
+  font-family: "FOT-Rodin Pro", sans-serif;
+  font-size: 48px;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  flex: 0 0 auto;
+}
+
+.rounds {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 80px;
+  overflow: auto;
+}
+
+.round {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.roundLabel {
+  margin: 0 0 16px;
+  font-family: "FOT-Rodin Pro", sans-serif;
+  font-size: 38px;
+  opacity: 0.75;
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.matches {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.set {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 3px solid rgba(255, 255, 255, 0.16);
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 32px;
+  font-size: 42px;
+}
+
+.slot + .slot {
+  border-top: 3px solid rgba(255, 255, 255, 0.16);
+}
+
+.slotWinner {
+  font-weight: 700;
+  background-color: rgba(51, 200, 255, 0.18);
+}
+
+.slotNames {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 10px;
+}
+
+.slotScore {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
+.slotName {
+  font-family: "FOT-Rodin Pro", sans-serif;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slotPrefix {
+  font-family: "Chiaro Std", sans-serif;
+  font-size: 0.8em;
+  opacity: 0.65;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* stub reaching from a set's right edge into the gap toward the next round */
+.setConnect::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 40px;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* vertical bar joining two matches, plus its own stub continuing to the next round */
+.connector {
+  position: absolute;
+  left: calc(100% + 40px);
+  width: 3px;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.connector::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.empty {
+  font-size: 48px;
+  opacity: 0.6;
+}
