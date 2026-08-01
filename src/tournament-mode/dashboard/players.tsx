@@ -34,7 +34,7 @@ const sortedEntrants = [...entrants].sort((a, b) =>
   a.gamerTag.localeCompare(b.gamerTag),
 );
 
-const PLAYER_COUNT = 4;
+const MIN_PLAYER_COUNT = 4;
 const CAB_LABELS = ["Cab 1 [P1]", "Cab 1 [P2]", "Cab 2 [P1]", "Cab 2 [P2]"];
 
 function makeEmptyPlayer(scoreCount: number): PoolPlayer {
@@ -49,8 +49,8 @@ function padToPlayerCount(
   players: PoolPlayer[],
   scoreCount: number,
 ): PoolPlayer[] {
-  const padded = players.slice(0, PLAYER_COUNT);
-  while (padded.length < PLAYER_COUNT) {
+  const padded = [...players];
+  while (padded.length < MIN_PLAYER_COUNT) {
     padded.push(makeEmptyPlayer(scoreCount));
   }
   return padded;
@@ -227,6 +227,20 @@ export function Players() {
     }));
   }
 
+  function handleAddPlayer() {
+    setPoolState((prev) => ({
+      ...prev,
+      players: [...(prev.players ?? []), makeEmptyPlayer((prev.songs ?? []).length)],
+    }));
+  }
+
+  function handleRemovePlayer(index: number) {
+    setPoolState((prev) => ({
+      ...prev,
+      players: (prev.players ?? []).filter((_, j) => j !== index),
+    }));
+  }
+
   function handleResetSongs() {
     setPoolState((prev) => ({
       ...prev,
@@ -298,17 +312,27 @@ export function Players() {
             </tr>
           </thead>
           <tbody>
-            {CAB_LABELS.map((cabLabel, i) => (
-              <tr key={i}>
-                <CabCell
-                  cabLabel={cabLabel}
-                  cabNumber={i < 2 ? 1 : 2}
-                  playerNumber={i % 2 === 0 ? 1 : 2}
-                />
-              </tr>
-            ))}
+            {players.map((_, i) =>
+              i < CAB_LABELS.length ? (
+                <tr key={i}>
+                  <CabCell
+                    cabLabel={CAB_LABELS[i]}
+                    cabNumber={i < 2 ? 1 : 2}
+                    playerNumber={i % 2 === 0 ? 1 : 2}
+                  />
+                </tr>
+              ) : (
+                <tr key={i}>
+                  <td></td>
+                </tr>
+              ),
+            )}
             <tr>
-              <td></td>
+              <td>
+                <Tooltip content="Add player">
+                  <Button icon={<Plus />} onClick={handleAddPlayer} />
+                </Tooltip>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -399,6 +423,8 @@ export function Players() {
                 lobbyPlayerName={getLobbyPlayerName(i)}
                 player={player}
                 songs={songs}
+                canRemove={players.length > MIN_PLAYER_COUNT}
+                onRemove={() => handleRemovePlayer(i)}
                 onEditScore={(songIndex: number) =>
                   setEditingScore({ playerIndex: i, songIndex })
                 }
@@ -538,6 +564,8 @@ interface PlayerRowProps {
   lobbyPlayerName: string;
   player: PoolPlayer;
   songs: string[];
+  canRemove: boolean;
+  onRemove(): void;
   onEditScore(songIndex: number): void;
   onClearScore(songIndex: number): void;
   onToggleActive(active: boolean): void;
@@ -550,6 +578,8 @@ function PlayerRow({
   lobbyPlayerName,
   player,
   songs,
+  canRemove,
+  onRemove,
   onEditScore,
   onClearScore,
   onToggleActive,
@@ -612,6 +642,9 @@ function PlayerRow({
               noResults={<MenuItem disabled text="No matching players" />}
             />
           </div>
+          <Tooltip content="Remove player">
+            <Button icon={<Trash />} disabled={!canRemove} onClick={onRemove} />
+          </Tooltip>
         </div>
         <Suggest<string>
           className={styles.lobbyPlayerSuggest}

@@ -182,7 +182,7 @@ export function downloadDataUrl(dataUrl: string, filename: string) {
 
 export async function copyTextToClipboard(text: string, toastSuccess?: string) {
   try {
-    await navigator.clipboard.writeText(text);
+    await writeTextToClipboard(text);
     toaster.show(
       {
         message: toastSuccess || "Copied to clipboard",
@@ -217,7 +217,7 @@ export async function copyPlainTextToClipboard(
   text: string,
   toastMessage?: string,
 ) {
-  await navigator.clipboard.writeText(text);
+  await writeTextToClipboard(text);
   if (toastMessage) {
     toaster.show(
       {
@@ -226,6 +226,32 @@ export async function copyPlainTextToClipboard(
       },
       "copied-data",
     );
+  }
+}
+
+/**
+ * navigator.clipboard is only defined in secure contexts (HTTPS or
+ * localhost), so it's undefined for anyone opening the dashboard over plain
+ * HTTP on a LAN address. Fall back to the legacy execCommand("copy") path
+ * via an offscreen textarea in that case.
+ */
+async function writeTextToClipboard(text: string) {
+  if (navigator.clipboard) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.setAttribute("readonly", "");
+  area.style.position = "absolute";
+  area.style.left = "-9999px";
+  document.body.appendChild(area);
+  area.select();
+  const ok = document.execCommand("copy");
+  document.body.removeChild(area);
+  if (!ok) {
+    throw new Error("execCommand copy failed");
   }
 }
 
