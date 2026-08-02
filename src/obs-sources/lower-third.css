@@ -21,10 +21,17 @@
   color: white;
 }
 
+.background {
+  position: absolute;
+  z-index: -1;
+  transform: scale(1.5) translate(200px, 103px);
+}
+
 .lowerThird {
   position: absolute;
+  isolation: isolate;
   left: 150px;
-  bottom: 220px;
+  bottom: 250px;
   max-width: 2200px;
   display: flex;
   flex-direction: column;
@@ -36,6 +43,8 @@
   display: inline-block;
   width: fit-content;
   align-self: flex-start;
+  margin-left: 115px;
+  margin-top: 10px;
   transform: scaleX(1.2);
   transform-origin: left;
 }
@@ -75,6 +84,8 @@
 
 .line {
   margin: 0;
+  margin-left: 140px;
+  margin-top: -10px;
   font-family: "Chiaro Std";
   font-size: 68px;
   font-weight: 700;
