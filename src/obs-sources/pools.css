@@ -25,7 +25,7 @@
   height: 100vh;
   text-align: center;
   font-family: "Chiaro Std";
-  font-size: 32px;
+  font-size: 1.67vw;
   animation: fadeIn 0.5s ease;
 }
 
@@ -38,7 +38,7 @@
 }
 
 .avg {
-  font-size: 24px;
+  font-size: 0.75em;
 }
 
 .rankSecond {
