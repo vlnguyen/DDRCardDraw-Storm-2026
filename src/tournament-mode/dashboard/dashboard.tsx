@@ -20,8 +20,9 @@ import {
   Tabs,
   TextArea,
 } from "@blueprintjs/core";
+import { TimePicker } from "@blueprintjs/datetime";
 import { Suggest } from "@blueprintjs/select";
-import { Add, Duplicate, Edit, FloppyDisk } from "@blueprintjs/icons";
+import { Add, Duplicate, Edit, FloppyDisk, Plus, Trash } from "@blueprintjs/icons";
 import { css } from "@codemirror/lang-css";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { nanoid } from "nanoid";
@@ -31,6 +32,8 @@ import {
   type CardDrawPhase,
   type ObsLabelType,
   type ObsTextAlign,
+  type ScheduleDay,
+  type ScheduleItem,
   eventSlice,
 } from "../../state/event.slice";
 import { useStockGameData } from "../../state/game-data.atoms";
@@ -45,6 +48,7 @@ import {
   routableGlobalSourcePath,
   routableLowerThirdPath,
   routablePersona3CirclePath,
+  routableSchedulePath,
   routableTrianglesPath,
   routableVsMeterPath,
 } from "../copy-obs-source";
@@ -65,7 +69,8 @@ type DashboardTabId =
   | "sources"
   | "lobbies"
   | "match-log"
-  | "players";
+  | "players"
+  | "schedule";
 
 export function Dashboard() {
   const [currentTab, setCurrentTab] =
@@ -93,8 +98,176 @@ export function Dashboard() {
         <Tab id="match-log" panel={<MatchLogPanel />}>
           Match Log ({matchCount})
         </Tab>
+        <Tab id="schedule" panel={<Schedule />}>
+          Schedule
+        </Tab>
       </Tabs>
     </div>
+  );
+}
+
+function emptyScheduleItem(): ScheduleItem {
+  return { time: "", event: "", description: "" };
+}
+
+// Schedule times are wall-clock, as typed by the user (e.g. "20:30" for
+// 8:30 PM) — stored and rendered as-is, with no timezone conversion.
+function parseScheduleTime(time: string | undefined): Date | null {
+  if (!time) return null;
+  const [hours, minutes] = time.split(":").map(Number);
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+}
+
+function formatScheduleTime(date: Date): string {
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+const SCHEDULE_DAYS: { id: ScheduleDay; label: string }[] = [
+  { id: "fri", label: "Friday" },
+  { id: "sat", label: "Saturday" },
+  { id: "sun", label: "Sunday" },
+];
+
+function ScheduleDayLink({ day, label }: { day: ScheduleDay; label: string }) {
+  const href = useHref(routableSchedulePath(day));
+  return (
+    <AnchorButton
+      icon={<Duplicate />}
+      onClick={(e) => {
+        e.preventDefault();
+        copyObsSource(new URL(href, document.location.href).href);
+      }}
+      href={href}
+    >
+      {label}
+    </AnchorButton>
+  );
+}
+
+function Schedule() {
+  const [currentDay, setCurrentDay] = useState<ScheduleDay>("fri");
+
+  return (
+    <section className={styles.autoWidthSection}>
+      <H3>Schedule</H3>
+      <div className={styles.formRow}>
+        {SCHEDULE_DAYS.map(({ id, label }) => (
+          <ScheduleDayLink key={id} day={id} label={label} />
+        ))}
+      </div>
+      <Tabs
+        id="schedule-days"
+        selectedTabId={currentDay}
+        onChange={(newDay: ScheduleDay) => setCurrentDay(newDay)}
+      >
+        {SCHEDULE_DAYS.map(({ id, label }) => (
+          <Tab key={id} id={id} panel={<ScheduleDayEditor day={id} />}>
+            {label}
+          </Tab>
+        ))}
+      </Tabs>
+    </section>
+  );
+}
+
+function ScheduleDayEditor({ day }: { day: ScheduleDay }) {
+  const dispatch = useAppDispatch();
+  const savedSchedule = useAppState(
+    (s) => s.event.tournament?.schedules?.[day]?.items ?? [],
+  );
+  const [schedule, setSchedule] = useState<ScheduleItem[]>(savedSchedule);
+  const isDirty = JSON.stringify(schedule) !== JSON.stringify(savedSchedule);
+
+  function updateRow(index: number, patch: Partial<ScheduleItem>) {
+    setSchedule((prev) =>
+      prev.map((row, i) => (i === index ? { ...row, ...patch } : row)),
+    );
+  }
+
+  function addRow() {
+    setSchedule((prev) => [...prev, emptyScheduleItem()]);
+  }
+
+  function removeRow(index: number) {
+    setSchedule((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function submit() {
+    dispatch(eventSlice.actions.updateSchedule({ day, items: schedule }));
+  }
+
+  function sortByTime() {
+    setSchedule((prev) =>
+      [...prev].sort((a, b) => (a.time ?? "").localeCompare(b.time ?? "")),
+    );
+  }
+
+  return (
+    <>
+      <table className={styles.scheduleTable}>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Event</th>
+            <th>Description</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {schedule.map((row, i) => (
+            <tr key={i}>
+              <td>
+                <TimePicker
+                  precision="minute"
+                  useAmPm
+                  value={parseScheduleTime(row.time)}
+                  onChange={(newTime) =>
+                    updateRow(i, { time: formatScheduleTime(newTime) })
+                  }
+                />
+              </td>
+              <td>
+                <InputGroup
+                  value={row.event ?? ""}
+                  onChange={(e) => updateRow(i, { event: e.target.value })}
+                />
+              </td>
+              <td>
+                <InputGroup
+                  value={row.description ?? ""}
+                  onChange={(e) =>
+                    updateRow(i, { description: e.target.value })
+                  }
+                />
+              </td>
+              <td>
+                <Button icon={<Trash />} onClick={() => removeRow(i)} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <Button
+        icon={<Plus />}
+        onClick={addRow}
+        className={styles.scheduleAddRow}
+      />{" "}
+      <Button disabled={schedule.length < 2} onClick={sortByTime}>
+        Sort
+      </Button>{" "}
+      <Button
+        disabled={!isDirty}
+        intent={isDirty ? "primary" : undefined}
+        onClick={submit}
+      >
+        Submit
+      </Button>
+    </>
   );
 }
 

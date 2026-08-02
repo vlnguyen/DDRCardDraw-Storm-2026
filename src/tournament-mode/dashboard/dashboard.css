@@ -36,3 +36,13 @@
 .chartLeaderboardInput {
   width: 320px;
 }
+
+.scheduleTable td,
+.scheduleTable th {
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.scheduleAddRow {
+  margin-top: 8px;
+}
