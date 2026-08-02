@@ -59,7 +59,11 @@ export function Schedule() {
       {rows.length > 0 && (
         <div className={styles.list}>
           {rows.map((row, i) => (
-            <div className={styles.row} key={i}>
+            <div
+              className={styles.row}
+              key={i}
+              style={{ animationDelay: `${0.3 + i * 0.05}s` }}
+            >
               <span className={styles.time}>
                 <span className={styles.timeText}>
                   {formatDisplayTime(row.time)}
