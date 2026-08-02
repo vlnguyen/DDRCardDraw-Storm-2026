@@ -33,6 +33,12 @@
   font-family: "FOT-Rodin Pro";
 }
 
+.squish {
+  display: inline-block;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+}
+
 .rankFirst {
   background-color: #d4af00;
 }
@@ -59,6 +65,9 @@
 
 .gamerTag {
   font-family: "FOT-Rodin Pro";
+  display: inline-block;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
 }
 
 .prefix {

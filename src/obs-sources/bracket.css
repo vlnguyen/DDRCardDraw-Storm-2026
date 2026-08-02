@@ -54,7 +54,8 @@
   font-size: 48px;
   color: white;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
   flex: 0 0 auto;
 }
 
@@ -77,6 +78,8 @@
 .roundLabel {
   margin: 0 0 16px;
   font-family: "FOT-Rodin Pro", sans-serif;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
   font-size: 38px;
   opacity: 0.75;
   text-align: center;
@@ -139,6 +142,8 @@
 
 .slotName {
   font-family: "FOT-Rodin Pro", sans-serif;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;

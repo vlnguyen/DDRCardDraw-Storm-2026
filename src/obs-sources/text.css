@@ -30,6 +30,8 @@
 
 .titleFont {
   font-family: "FOT-Rodin Pro";
+  letter-spacing: -0.05em;
+  transform: translate(-50%, -50%) scaleY(0.75);
 }
 
 .alignLeft {
