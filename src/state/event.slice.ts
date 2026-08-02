@@ -73,6 +73,20 @@ export interface LowerThirdState {
   line2: string;
 }
 
+export interface ScheduleItem {
+  time?: string;
+  event?: string;
+  description?: string;
+}
+
+export type ScheduleDay = "fri" | "sat" | "sun";
+
+export interface ScheduleDayState {
+  items: ScheduleItem[];
+}
+
+export type SchedulesState = Partial<Record<ScheduleDay, ScheduleDayState>>;
+
 /**
  * Event state properties that are unique to use at Project Storm
  */
@@ -88,6 +102,7 @@ interface TournamentState {
   cardDrawPhase?: CardDrawPhase;
   lowerThird?: LowerThirdState;
   toggleLowerThird?: boolean;
+  schedules?: SchedulesState;
 }
 
 
@@ -240,6 +255,21 @@ export const eventSlice = createSlice({
         state.tournament = {};
       }
       state.tournament.toggleLowerThird = action.payload;
+    },
+    updateSchedule(
+      state,
+      action: PayloadAction<{ day: ScheduleDay; items: ScheduleItem[] }>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      if (!state.tournament.schedules) {
+        state.tournament.schedules = {};
+      }
+      state.tournament.schedules[action.payload.day] = {
+        ...state.tournament.schedules[action.payload.day],
+        items: action.payload.items,
+      };
     },
   },
   extraReducers(builder) {

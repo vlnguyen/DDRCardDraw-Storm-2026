@@ -16,6 +16,8 @@ export const routableVsMeterPath = () => `../vs-meter`;
 export const routableLowerThirdPath = () => `../lower-third`;
 export const routableCurrentTimePath = () => `../current-time`;
 export const routableBracketPath = () => `../bracket`;
+export const routableSchedulePath = (day: "fri" | "sat" | "sun") =>
+  `../schedule?day=${day}`;
 
 export function copyObsSource(href: string) {
   void copyPlainTextToClipboard(href, "Copied OBS source URL to clipboard");

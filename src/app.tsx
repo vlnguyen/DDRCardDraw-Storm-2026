@@ -264,6 +264,19 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/schedule",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { Schedule } = await import("./obs-sources/schedule");
+          return { Component: Schedule };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/current-time",
     element: <ObsSource />,
     children: [

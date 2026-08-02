@@ -1,0 +1,189 @@
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.canvas {
+  position: relative;
+  width: 3840px;
+  height: 2160px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 400px;
+  font-family: "Chiaro Std", sans-serif;
+  color: white;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeIn 0.6s ease both;
+}
+
+.titleWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.titleStroke {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 240px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: #1a1a1a;
+  -webkit-text-stroke: 28px #1a1a1a;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.title {
+  position: relative;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 240px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  text-transform: uppercase;
+  text-align: center;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+.dayWrap {
+  position: relative;
+  display: inline-block;
+  margin-top: -30px;
+}
+
+.dayStroke {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 112px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: #1a1a1a;
+  -webkit-text-stroke: 20px #1a1a1a;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.day {
+  position: relative;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 112px;
+  line-height: 1;
+  color: #6be8c8;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  text-align: center;
+}
+
+.list {
+  width: 2020px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  width: 2020px;
+  height: 210px;
+  box-sizing: border-box;
+  background: #222222;;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  animation: slideDown 0.5s ease both;
+}
+
+.time {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  align-self: stretch;
+  min-width: 450px;
+  flex-shrink: 0;
+  background: #333333;
+  padding: 0 32px;
+  box-sizing: border-box;
+}
+
+.timeText {
+  display: inline-block;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 84px;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  text-transform: uppercase;
+}
+
+.eventCol {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event {
+  font-family: "Chiaro Std", sans-serif;
+  font-weight: 700;
+  font-size: 84px;
+}
+
+.description {
+  font-family: "Chiaro Std", sans-serif;
+  font-weight: 700;
+  font-size: 40px;
+  opacity: 0.75;
+}
