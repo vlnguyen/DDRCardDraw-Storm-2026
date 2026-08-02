@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useAppState } from "../state/store";
 import styles from "./lower-third.css";
+import lowerThirdBg from "../assets/img/lower-third-blue.png";
 
 const DISPLAY_TIME_SECONDS = 10;
 const FADE_MS = 600;
+// DEBUG: force the lower third to stay visible for layout iteration.
+const DEBUG_ALWAYS_VISIBLE = false;
 
 export function LowerThird() {
   const { title, line1, line2 } = useAppState(
@@ -28,7 +31,7 @@ export function LowerThird() {
     return () => clearTimeout(hideTimer);
   }, [toggled]);
 
-  if (!title && !line1 && !line2) {
+  if (!DEBUG_ALWAYS_VISIBLE && !title && !line1 && !line2) {
     return <div className={styles.canvas} />;
   }
 
@@ -37,10 +40,11 @@ export function LowerThird() {
       <div
         className={styles.lowerThird}
         style={{
-          opacity: visible ? 1 : 0,
+          opacity: DEBUG_ALWAYS_VISIBLE || visible ? 1 : 0,
           transition: `opacity ${FADE_MS}ms ease`,
         }}
       >
+        <img src={lowerThirdBg} alt="" className={styles.background} />
         {title && (
           <div className={styles.titleWrap}>
             <h1 aria-hidden="true" className={styles.titleStroke}>
