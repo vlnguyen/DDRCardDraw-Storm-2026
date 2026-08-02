@@ -25,7 +25,7 @@
   height: 100vh;
   text-align: center;
   font-family: "Chiaro Std";
-  font-size: 32px;
+  font-size: 1.67vw;
   animation: fadeIn 0.5s ease;
 }
 
@@ -33,12 +33,18 @@
   font-family: "FOT-Rodin Pro";
 }
 
+.squish {
+  display: inline-block;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+}
+
 .rankFirst {
   background-color: #d4af00;
 }
 
 .avg {
-  font-size: 24px;
+  font-size: 0.75em;
 }
 
 .rankSecond {
@@ -59,6 +65,9 @@
 
 .gamerTag {
   font-family: "FOT-Rodin Pro";
+  display: inline-block;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
 }
 
 .prefix {
@@ -68,6 +77,7 @@
 table {
   border-collapse: collapse;
   border: 2px solid white;
+  background-color: rgba(0, 0, 0, 0.75);
 }
 
 table td {

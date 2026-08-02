@@ -45,6 +45,8 @@
   inset: 0;
   margin: 0;
   font-family: "FOT-Rodin Pro";
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
   font-size: 120px;
   font-weight: 800;
   line-height: 1.1;
@@ -57,6 +59,8 @@
   position: relative;
   margin: 0;
   font-family: "FOT-Rodin Pro";
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
   font-size: 120px;
   font-weight: 800;
   line-height: 1.1;

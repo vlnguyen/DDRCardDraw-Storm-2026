@@ -37,6 +37,8 @@
   white-space: nowrap;
   text-align: right;
   font-family: "FOT-Rodin Pro";
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
@@ -47,6 +49,9 @@
 
 .gamerTag {
   font-family: "FOT-Rodin Pro";
+  display: inline-block;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
 }
 
 .prefix {

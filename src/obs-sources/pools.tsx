@@ -37,9 +37,7 @@ function PlayerName({
   if (!player.gamerTag) return <>--</>;
   return (
     <>
-      <span className={styles.gamerTag}>
-        {player.gamerTag} {medal}
-      </span>
+      <span className={styles.gamerTag}>{player.gamerTag}</span> {medal}
       {player.prefix && (
         <div className={styles.prefix}>{player.prefix}</div>
       )}
@@ -182,10 +180,14 @@ export function Pools() {
           <th></th>
           {Array.from({ length: numSongs }).map((_, index) => (
             <th key={index}>
-              <h3 className={styles.rank}>Song {index + 1}</h3>
+              <h3 className={styles.rank}>
+                <span className={styles.squish}>Song {index + 1}</span>
+              </h3>
             </th>
           ))}
-          <th className={styles.rank}>Wins</th>
+          <th className={styles.rank}>
+            <span className={styles.squish}>Wins</span>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -210,7 +212,7 @@ export function Pools() {
           return (
             <tr key={poolPlayerResultIndex}>
               <td className={getRankClassName(rank)}>
-                <b>{rank}</b>
+                <b className={styles.squish}>{rank}</b>
               </td>
               <td className={styles.playerName}>
                 <b>
