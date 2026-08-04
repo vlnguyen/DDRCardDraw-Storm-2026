@@ -19,6 +19,7 @@ export function useFitText<T extends HTMLElement>(
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
+    let cancelled = false;
 
     function fit() {
       if (!el) return;
@@ -40,9 +41,20 @@ export function useFitText<T extends HTMLElement>(
       el.style.fontSize = `${low}px`;
     }
 
+    // Immediate best-effort fit so there's no flash of unsized/invisible
+    // text, then re-fit once web fonts are confirmed loaded — on first
+    // mount this can race ahead of custom @font-face loading, measuring
+    // against fallback-font metrics and settling on the wrong size until
+    // something else (e.g. a window resize) happens to re-run fit().
     fit();
+    document.fonts.ready.then(() => {
+      if (!cancelled) fit();
+    });
     window.addEventListener("resize", fit);
-    return () => window.removeEventListener("resize", fit);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("resize", fit);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content, ...extraDeps]);
 
