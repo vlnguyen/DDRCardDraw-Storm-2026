@@ -52,7 +52,7 @@ function rowToPoolPlayer(row: string[]): PoolPlayer {
   const gamerTag = row[GAMER_TAG_COLUMN];
   const entrant = findEntrant(gamerTag);
   return {
-    gamerTag,
+    gamerTag: entrant?.gamerTag ?? gamerTag,
     prefix: entrant?.prefix,
     entrantId: entrant?.id,
     scores,
