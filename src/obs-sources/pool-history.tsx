@@ -10,7 +10,7 @@ import entrants from "../assets/entrants/entrants.json";
 import { Pools } from "./pools";
 
 export const SPREADSHEET_URL =
-  "https://docs.google.com/spreadsheets/d/13_BozVhnQf7nYyP5F2qJlq5Ly-mb0LtJyMWisswBoCc" as const;
+  "https://docs.google.com/spreadsheets/d/1bWj8QnYeLFyWdON8XQjbcfqv1AsPf33nKg0qVJcSbm0" as const;
 
 export const STAGE_GIDS: Readonly<Record<PoolHistoryStage, string>> = {
   stage1: "1158920643",
