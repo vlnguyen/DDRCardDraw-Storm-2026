@@ -19,6 +19,7 @@ import {
   Tab,
   Tabs,
   TextArea,
+  Tooltip,
 } from "@blueprintjs/core";
 import { TimePicker } from "@blueprintjs/datetime";
 import { Suggest } from "@blueprintjs/select";
@@ -54,6 +55,7 @@ import {
   routableGlobalSourcePath,
   routableLowerThirdPath,
   routablePersona3CirclePath,
+  routablePoolHistoryLabelPath,
   routablePoolHistoryPath,
   routableSchedulePath,
   routableStarsPath,
@@ -286,14 +288,32 @@ function ScheduleDayEditor({ day }: { day: ScheduleDay }) {
 function PoolHistoryLink() {
   const href = useHref(routablePoolHistoryPath());
   return (
-    <AnchorButton
-      icon={<Duplicate />}
-      onClick={(e) => {
-        e.preventDefault();
-        copyObsSource(new URL(href, document.location.href).href);
-      }}
-      href={href}
-    />
+    <Tooltip content="Table view">
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          copyObsSource(new URL(href, document.location.href).href);
+        }}
+        href={href}
+      />
+    </Tooltip>
+  );
+}
+
+function PoolHistoryLabelLink() {
+  const href = useHref(routablePoolHistoryLabelPath());
+  return (
+    <Tooltip content="Selected pool label">
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          copyObsSource(new URL(href, document.location.href).href);
+        }}
+        href={href}
+      />
+    </Tooltip>
   );
 }
 
@@ -469,7 +489,7 @@ function Sources() {
       </section>
       <section className={styles.autoWidthSection}>
         <H3>
-          Pool History <PoolHistoryLink />
+          Pool History <PoolHistoryLink /> <PoolHistoryLabelLink />
         </H3>
         <PoolHistorySelect />
       </section>
