@@ -29,10 +29,11 @@ const GAMER_TAG_COLUMN = 1;
 const SONGS_PER_POOL = 6;
 const PENDING_MARKER = "--- PENDING ---";
 
+// EX scores in the spreadsheet are integers from 0-10000 (e.g. 9523 = 95.23%).
 function parseExScore(cell: string | undefined): number | undefined {
   if (!cell) return undefined;
   const value = parseFloat(cell.replace("%", ""));
-  return Number.isNaN(value) ? undefined : value;
+  return Number.isNaN(value) ? undefined : value / 100;
 }
 
 function parseAdvancement(cell: string | undefined): PlayerAdvancement {
