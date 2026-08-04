@@ -46,41 +46,43 @@ export function Schedule() {
 
   return (
     <div className={styles.canvas}>
-      <div className={styles.header}>
-        <div className={styles.titleWrap}>
-          <h1 className={styles.titleStroke}>Schedule</h1>
-          <h1 className={styles.title}>Schedule</h1>
+      <div className={styles.content}>
+        <div className={styles.header}>
+          <div className={styles.titleWrap}>
+            <h1 className={styles.titleStroke}>Schedule</h1>
+            <h1 className={styles.title}>Schedule</h1>
+          </div>
+          <div className={styles.dayWrap}>
+            <h2 className={styles.dayStroke}>{DAY_LABELS[day]}</h2>
+            <h2 className={styles.day}>{DAY_LABELS[day]}</h2>
+          </div>
         </div>
-        <div className={styles.dayWrap}>
-          <h2 className={styles.dayStroke}>{DAY_LABELS[day]}</h2>
-          <h2 className={styles.day}>{DAY_LABELS[day]}</h2>
-        </div>
-      </div>
-      {rows.length > 0 && (
-        <div className={styles.list}>
-          {rows.map((row, i) => (
-            <div
-              className={styles.row}
-              key={i}
-              style={{ animationDelay: `${0.3 + i * 0.05}s` }}
-            >
-              <span className={styles.time}>
-                <span className={styles.timeText}>
-                  {formatDisplayTime(row.time)}
-                </span>
-              </span>
-              <span className={styles.eventCol}>
-                <span className={styles.event}>{row.event}</span>
-                {row.description && (
-                  <span className={styles.description}>
-                    {row.description}
+        {rows.length > 0 && (
+          <div className={styles.list}>
+            {rows.map((row, i) => (
+              <div
+                className={styles.row}
+                key={i}
+                style={{ animationDelay: `${0.6 + i * 0.05}s` }}
+              >
+                <span className={styles.time}>
+                  <span className={styles.timeText}>
+                    {formatDisplayTime(row.time)}
                   </span>
-                )}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+                </span>
+                <span className={styles.eventCol}>
+                  <span className={styles.event}>{row.event}</span>
+                  {row.description && (
+                    <span className={styles.description}>
+                      {row.description}
+                    </span>
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
