@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { PoolHistoryStage, PoolPlayer, PoolPlayerScore } from "../state/event.slice";
 import { useAppState } from "../state/store";
 import { Pools } from "./pools";
@@ -52,11 +52,30 @@ function rowToPoolPlayer(row: string[]): PoolPlayer {
 function parsePoolPlayers(rows: string[][], poolCode: string): PoolPlayer[] {
   return rows
     .filter((row) => row[POOL_COLUMN] === poolCode)
+    .filter((row) => row[GAMER_TAG_COLUMN])
     .filter((row) => row[GAMER_TAG_COLUMN] !== PENDING_MARKER)
     .map(rowToPoolPlayer);
 }
 
-async function fetchStageRows(stage: PoolHistoryStage): Promise<string[][]> {
+/** Distinct pool codes present in a stage's raw rows, in sheet order. */
+export function getPoolCodesForStage(rows: string[][] | undefined): string[] {
+  if (!rows) return [];
+  const codes = new Set<string>();
+  for (const row of rows) {
+    const code = row[POOL_COLUMN];
+    if (code && code !== "Pool") {
+      codes.add(code);
+    }
+  }
+  return Array.from(codes);
+}
+
+/** Fetches and parses a Stage tab's raw rows. Used by the dashboard's Fetch
+ * button to populate `tournament.poolHistory.data` — the OBS source itself
+ * never calls this, it only reads the cached result from the event slice. */
+export async function fetchStageRows(
+  stage: PoolHistoryStage,
+): Promise<string[][]> {
   const gid = STAGE_GIDS[stage];
   const res = await fetch(`${SPREADSHEET_URL}/export?format=csv&gid=${gid}`);
   const text = await res.text();
@@ -65,30 +84,17 @@ async function fetchStageRows(stage: PoolHistoryStage): Promise<string[][]> {
 }
 
 export function PoolHistory() {
-  const selection = useAppState(
-    (s) => s.event.tournament?.poolHistorySelection,
-  );
-  const stage = selection?.stage;
-  const [rows, setRows] = useState<string[][] | null>(null);
-
-  useEffect(() => {
-    if (!stage) {
-      setRows(null);
-      return;
-    }
-    let cancelled = false;
-    fetchStageRows(stage).then((data) => {
-      if (!cancelled) setRows(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [stage]);
+  const poolHistory = useAppState((s) => s.event.tournament?.poolHistory);
+  const stage = poolHistory?.selection?.stage;
+  const poolCode = poolHistory?.selection?.poolCode;
+  const rows = stage
+    ? (poolHistory?.data?.[stage] as string[][] | undefined)
+    : undefined;
 
   const poolPlayers = useMemo(() => {
-    if (!rows || !selection?.poolCode) return [];
-    return parsePoolPlayers(rows, selection.poolCode);
-  }, [rows, selection?.poolCode]);
+    if (!rows || !poolCode) return [];
+    return parsePoolPlayers(rows, poolCode);
+  }, [rows, poolCode]);
 
   return <Pools poolPlayers={poolPlayers} />;
 }

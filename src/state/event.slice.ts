@@ -94,6 +94,14 @@ export interface PoolHistorySelection {
   poolCode: string;
 }
 
+export interface PoolHistoryState {
+  selection?: PoolHistorySelection;
+  /** UTC timestamp (ISO string) of the last successful fetch across all stages */
+  lastFetched?: string;
+  /** raw fetch data from Google Sheets, keyed by stage */
+  data?: Partial<Record<PoolHistoryStage, any>>;
+}
+
 /**
  * Event state properties that are unique to use at Project Storm
  */
@@ -110,7 +118,7 @@ interface TournamentState {
   lowerThird?: LowerThirdState;
   toggleLowerThird?: boolean;
   schedules?: SchedulesState;
-  poolHistorySelection?: PoolHistorySelection;
+  poolHistory?: PoolHistoryState;
 }
 
 
@@ -286,7 +294,26 @@ export const eventSlice = createSlice({
       if (!state.tournament) {
         state.tournament = {};
       }
-      state.tournament.poolHistorySelection = action.payload;
+      if (!state.tournament.poolHistory) {
+        state.tournament.poolHistory = {};
+      }
+      state.tournament.poolHistory.selection = action.payload;
+    },
+    setPoolHistoryData(
+      state,
+      action: PayloadAction<{
+        data: Partial<Record<PoolHistoryStage, any>>;
+        lastFetched: string;
+      }>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      if (!state.tournament.poolHistory) {
+        state.tournament.poolHistory = {};
+      }
+      state.tournament.poolHistory.data = action.payload.data;
+      state.tournament.poolHistory.lastFetched = action.payload.lastFetched;
     },
   },
   extraReducers(builder) {

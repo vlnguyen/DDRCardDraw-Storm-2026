@@ -26,7 +26,7 @@ import { Add, Duplicate, Edit, FloppyDisk, Plus, Trash } from "@blueprintjs/icon
 import { css } from "@codemirror/lang-css";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { nanoid } from "nanoid";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useHref } from "react-router-dom";
 import {
   type CardDrawPhase,
@@ -40,7 +40,12 @@ import {
 import { useStockGameData } from "../../state/game-data.atoms";
 import { useAppDispatch, useAppState } from "../../state/store";
 import { useTheme } from "../../theme-toggle";
-import { formatDate, useCurrentTime } from "../../hooks/useCurrentTime";
+import format from "date-fns/format";
+import {
+  EASTERN_TIME_ZONE,
+  formatDate,
+  useCurrentTime,
+} from "../../hooks/useCurrentTime";
 import {
   copyObsSource,
   routableBracketPath,
@@ -55,6 +60,10 @@ import {
   routableTrianglesPath,
   routableVsMeterPath,
 } from "../copy-obs-source";
+import {
+  fetchStageRows,
+  getPoolCodesForStage,
+} from "../../obs-sources/pool-history";
 import styles from "./dashboard.css";
 import { Lobbies } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
@@ -298,57 +307,124 @@ const POOL_HISTORY_STAGES: { value: PoolHistoryStage; label: string }[] = [
   { value: "stage7", label: "Stage 7" },
 ];
 
-function isPoolHistoryStage(value: string): value is PoolHistoryStage {
-  return POOL_HISTORY_STAGES.some((stage) => stage.value === value);
+function formatLastFetched(iso: string): string {
+  const zoned = new Date(
+    new Date(iso).toLocaleString("en-US", { timeZone: EASTERN_TIME_ZONE }),
+  );
+  return `${format(zoned, "M/d/yyyy h:mm:ss a")} ET`;
+}
+
+interface PoolOption {
+  value: string;
+  label: string;
+  stage: PoolHistoryStage;
+  poolCode: string;
+}
+
+function usePoolHistoryOptions(): PoolOption[] {
+  const data = useAppState((s) => s.event.tournament?.poolHistory?.data);
+  return useMemo(() => {
+    const options: PoolOption[] = [];
+    for (const { value: stage, label: stageLabel } of POOL_HISTORY_STAGES) {
+      for (const poolCode of getPoolCodesForStage(data?.[stage])) {
+        options.push({
+          value: `${stage}:${poolCode}`,
+          label: `${stageLabel} - Pool ${poolCode}`,
+          stage,
+          poolCode,
+        });
+      }
+    }
+    return options;
+  }, [data]);
 }
 
 function PoolHistorySelect() {
   const dispatch = useAppDispatch();
   const saved = useAppState(
     (s) =>
-      s.event.tournament?.poolHistorySelection ?? {
+      s.event.tournament?.poolHistory?.selection ?? {
         stage: "stage1" as PoolHistoryStage,
         poolCode: "",
       },
   );
-  const [stage, setStage] = useState(saved.stage);
-  const [poolCode, setPoolCode] = useState(saved.poolCode);
-  const isDirty = stage !== saved.stage || poolCode !== saved.poolCode;
+  const lastFetched = useAppState(
+    (s) => s.event.tournament?.poolHistory?.lastFetched,
+  );
+  const poolOptions = usePoolHistoryOptions();
+  const savedValue = saved.poolCode ? `${saved.stage}:${saved.poolCode}` : "";
+  const [selectedValue, setSelectedValue] = useState(savedValue);
+  const [isFetching, setIsFetching] = useState(false);
+  const isDirty = selectedValue !== savedValue;
+
+  const fetchData = async () => {
+    setIsFetching(true);
+    try {
+      const results = await Promise.all(
+        POOL_HISTORY_STAGES.map(async ({ value: stage }) => {
+          const data = await fetchStageRows(stage);
+          return [stage, data] as const;
+        }),
+      );
+      dispatch(
+        eventSlice.actions.setPoolHistoryData({
+          data: Object.fromEntries(results),
+          lastFetched: new Date().toISOString(),
+        }),
+      );
+    } catch (e) {
+      console.warn("failed to fetch pool history spreadsheet data", e);
+      toaster.show({
+        message: "Failed to fetch pool history data from the spreadsheet",
+        intent: "danger",
+      });
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
   return (
     <FormGroup label="Pool">
       <div className={styles.formRow}>
         <HTMLSelect
-          value={stage}
-          onChange={(e) => {
-            const { value } = e.currentTarget;
-            if (isPoolHistoryStage(value)) {
-              setStage(value);
-            }
-          }}
+          value={selectedValue}
+          onChange={(e) => setSelectedValue(e.currentTarget.value)}
         >
-          {POOL_HISTORY_STAGES.map(({ value, label }) => (
+          <option value="" disabled>
+            {poolOptions.length
+              ? "Select a pool"
+              : "--"}
+          </option>
+          {poolOptions.map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
             </option>
           ))}
         </HTMLSelect>
-        <InputGroup
-          placeholder="Pool code (e.g. A1)"
-          value={poolCode}
-          onChange={(e) => setPoolCode(e.target.value)}
-        />
         <Button
           disabled={!isDirty}
           intent={isDirty ? "primary" : undefined}
-          onClick={() =>
+          onClick={() => {
+            const selected = poolOptions.find(
+              (option) => option.value === selectedValue,
+            );
+            if (!selected) return;
             dispatch(
-              eventSlice.actions.setPoolHistorySelection({ stage, poolCode }),
-            )
-          }
+              eventSlice.actions.setPoolHistorySelection({
+                stage: selected.stage,
+                poolCode: selected.poolCode,
+              }),
+            );
+          }}
         >
           Submit
         </Button>
+        <Button loading={isFetching} onClick={fetchData}>
+          Fetch
+        </Button>
+      </div>
+      <div style={{ fontSize: "0.85em", opacity: 0.7 }}>
+        Last updated: {lastFetched ? formatLastFetched(lastFetched) : "never"}
       </div>
     </FormGroup>
   );
