@@ -3,4 +3,22 @@
   width: 3840px;
   height: 2160px;
   overflow: hidden;
+  background: linear-gradient(to bottom, #040423, #0a0a62);
+}
+
+.star {
+  position: absolute;
+  animation-name: twinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }
