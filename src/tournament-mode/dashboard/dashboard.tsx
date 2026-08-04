@@ -48,6 +48,7 @@ import {
   routableGlobalSourcePath,
   routableLowerThirdPath,
   routablePersona3CirclePath,
+  routablePoolHistoryPath,
   routableSchedulePath,
   routableStarsPath,
   routableTrianglesPath,
@@ -272,6 +273,20 @@ function ScheduleDayEditor({ day }: { day: ScheduleDay }) {
   );
 }
 
+function PoolHistoryLink() {
+  const href = useHref(routablePoolHistoryPath());
+  return (
+    <AnchorButton
+      icon={<Duplicate />}
+      onClick={(e) => {
+        e.preventDefault();
+        copyObsSource(new URL(href, document.location.href).href);
+      }}
+      href={href}
+    />
+  );
+}
+
 function Sources() {
   const [currentEdit, setCurrentEdit] = useState<string | null>(null);
   const labels = useAppState((s) => s.event.obsLabels);
@@ -308,6 +323,11 @@ function Sources() {
       </section>
       <section>
         <LowerThirdEditor />
+      </section>
+      <section className={styles.autoWidthSection}>
+        <H3>
+          Pool History <PoolHistoryLink />
+        </H3>
       </section>
       <Divider />
       <CssEditor />

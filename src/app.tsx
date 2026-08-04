@@ -197,6 +197,19 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/pool-history",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { PoolHistory } = await import("./obs-sources/pool-history");
+          return { Component: PoolHistory };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/chart-leaderboard",
     element: <ObsSource />,
     children: [
