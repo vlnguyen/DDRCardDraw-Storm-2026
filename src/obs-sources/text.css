@@ -1,3 +1,10 @@
+/* fitText should always size itself to the viewport; overflow: hidden here
+   is purely defensive so a transient/failed fit never shows a scrollbar. */
+:global(html),
+:global(body) {
+  overflow: hidden;
+}
+
 @font-face {
   font-family: "Chiaro Std";
   font-style: normal;
