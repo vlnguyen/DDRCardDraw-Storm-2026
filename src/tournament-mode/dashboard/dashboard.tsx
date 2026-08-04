@@ -19,6 +19,7 @@ import {
   Tab,
   Tabs,
   TextArea,
+  Tooltip,
 } from "@blueprintjs/core";
 import { TimePicker } from "@blueprintjs/datetime";
 import { Suggest } from "@blueprintjs/select";
@@ -26,12 +27,13 @@ import { Add, Duplicate, Edit, FloppyDisk, Plus, Trash } from "@blueprintjs/icon
 import { css } from "@codemirror/lang-css";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { nanoid } from "nanoid";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useHref } from "react-router-dom";
 import {
   type CardDrawPhase,
   type ObsLabelType,
   type ObsTextAlign,
+  type PoolHistoryStage,
   type ScheduleDay,
   type ScheduleItem,
   eventSlice,
@@ -39,7 +41,13 @@ import {
 import { useStockGameData } from "../../state/game-data.atoms";
 import { useAppDispatch, useAppState } from "../../state/store";
 import { useTheme } from "../../theme-toggle";
-import { formatDate, useCurrentTime } from "../../hooks/useCurrentTime";
+import format from "date-fns/format";
+import {
+  EASTERN_TIME_ZONE,
+  formatDate,
+  formatTimeAgo,
+  useCurrentTime,
+} from "../../hooks/useCurrentTime";
 import {
   copyObsSource,
   routableBracketPath,
@@ -48,11 +56,17 @@ import {
   routableGlobalSourcePath,
   routableLowerThirdPath,
   routablePersona3CirclePath,
+  routablePoolHistoryLabelPath,
+  routablePoolHistoryPath,
   routableSchedulePath,
   routableStarsPath,
   routableTrianglesPath,
   routableVsMeterPath,
 } from "../copy-obs-source";
+import {
+  fetchStageRows,
+  getPoolCodesForStage,
+} from "../../obs-sources/pool-history";
 import styles from "./dashboard.css";
 import { Lobbies } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
@@ -272,6 +286,176 @@ function ScheduleDayEditor({ day }: { day: ScheduleDay }) {
   );
 }
 
+function PoolHistoryLink() {
+  const href = useHref(routablePoolHistoryPath());
+  return (
+    <Tooltip content="Table view">
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          copyObsSource(new URL(href, document.location.href).href);
+        }}
+        href={href}
+      />
+    </Tooltip>
+  );
+}
+
+function PoolHistoryLabelLink() {
+  const href = useHref(routablePoolHistoryLabelPath());
+  return (
+    <Tooltip content="Selected pool label">
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          copyObsSource(new URL(href, document.location.href).href);
+        }}
+        href={href}
+      />
+    </Tooltip>
+  );
+}
+
+const POOL_HISTORY_STAGES: { value: PoolHistoryStage; label: string }[] = [
+  { value: "stage1", label: "Stage 1" },
+  { value: "stage2", label: "Stage 2" },
+  { value: "stage3", label: "Stage 3" },
+  { value: "stage4", label: "Stage 4" },
+  { value: "stage5", label: "Stage 5" },
+  { value: "stage6", label: "Stage 6" },
+  { value: "stage7", label: "Stage 7" },
+];
+
+function formatLastFetched(iso: string): string {
+  const zoned = new Date(
+    new Date(iso).toLocaleString("en-US", { timeZone: EASTERN_TIME_ZONE }),
+  );
+  return `${format(zoned, "M/d/yyyy h:mm:ss a")} ET`;
+}
+
+interface PoolOption {
+  value: string;
+  label: string;
+  stage: PoolHistoryStage;
+  poolCode: string;
+}
+
+function usePoolHistoryOptions(): PoolOption[] {
+  const data = useAppState((s) => s.event.tournament?.poolHistory?.data);
+  return useMemo(() => {
+    const options: PoolOption[] = [];
+    for (const { value: stage, label: stageLabel } of POOL_HISTORY_STAGES) {
+      for (const poolCode of getPoolCodesForStage(data?.[stage])) {
+        options.push({
+          value: `${stage}:${poolCode}`,
+          label: `${stageLabel} - Pool ${poolCode}`,
+          stage,
+          poolCode,
+        });
+      }
+    }
+    return options;
+  }, [data]);
+}
+
+function PoolHistorySelect() {
+  const dispatch = useAppDispatch();
+  const saved = useAppState(
+    (s) =>
+      s.event.tournament?.poolHistory?.selection ?? {
+        stage: "stage1" as PoolHistoryStage,
+        poolCode: "",
+      },
+  );
+  const lastFetched = useAppState(
+    (s) => s.event.tournament?.poolHistory?.lastFetched,
+  );
+  const poolOptions = usePoolHistoryOptions();
+  const savedValue = saved.poolCode ? `${saved.stage}:${saved.poolCode}` : "";
+  const [selectedValue, setSelectedValue] = useState(savedValue);
+  const [isFetching, setIsFetching] = useState(false);
+  const isDirty = selectedValue !== savedValue;
+  // ticks once/sec purely to keep the "time ago" text below live
+  useCurrentTime();
+
+  const fetchData = async () => {
+    setIsFetching(true);
+    try {
+      const results = await Promise.all(
+        POOL_HISTORY_STAGES.map(async ({ value: stage }) => {
+          const data = await fetchStageRows(stage);
+          return [stage, data] as const;
+        }),
+      );
+      dispatch(
+        eventSlice.actions.setPoolHistoryData({
+          data: Object.fromEntries(results),
+          lastFetched: new Date().toISOString(),
+        }),
+      );
+    } catch (e) {
+      console.warn("failed to fetch pool history spreadsheet data", e);
+      toaster.show({
+        message: "Failed to fetch pool history data from the spreadsheet",
+        intent: "danger",
+      });
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  return (
+    <FormGroup label="Pool">
+      <div className={styles.formRow}>
+        <HTMLSelect
+          value={selectedValue}
+          onChange={(e) => setSelectedValue(e.currentTarget.value)}
+        >
+          <option value="" disabled>
+            {poolOptions.length
+              ? "Select a pool"
+              : "--"}
+          </option>
+          {poolOptions.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </HTMLSelect>
+        <Button
+          disabled={!isDirty}
+          intent={isDirty ? "primary" : undefined}
+          onClick={() => {
+            const selected = poolOptions.find(
+              (option) => option.value === selectedValue,
+            );
+            if (!selected) return;
+            dispatch(
+              eventSlice.actions.setPoolHistorySelection({
+                stage: selected.stage,
+                poolCode: selected.poolCode,
+              }),
+            );
+          }}
+        >
+          Submit
+        </Button>
+        <Button loading={isFetching} onClick={fetchData}>
+          Fetch
+        </Button>
+      </div>
+      <div style={{ fontSize: "0.85em", opacity: 0.7 }}>
+        Last updated:{" "}
+        {lastFetched
+          ? `${formatLastFetched(lastFetched)} (${formatTimeAgo(lastFetched)})`
+          : "never"}
+      </div>
+    </FormGroup>
+  );
+}
+
 function Sources() {
   const [currentEdit, setCurrentEdit] = useState<string | null>(null);
   const labels = useAppState((s) => s.event.obsLabels);
@@ -308,6 +492,12 @@ function Sources() {
       </section>
       <section>
         <LowerThirdEditor />
+      </section>
+      <section className={styles.autoWidthSection}>
+        <H3>
+          Pool History <PoolHistoryLink /> <PoolHistoryLabelLink />
+        </H3>
+        <PoolHistorySelect />
       </section>
       <Divider />
       <CssEditor />

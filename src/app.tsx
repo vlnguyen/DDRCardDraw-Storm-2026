@@ -190,8 +190,34 @@ const router = createBrowserRouter([
       {
         index: true,
         lazy: async () => {
-          const { Pools } = await import("./obs-sources/pools");
-          return { Component: Pools };
+          const { PoolsLive } = await import("./obs-sources/pools");
+          return { Component: PoolsLive };
+        },
+      },
+    ],
+  },
+  {
+    path: "e/:roomName/pool-history",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { PoolHistory } = await import("./obs-sources/pool-history");
+          return { Component: PoolHistory };
+        },
+      },
+    ],
+  },
+  {
+    path: "e/:roomName/pool-history-label",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { PoolHistoryLabel } = await import("./obs-sources/text");
+          return { Component: PoolHistoryLabel };
         },
       },
     ],

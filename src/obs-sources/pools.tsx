@@ -135,9 +135,19 @@ function getDisplayScore(score: number): string {
   return `${score.toFixed(2)}%`;
 }
 
-export function Pools() {
+export function PoolsLive() {
   const poolPlayers =
     useAppState((s) => s.event.tournament?.poolState?.players) ?? [];
+  return <Pools poolPlayers={poolPlayers} />;
+}
+
+export function Pools({
+  poolPlayers,
+  forcePlayerAdvancement,
+}: {
+  poolPlayers: PoolPlayer[];
+  forcePlayerAdvancement?: boolean;
+}) {
   const numSongs = poolPlayers[0]?.scores.length ?? 0;
   const poolPlayersResults = useMemo(() => {
     return getPoolPlayersResults(poolPlayers);
@@ -192,10 +202,22 @@ export function Pools() {
       </thead>
       <tbody>
         {poolPlayersResults.map((player, poolPlayerResultIndex) => {
-          const { scores, wins, rank, averageEx, isEliminated } = player;
+          const { scores, wins, rank, averageEx, isEliminated, advancement } =
+            player;
           const medal = ((): string | null => {
             if (isEliminated) {
               return "💀";
+            }
+
+            if (forcePlayerAdvancement) {
+              switch (advancement) {
+                case "1st":
+                  return "🥇";
+                case "2nd":
+                  return "🥈";
+                default:
+                  return null;
+              }
             }
 
             switch (rank) {

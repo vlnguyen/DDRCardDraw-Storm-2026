@@ -124,6 +124,28 @@ export function CabPlayer(props: {
   return <FitH1>{text}</FitH1>;
 }
 
+export function PoolHistoryLabel() {
+  const selection = useAppState(
+    (s) => s.event.tournament?.poolHistory?.selection,
+  );
+  const stageNumber = selection?.stage?.slice("stage".length);
+  const poolCode = selection?.poolCode;
+  const ref = useFitText<HTMLDivElement>(
+    stageNumber && poolCode ? `${stageNumber}:${poolCode}` : null,
+  );
+
+  if (!stageNumber || !poolCode) {
+    return null;
+  }
+
+  return (
+    <div ref={ref} className={styles.poolHistoryLabel}>
+      <div className={styles.poolHistoryStageLine}>Stage {stageNumber}</div>
+      <div className={styles.poolHistoryPoolLine}>Pool {poolCode}</div>
+    </div>
+  );
+}
+
 export function PhaseName() {
   const params = useParams<"roomName" | "cabId">();
   const text = useAppState((s) => {

@@ -6,6 +6,7 @@ import {
   SYNCSTART_PORT,
   SYNCSTART_URL,
 } from "../../obs-sources/syncstart-connection";
+import { formatTimeAgo, useCurrentTime } from "../../hooks/useCurrentTime";
 import { useMatchLogStore } from "./match-log.store";
 import styles from "./match-log.css";
 
@@ -27,6 +28,8 @@ export function MatchLog({
   const fetchMatches = useMatchLogStore((s) => s.fetchMatches);
   const addMatch = useMatchLogStore((s) => s.addMatch);
   const patchMatch = useMatchLogStore((s) => s.patchMatch);
+  // ticks once/sec purely to keep the "time ago" text below live
+  useCurrentTime();
 
   useEffect(() => {
     fetchMatches();
@@ -64,7 +67,8 @@ export function MatchLog({
       </H3>
       {lastUpdated && (
         <p className={styles.refreshInfo}>
-          Last updated: {lastUpdated.toLocaleString()}
+          Last updated: {lastUpdated.toLocaleString()} (
+          {formatTimeAgo(lastUpdated)})
           <br />
           Received {matches.length} matches and {totalScores} scores.
         </p>
@@ -92,6 +96,7 @@ function MatchCard({
   onLabelEdit?: (match: Match) => void;
 }) {
   const date = new Date(match.dateAdded).toLocaleString();
+  const timeAgo = formatTimeAgo(match.dateAdded);
   const sortedScores = [...match.scores].sort(
     (a, b) => (b.exScore ?? -1) - (a.exScore ?? -1),
   );
@@ -111,7 +116,9 @@ function MatchCard({
               />
             )}
           </div>
-          <div>{match.lobbyCode} &mdash; {date}</div>
+          <div>
+            {match.lobbyCode} &mdash; {date} ({timeAgo})
+          </div>
         </div>
       </div>
       <table className={styles.scoreTable}>
