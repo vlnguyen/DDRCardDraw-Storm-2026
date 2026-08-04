@@ -49,6 +49,7 @@ import {
   routableLowerThirdPath,
   routablePersona3CirclePath,
   routableSchedulePath,
+  routableStarsPath,
   routableTrianglesPath,
   routableVsMeterPath,
 } from "../copy-obs-source";
@@ -769,6 +770,7 @@ function OtherSources() {
           path={routableCurrentTimePath()}
         />
         <OtherSourceCard label="Bracket (3840x2160)" path={routableBracketPath()} />
+        <OtherSourceCard label="Stars (3840x2160)" path={routableStarsPath()} />
       </CardList>
     </section>
   );
