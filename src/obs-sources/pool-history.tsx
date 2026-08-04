@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { PoolHistoryStage, PoolPlayer, PoolPlayerScore } from "../state/event.slice";
 import { useAppState } from "../state/store";
+import entrants from "../assets/entrants/entrants.json";
 import { Pools } from "./pools";
 
 export const SPREADSHEET_URL =
@@ -37,13 +38,23 @@ function derivePlayerStatus(_row: string[]): {
   return { isEliminated: false, isDisabled: false };
 }
 
+function findEntrant(gamerTag: string) {
+  return entrants.find(
+    (entrant) => entrant.gamerTag.toLowerCase() === gamerTag.toLowerCase(),
+  );
+}
+
 function rowToPoolPlayer(row: string[]): PoolPlayer {
   const scores: PoolPlayerScore[] = [];
   for (let songIndex = 0; songIndex < SONGS_PER_POOL; songIndex++) {
     scores.push({ exScore: parseExScore(row[2 + songIndex * 2]) });
   }
+  const gamerTag = row[GAMER_TAG_COLUMN];
+  const entrant = findEntrant(gamerTag);
   return {
-    gamerTag: row[GAMER_TAG_COLUMN],
+    gamerTag,
+    prefix: entrant?.prefix,
+    entrantId: entrant?.id,
     scores,
     ...derivePlayerStatus(row),
   };
