@@ -45,6 +45,7 @@ import format from "date-fns/format";
 import {
   EASTERN_TIME_ZONE,
   formatDate,
+  formatTimeAgo,
   useCurrentTime,
 } from "../../hooks/useCurrentTime";
 import {
@@ -376,6 +377,8 @@ function PoolHistorySelect() {
   const [selectedValue, setSelectedValue] = useState(savedValue);
   const [isFetching, setIsFetching] = useState(false);
   const isDirty = selectedValue !== savedValue;
+  // ticks once/sec purely to keep the "time ago" text below live
+  useCurrentTime();
 
   const fetchData = async () => {
     setIsFetching(true);
@@ -444,7 +447,10 @@ function PoolHistorySelect() {
         </Button>
       </div>
       <div style={{ fontSize: "0.85em", opacity: 0.7 }}>
-        Last updated: {lastFetched ? formatLastFetched(lastFetched) : "never"}
+        Last updated:{" "}
+        {lastFetched
+          ? `${formatLastFetched(lastFetched)} (${formatTimeAgo(lastFetched)})`
+          : "never"}
       </div>
     </FormGroup>
   );
