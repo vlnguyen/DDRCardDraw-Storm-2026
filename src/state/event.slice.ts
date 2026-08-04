@@ -51,6 +51,8 @@ export interface PoolPlayerScore {
   rollsHeld?: number;
 }
 
+export type PlayerAdvancement = "" | "1st" | "2nd";
+
 export interface PoolPlayer {
   gamerTag?: string;
   prefix?: string;
@@ -58,6 +60,7 @@ export interface PoolPlayer {
   scores: PoolPlayerScore[];
   isEliminated: boolean;
   isDisabled: boolean;
+  advancement?: PlayerAdvancement;
 }
 
 export interface PoolState {

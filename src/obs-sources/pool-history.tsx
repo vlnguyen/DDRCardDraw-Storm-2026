@@ -1,5 +1,10 @@
 import { useMemo } from "react";
-import type { PoolHistoryStage, PoolPlayer, PoolPlayerScore } from "../state/event.slice";
+import type {
+  PlayerAdvancement,
+  PoolHistoryStage,
+  PoolPlayer,
+  PoolPlayerScore,
+} from "../state/event.slice";
 import { useAppState } from "../state/store";
 import entrants from "../assets/entrants/entrants.json";
 import { Pools } from "./pools";
@@ -18,6 +23,7 @@ export const STAGE_GIDS: Readonly<Record<PoolHistoryStage, string>> = {
 };
 
 // Column positions within a Stage tab's raw CSV export (0-indexed).
+const ADVANCEMENT_COLUMN = 16;
 const POOL_COLUMN = 18;
 const GAMER_TAG_COLUMN = 1;
 const SONGS_PER_POOL = 6;
@@ -27,6 +33,10 @@ function parseExScore(cell: string | undefined): number | undefined {
   if (!cell) return undefined;
   const value = parseFloat(cell.replace("%", ""));
   return Number.isNaN(value) ? undefined : value;
+}
+
+function parseAdvancement(cell: string | undefined): PlayerAdvancement {
+  return cell === "1st" || cell === "2nd" ? cell : "";
 }
 
 // Elimination/disable status has no source in the spreadsheet today —
@@ -56,6 +66,7 @@ function rowToPoolPlayer(row: string[]): PoolPlayer {
     prefix: entrant?.prefix,
     entrantId: entrant?.id,
     scores,
+    advancement: parseAdvancement(row[ADVANCEMENT_COLUMN]),
     ...derivePlayerStatus(row),
   };
 }
@@ -107,5 +118,5 @@ export function PoolHistory() {
     return parsePoolPlayers(rows, poolCode);
   }, [rows, poolCode]);
 
-  return <Pools poolPlayers={poolPlayers} />;
+  return <Pools poolPlayers={poolPlayers} forcePlayerAdvancement />;
 }
