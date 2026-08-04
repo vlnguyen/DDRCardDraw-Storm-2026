@@ -190,8 +190,8 @@ const router = createBrowserRouter([
       {
         index: true,
         lazy: async () => {
-          const { Pools } = await import("./obs-sources/pools");
-          return { Component: Pools };
+          const { PoolsLive } = await import("./obs-sources/pools");
+          return { Component: PoolsLive };
         },
       },
     ],

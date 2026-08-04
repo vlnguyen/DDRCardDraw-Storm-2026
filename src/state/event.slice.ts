@@ -87,6 +87,13 @@ export interface ScheduleDayState {
 
 export type SchedulesState = Partial<Record<ScheduleDay, ScheduleDayState>>;
 
+export type PoolHistoryStage = `stage${1 | 2 | 3 | 4 | 5 | 6 | 7}`;
+
+export interface PoolHistorySelection {
+  stage: PoolHistoryStage;
+  poolCode: string;
+}
+
 /**
  * Event state properties that are unique to use at Project Storm
  */
@@ -103,6 +110,7 @@ interface TournamentState {
   lowerThird?: LowerThirdState;
   toggleLowerThird?: boolean;
   schedules?: SchedulesState;
+  poolHistorySelection?: PoolHistorySelection;
 }
 
 
@@ -270,6 +278,15 @@ export const eventSlice = createSlice({
         ...state.tournament.schedules[action.payload.day],
         items: action.payload.items,
       };
+    },
+    setPoolHistorySelection(
+      state,
+      action: PayloadAction<PoolHistorySelection>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      state.tournament.poolHistorySelection = action.payload;
     },
   },
   extraReducers(builder) {

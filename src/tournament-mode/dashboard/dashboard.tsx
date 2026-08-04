@@ -32,6 +32,7 @@ import {
   type CardDrawPhase,
   type ObsLabelType,
   type ObsTextAlign,
+  type PoolHistoryStage,
   type ScheduleDay,
   type ScheduleItem,
   eventSlice,
@@ -287,6 +288,72 @@ function PoolHistoryLink() {
   );
 }
 
+const POOL_HISTORY_STAGES: { value: PoolHistoryStage; label: string }[] = [
+  { value: "stage1", label: "Stage 1" },
+  { value: "stage2", label: "Stage 2" },
+  { value: "stage3", label: "Stage 3" },
+  { value: "stage4", label: "Stage 4" },
+  { value: "stage5", label: "Stage 5" },
+  { value: "stage6", label: "Stage 6" },
+  { value: "stage7", label: "Stage 7" },
+];
+
+function isPoolHistoryStage(value: string): value is PoolHistoryStage {
+  return POOL_HISTORY_STAGES.some((stage) => stage.value === value);
+}
+
+function PoolHistorySelect() {
+  const dispatch = useAppDispatch();
+  const saved = useAppState(
+    (s) =>
+      s.event.tournament?.poolHistorySelection ?? {
+        stage: "stage1" as PoolHistoryStage,
+        poolCode: "",
+      },
+  );
+  const [stage, setStage] = useState(saved.stage);
+  const [poolCode, setPoolCode] = useState(saved.poolCode);
+  const isDirty = stage !== saved.stage || poolCode !== saved.poolCode;
+
+  return (
+    <FormGroup label="Pool">
+      <div className={styles.formRow}>
+        <HTMLSelect
+          value={stage}
+          onChange={(e) => {
+            const { value } = e.currentTarget;
+            if (isPoolHistoryStage(value)) {
+              setStage(value);
+            }
+          }}
+        >
+          {POOL_HISTORY_STAGES.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </HTMLSelect>
+        <InputGroup
+          placeholder="Pool code (e.g. A1)"
+          value={poolCode}
+          onChange={(e) => setPoolCode(e.target.value)}
+        />
+        <Button
+          disabled={!isDirty}
+          intent={isDirty ? "primary" : undefined}
+          onClick={() =>
+            dispatch(
+              eventSlice.actions.setPoolHistorySelection({ stage, poolCode }),
+            )
+          }
+        >
+          Submit
+        </Button>
+      </div>
+    </FormGroup>
+  );
+}
+
 function Sources() {
   const [currentEdit, setCurrentEdit] = useState<string | null>(null);
   const labels = useAppState((s) => s.event.obsLabels);
@@ -328,6 +395,7 @@ function Sources() {
         <H3>
           Pool History <PoolHistoryLink />
         </H3>
+        <PoolHistorySelect />
       </section>
       <Divider />
       <CssEditor />

@@ -135,9 +135,13 @@ function getDisplayScore(score: number): string {
   return `${score.toFixed(2)}%`;
 }
 
-export function Pools() {
+export function PoolsLive() {
   const poolPlayers =
     useAppState((s) => s.event.tournament?.poolState?.players) ?? [];
+  return <Pools poolPlayers={poolPlayers} />;
+}
+
+export function Pools({ poolPlayers }: { poolPlayers: PoolPlayer[] }) {
   const numSongs = poolPlayers[0]?.scores.length ?? 0;
   const poolPlayersResults = useMemo(() => {
     return getPoolPlayersResults(poolPlayers);

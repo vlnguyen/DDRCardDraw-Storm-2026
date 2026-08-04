@@ -2,7 +2,7 @@ import type { AppState } from "../state/root-reducer";
 
 export const PARTYKIT_HOST =
   process.env.NODE_ENV === "development"
-    ? "localhost:1999"
+    ? "127.0.0.1:1999"
     : "ddr-card-draw-party.noahm.partykit.dev";
 
 const ENDPOINT_PROTOCOL =
