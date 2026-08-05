@@ -105,6 +105,11 @@ export interface StageProgressionState {
   selectedPool?: string;
 }
 
+export interface UpcomingPoolState {
+  selectedStage?: PoolHistoryStage;
+  selectedPool?: string;
+}
+
 /**
  * Event state properties that are unique to use at Project Storm
  */
@@ -123,6 +128,7 @@ interface TournamentState {
   schedules?: SchedulesState;
   poolHistory?: PoolHistoryState;
   stageProgression?: StageProgressionState;
+  upcomingPool?: UpcomingPoolState;
 }
 
 
@@ -319,6 +325,19 @@ export const eventSlice = createSlice({
       }
       state.tournament.stageProgression.selectedStage = action.payload.stage;
       state.tournament.stageProgression.selectedPool = action.payload.pool;
+    },
+    setUpcomingPoolSelection(
+      state,
+      action: PayloadAction<{ stage: PoolHistoryStage; pool: string }>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      if (!state.tournament.upcomingPool) {
+        state.tournament.upcomingPool = {};
+      }
+      state.tournament.upcomingPool.selectedStage = action.payload.stage;
+      state.tournament.upcomingPool.selectedPool = action.payload.pool;
     },
   },
   extraReducers(builder) {

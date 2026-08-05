@@ -60,6 +60,7 @@ import {
   routableStageProgressionPath,
   routableStarsPath,
   routableTrianglesPath,
+  routableUpcomingPoolPath,
   routableVsMeterPath,
 } from "../copy-obs-source";
 import {
@@ -301,6 +302,22 @@ function StageProgressionLink() {
   );
 }
 
+function UpcomingPoolLink() {
+  const href = useHref(routableUpcomingPoolPath());
+  return (
+    <Tooltip content="Upcoming Pool (3840x2160)">
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          copyObsSource(new URL(href, document.location.href).href);
+        }}
+        href={href}
+      />
+    </Tooltip>
+  );
+}
+
 const POOL_HISTORY_STAGES: { value: PoolHistoryStage; label: string }[] = [
   { value: "stage1", label: "Stage 1" },
   { value: "stage2", label: "Stage 2" },
@@ -326,14 +343,19 @@ function useStagePoolCodes(): Record<PoolHistoryStage, string[]> {
   }, [data]);
 }
 
-function StageProgressionSelect() {
+/** Shared by any dashboard section that needs a stage+pool picker backed
+ * by the same fetched spreadsheet data (Stage Progression, Upcoming Pool,
+ * ...) — only what's submitted to differs between callers. */
+function StagePoolSelect({
+  savedStage,
+  savedPool,
+  onSubmit,
+}: {
+  savedStage: PoolHistoryStage;
+  savedPool: string;
+  onSubmit: (selection: { stage: PoolHistoryStage; pool: string }) => void;
+}) {
   const dispatch = useAppDispatch();
-  const savedStage = useAppState(
-    (s) => s.event.tournament?.stageProgression?.selectedStage ?? "stage1",
-  );
-  const savedPool = useAppState(
-    (s) => s.event.tournament?.stageProgression?.selectedPool ?? "",
-  );
   const lastFetched = useAppState(
     (s) => s.event.tournament?.poolHistory?.lastFetched,
   );
@@ -410,12 +432,7 @@ function StageProgressionSelect() {
           disabled={!isDirty}
           intent={isDirty ? "primary" : undefined}
           onClick={() =>
-            dispatch(
-              eventSlice.actions.setStageProgressionSelection({
-                stage: selectedStage,
-                pool: selectedPool,
-              }),
-            )
+            onSubmit({ stage: selectedStage, pool: selectedPool })
           }
         >
           Submit
@@ -431,6 +448,44 @@ function StageProgressionSelect() {
           : "never"}
       </div>
     </>
+  );
+}
+
+function StageProgressionSelect() {
+  const dispatch = useAppDispatch();
+  const savedStage = useAppState(
+    (s) => s.event.tournament?.stageProgression?.selectedStage ?? "stage1",
+  );
+  const savedPool = useAppState(
+    (s) => s.event.tournament?.stageProgression?.selectedPool ?? "",
+  );
+  return (
+    <StagePoolSelect
+      savedStage={savedStage}
+      savedPool={savedPool}
+      onSubmit={(selection) =>
+        dispatch(eventSlice.actions.setStageProgressionSelection(selection))
+      }
+    />
+  );
+}
+
+function UpcomingPoolSelect() {
+  const dispatch = useAppDispatch();
+  const savedStage = useAppState(
+    (s) => s.event.tournament?.upcomingPool?.selectedStage ?? "stage1",
+  );
+  const savedPool = useAppState(
+    (s) => s.event.tournament?.upcomingPool?.selectedPool ?? "",
+  );
+  return (
+    <StagePoolSelect
+      savedStage={savedStage}
+      savedPool={savedPool}
+      onSubmit={(selection) =>
+        dispatch(eventSlice.actions.setUpcomingPoolSelection(selection))
+      }
+    />
   );
 }
 
@@ -483,6 +538,12 @@ function Sources() {
           Stage Progression <StageProgressionLink />
         </H3>
         <StageProgressionSelect />
+      </section>
+      <section className={styles.autoWidthSection}>
+        <H3>
+          Upcoming Pool <UpcomingPoolLink />
+        </H3>
+        <UpcomingPoolSelect />
       </section>
       <Divider />
       <CssEditor />
