@@ -1,0 +1,131 @@
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+.canvas {
+  position: relative;
+  width: 3840px;
+  height: 2160px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #fff;
+  font-size: 64px;
+  font-family: sans-serif;
+}
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 33.333%;
+  height: 100%;
+  background: red;
+  box-sizing: border-box;
+  padding: 100px 0 0 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.titleWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.titleStroke {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 190px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: #1a1a1a;
+  -webkit-text-stroke: 32px #1a1a1a;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.title {
+  position: relative;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 190px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.pools {
+  margin-top: 82px;
+  padding-right: 100px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 55px;
+  width: 100%;
+}
+
+.pool {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+
+.poolName {
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 88px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.playerList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: "Chiaro Std";
+  font-weight: 700;
+  font-size: 52px;
+  line-height: 1.15;
+  color: white;
+  text-align: left;
+}
+
+.medal {
+  font-size: 0.9em;
+}

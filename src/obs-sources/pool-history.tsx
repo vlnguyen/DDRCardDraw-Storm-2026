@@ -72,7 +72,10 @@ function rowToPoolPlayer(row: string[]): PoolPlayer {
   };
 }
 
-function parsePoolPlayers(rows: string[][], poolCode: string): PoolPlayer[] {
+export function parsePoolPlayers(
+  rows: string[][],
+  poolCode: string,
+): PoolPlayer[] {
   return rows
     .filter((row) => row[POOL_COLUMN] === poolCode)
     .filter((row) => row[GAMER_TAG_COLUMN])

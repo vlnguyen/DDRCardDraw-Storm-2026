@@ -105,6 +105,11 @@ export interface PoolHistoryState {
   data?: Partial<Record<PoolHistoryStage, any>>;
 }
 
+export interface StageProgressionState {
+  /** same stage keys as pool history, but not broken out by pool */
+  selectedStage?: PoolHistoryStage;
+}
+
 /**
  * Event state properties that are unique to use at Project Storm
  */
@@ -122,6 +127,7 @@ interface TournamentState {
   toggleLowerThird?: boolean;
   schedules?: SchedulesState;
   poolHistory?: PoolHistoryState;
+  stageProgression?: StageProgressionState;
 }
 
 
@@ -317,6 +323,18 @@ export const eventSlice = createSlice({
       }
       state.tournament.poolHistory.data = action.payload.data;
       state.tournament.poolHistory.lastFetched = action.payload.lastFetched;
+    },
+    setStageProgressionSelectedStage(
+      state,
+      action: PayloadAction<PoolHistoryStage>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      if (!state.tournament.stageProgression) {
+        state.tournament.stageProgression = {};
+      }
+      state.tournament.stageProgression.selectedStage = action.payload;
     },
   },
   extraReducers(builder) {

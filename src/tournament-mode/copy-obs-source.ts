@@ -21,6 +21,7 @@ export const routableBracketPath = () => `../bracket`;
 export const routableSchedulePath = (day: "fri" | "sat" | "sun") =>
   `../schedule?day=${day}`;
 export const routableStarsPath = () => `../stars`;
+export const routableStageProgressionPath = () => `../stage-progression`;
 
 export function copyObsSource(href: string) {
   void copyPlainTextToClipboard(href, "Copied OBS source URL to clipboard");

@@ -4,7 +4,7 @@ import { useAppState } from "../state/store";
 
 import styles from "./pools.css";
 
-interface PoolPlayerResult extends PoolPlayer {
+export interface PoolPlayerResult extends PoolPlayer {
   wins: number[];
   rank: number;
   averageEx: number;
@@ -45,7 +45,9 @@ function PlayerName({
   );
 }
 
-function getPoolPlayersResults(poolPlayers: PoolPlayer[]): PoolPlayerResult[] {
+export function getPoolPlayersResults(
+  poolPlayers: PoolPlayer[],
+): PoolPlayerResult[] {
   const numSongs = poolPlayers[0]?.scores.length ?? 0;
   const poolPlayersResults: PoolPlayerResult[] = poolPlayers
     .filter((poolPlayer) => !poolPlayer.isDisabled)

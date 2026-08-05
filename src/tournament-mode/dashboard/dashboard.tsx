@@ -59,6 +59,7 @@ import {
   routablePoolHistoryLabelPath,
   routablePoolHistoryPath,
   routableSchedulePath,
+  routableStageProgressionPath,
   routableStarsPath,
   routableTrianglesPath,
   routableVsMeterPath,
@@ -318,6 +319,22 @@ function PoolHistoryLabelLink() {
   );
 }
 
+function StageProgressionLink() {
+  const href = useHref(routableStageProgressionPath());
+  return (
+    <Tooltip content="Stage Progression (3840x2160)">
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          copyObsSource(new URL(href, document.location.href).href);
+        }}
+        href={href}
+      />
+    </Tooltip>
+  );
+}
+
 const POOL_HISTORY_STAGES: { value: PoolHistoryStage; label: string }[] = [
   { value: "stage1", label: "Stage 1" },
   { value: "stage2", label: "Stage 2" },
@@ -327,6 +344,88 @@ const POOL_HISTORY_STAGES: { value: PoolHistoryStage; label: string }[] = [
   { value: "stage6", label: "Stage 6" },
   { value: "stage7", label: "Stage 7" },
 ];
+
+function StageProgressionSelect() {
+  const dispatch = useAppDispatch();
+  const saved = useAppState(
+    (s) => s.event.tournament?.stageProgression?.selectedStage ?? "stage1",
+  );
+  const lastFetched = useAppState(
+    (s) => s.event.tournament?.poolHistory?.lastFetched,
+  );
+  const [selectedStage, setSelectedStage] = useState<PoolHistoryStage>(saved);
+  const [isFetching, setIsFetching] = useState(false);
+  const isDirty = selectedStage !== saved;
+  // ticks once/sec purely to keep the "time ago" text below live
+  useCurrentTime();
+
+  const fetchData = async () => {
+    setIsFetching(true);
+    try {
+      const results = await Promise.all(
+        POOL_HISTORY_STAGES.map(async ({ value: stage }) => {
+          const data = await fetchStageRows(stage);
+          return [stage, data] as const;
+        }),
+      );
+      dispatch(
+        eventSlice.actions.setPoolHistoryData({
+          data: Object.fromEntries(results),
+          lastFetched: new Date().toISOString(),
+        }),
+      );
+    } catch (e) {
+      console.warn("failed to fetch pool history spreadsheet data", e);
+      toaster.show({
+        message: "Failed to fetch pool history data from the spreadsheet",
+        intent: "danger",
+      });
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  return (
+    <>
+      <div className={styles.formRow}>
+        <HTMLSelect
+          value={selectedStage}
+          onChange={(e) =>
+            setSelectedStage(e.currentTarget.value as PoolHistoryStage)
+          }
+        >
+          {POOL_HISTORY_STAGES.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </HTMLSelect>
+        <Button
+          disabled={!isDirty}
+          intent={isDirty ? "primary" : undefined}
+          onClick={() =>
+            dispatch(
+              eventSlice.actions.setStageProgressionSelectedStage(
+                selectedStage,
+              ),
+            )
+          }
+        >
+          Submit
+        </Button>
+        <Button loading={isFetching} onClick={fetchData}>
+          Fetch
+        </Button>
+      </div>
+      <div style={{ fontSize: "0.85em", opacity: 0.7 }}>
+        Last updated:{" "}
+        {lastFetched
+          ? `${formatLastFetched(lastFetched)} (${formatTimeAgo(lastFetched)})`
+          : "never"}
+      </div>
+    </>
+  );
+}
 
 function formatLastFetched(iso: string): string {
   const zoned = new Date(
@@ -498,6 +597,12 @@ function Sources() {
           Pool History <PoolHistoryLink /> <PoolHistoryLabelLink />
         </H3>
         <PoolHistorySelect />
+      </section>
+      <section className={styles.autoWidthSection}>
+        <H3>
+          Stage Progression <StageProgressionLink />
+        </H3>
+        <StageProgressionSelect />
       </section>
       <Divider />
       <CssEditor />
