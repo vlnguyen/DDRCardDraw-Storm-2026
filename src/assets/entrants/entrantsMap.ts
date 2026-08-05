@@ -188,14 +188,26 @@ export const eventsMap: Record<
   },
 };
 
+/** Registered for the current event but didn't end up with a seed
+ * (dropped before seeding closed). Distinguished from `null`, which means
+ * the player isn't in this event's entrants list at all. */
+export const SEED_DROPPED = -1;
+
 export const entrantsMap: Record<
   number,
   | {
       id: number;
       discriminator: string;
-      membersId: number;
+      // Not every entrant has a known GrooveStats member id (e.g. players
+      // added only via the current event's start.gg roster, with no prior
+      // ITL history to source it from).
+      membersId?: number;
       entrantPlacements: Partial<Record<EventKey, number>> &
         Partial<Record<ItlRankingPointsKey, number>>;
+      /** Current event seed. `SEED_DROPPED` if registered but unseeded,
+       * `null` if not registered for the current event. Never undefined —
+       * every entry must explicitly say which of these applies. */
+      seed: number | null;
     }
   | undefined
 > = {
@@ -214,6 +226,14 @@ export const entrantsMap: Record<
       itl2026: 302,
       itl2026rp: 379560,
     },
+    seed: 43,
+  },
+  // Alex
+  [3396838]: {
+    id: 3396838,
+    discriminator: "",
+    entrantPlacements: {},
+    seed: 65,
   },
   // Andeh [LONESTAR]
   [1955111]: {
@@ -232,6 +252,21 @@ export const entrantsMap: Record<
       panini2025: 13,
       rip15: 17,
     },
+    seed: 18,
+  },
+  // ANDROO [RNG]
+  [1787090]: {
+    id: 1787090,
+    discriminator: "c7bd7fec",
+    entrantPlacements: {},
+    seed: 34,
+  },
+  // BadAntelope
+  [3439497]: {
+    id: 3439497,
+    discriminator: "7df3718e",
+    entrantPlacements: {},
+    seed: 66,
   },
   // baraka
   [473954]: {
@@ -250,6 +285,14 @@ export const entrantsMap: Record<
       itl2026: 50,
       itl2026rp: 540558,
     },
+    seed: 12,
+  },
+  // BarinRojo
+  [3441371]: {
+    id: 3441371,
+    discriminator: "8df3e68c",
+    entrantPlacements: {},
+    seed: 69,
   },
   // BigYama
   [1956381]: {
@@ -266,6 +309,7 @@ export const entrantsMap: Record<
       itl2026: 260,
       itl2026rp: 400469,
     },
+    seed: 39,
   },
   // Blizzrdball
   [1970499]: {
@@ -285,6 +329,14 @@ export const entrantsMap: Record<
       rip13: 25,
       rip135: 29,
     },
+    seed: 32,
+  },
+  // BMG!!
+  [3286044]: {
+    id: 3286044,
+    discriminator: "edccd012",
+    entrantPlacements: {},
+    seed: 60,
   },
   // Bostic300
   [2628662]: {
@@ -299,6 +351,7 @@ export const entrantsMap: Record<
       itl2026: 37,
       itl2026rp: 563798,
     },
+    seed: 15,
   },
   // Captain Carbon [TBD]
   [486724]: {
@@ -315,6 +368,7 @@ export const entrantsMap: Record<
       itl2026: 100,
       itl2026rp: 503370,
     },
+    seed: -1,
   },
   // CarterTheQ [DDRIllini]
   [12877]: {
@@ -339,6 +393,7 @@ export const entrantsMap: Record<
       rip14: 17,
       rip15: 37,
     },
+    seed: 35,
   },
   // Chance R.
   [2008712]: {
@@ -368,6 +423,7 @@ export const entrantsMap: Record<
       shine2025: 3,
       wg2024: 5,
     },
+    seed: 1,
   },
   // cheesecake [HFIL]
   [14485]: {
@@ -375,6 +431,7 @@ export const entrantsMap: Record<
     discriminator: "b1875b2d",
     membersId: 2174,
     entrantPlacements: {},
+    seed: 59,
   },
   // chezmix [RNG]
   [1451396]: {
@@ -391,6 +448,7 @@ export const entrantsMap: Record<
       itl2026: 645,
       itl2026rp: 229486,
     },
+    seed: 24,
   },
   // Chief Skittles [STORM]
   [2099374]: {
@@ -410,6 +468,7 @@ export const entrantsMap: Record<
       rip14: 13,
       rip15: 25,
     },
+    seed: 21,
   },
   // cousinoer5
   [2158665]: {
@@ -424,6 +483,7 @@ export const entrantsMap: Record<
       itl2026: 454,
       itl2026rp: 305284,
     },
+    seed: 51,
   },
   // Crash Cringle
   [3439532]: {
@@ -440,6 +500,7 @@ export const entrantsMap: Record<
       itl2026: 382,
       itl2026rp: 338334,
     },
+    seed: 47,
   },
   // Darkstar
   [2652265]: {
@@ -457,6 +518,21 @@ export const entrantsMap: Record<
       itl2026rp: 579718,
       dd2025: 9,
     },
+    seed: 14,
+  },
+  // dashark
+  [2119088]: {
+    id: 2119088,
+    discriminator: "2f8f7845",
+    entrantPlacements: {},
+    seed: 25,
+  },
+  // datcoreedoe
+  [2230581]: {
+    id: 2230581,
+    discriminator: "e549c65b",
+    entrantPlacements: {},
+    seed: 50,
   },
   // DomDeeKong
   [488761]: {
@@ -473,6 +549,7 @@ export const entrantsMap: Record<
       itl2026: 170,
       itl2026rp: 452549,
     },
+    seed: 31,
   },
   // Eesa
   [1814321]: {
@@ -493,6 +570,21 @@ export const entrantsMap: Record<
       itl2026rp: 451961,
       rip15: 45,
     },
+    seed: 26,
+  },
+  // Emmp
+  [3265571]: {
+    id: 3265571,
+    discriminator: "",
+    entrantPlacements: {},
+    seed: 61,
+  },
+  // EvanS [ASU]
+  [2512771]: {
+    id: 2512771,
+    discriminator: "b8aaf24f",
+    entrantPlacements: {},
+    seed: 62,
   },
   // EvilDave219 [TBD]
   [436678]: {
@@ -500,6 +592,7 @@ export const entrantsMap: Record<
     discriminator: "96661b6c",
     membersId: 661,
     entrantPlacements: {},
+    seed: 33,
   },
   // FabSab440 [IIDX]
   [630151]: {
@@ -514,6 +607,7 @@ export const entrantsMap: Record<
       itl2025: 667,
       itl2025rp: 209209,
     },
+    seed: 41,
   },
   // fastboy [pals]
   [4634]: {
@@ -530,6 +624,7 @@ export const entrantsMap: Record<
       itl2026: 1520,
       itl2026rp: 17501,
     },
+    seed: null,
   },
   // Flash
   [2072594]: {
@@ -552,6 +647,7 @@ export const entrantsMap: Record<
       panini2025: 7,
       wg2024: 2,
     },
+    seed: 4,
   },
   // Flip
   [2090414]: {
@@ -564,6 +660,7 @@ export const entrantsMap: Record<
       itl2026: 186,
       itl2026rp: 448866,
     },
+    seed: 13,
   },
   // GalaxyStar
   [638828]: {
@@ -576,6 +673,14 @@ export const entrantsMap: Record<
       itl2026: 1354,
       itl2026rp: 38000,
     },
+    seed: null,
+  },
+  // GlitchedGoddess [Twitch]
+  [3065163]: {
+    id: 3065163,
+    discriminator: "a4c7a09f",
+    entrantPlacements: {},
+    seed: 64,
   },
   // Goomba Roomba [Bhop]
   [2403703]: {
@@ -598,6 +703,7 @@ export const entrantsMap: Record<
       rip14: 21,
       rip15: 17,
     },
+    seed: 10,
   },
   // HeavyMode
   [3171983]: {
@@ -616,6 +722,7 @@ export const entrantsMap: Record<
       itl2026rp: 480389,
       rip15: 29,
     },
+    seed: 28,
   },
   // Higgy
   [2121528]: {
@@ -634,6 +741,7 @@ export const entrantsMap: Record<
       rip13: 17,
       rip135: 13,
     },
+    seed: 19,
   },
   // idontevenknowyou
   [3008718]: {
@@ -650,6 +758,7 @@ export const entrantsMap: Record<
       itl2026: 60,
       itl2026rp: 531297,
     },
+    seed: 17,
   },
   // itgalex
   [2027270]: {
@@ -666,6 +775,21 @@ export const entrantsMap: Record<
       itl2026: 12,
       itl2026rp: 603358,
     },
+    seed: 6,
+  },
+  // Itss2Eazyy
+  [3442890]: {
+    id: 3442890,
+    discriminator: "49ee8d5d",
+    entrantPlacements: {},
+    seed: 74,
+  },
+  // JeauxColorado
+  [3441225]: {
+    id: 3441225,
+    discriminator: "2b2eb2e3",
+    entrantPlacements: {},
+    seed: 72,
   },
   // Jhennyinthecup
   [781642]: {
@@ -680,6 +804,7 @@ export const entrantsMap: Record<
       itl2025: 1505,
       itl2025rp: 13478,
     },
+    seed: 48,
   },
   // JONBUDDY [OCG]
   [746713]: {
@@ -696,6 +821,7 @@ export const entrantsMap: Record<
       itl2026: 664,
       itl2026rp: 221094,
     },
+    seed: 55,
   },
   // KEAK
   [2048909]: {
@@ -706,6 +832,14 @@ export const entrantsMap: Record<
       itl2026: 368,
       itl2026rp: 344770,
     },
+    seed: 42,
+  },
+  // kickinnc2
+  [3442088]: {
+    id: 3442088,
+    discriminator: "",
+    entrantPlacements: {},
+    seed: 70,
   },
   // Koffee
   [2409673]: {
@@ -721,6 +855,7 @@ export const entrantsMap: Record<
       itl2026rp: 401328,
       rip15: 57,
     },
+    seed: 38,
   },
   // Lazor
   [2267114]: {
@@ -735,6 +870,7 @@ export const entrantsMap: Record<
       itl2026: 96,
       itl2026rp: 504475,
     },
+    seed: 27,
   },
   // leontwix
   [498791]: {
@@ -750,6 +886,7 @@ export const entrantsMap: Record<
       itl2025: 1368,
       itl2025rp: 27066,
     },
+    seed: null,
   },
   // LIGHTW8
   [2151595]: {
@@ -764,6 +901,7 @@ export const entrantsMap: Record<
       itl2026: 117,
       itl2026rp: 493045,
     },
+    seed: 23,
   },
   // Limen
   [155600]: {
@@ -774,6 +912,7 @@ export const entrantsMap: Record<
       itl2026: 1294,
       itl2026rp: 47816,
     },
+    seed: 58,
   },
   // lolipo
   [436726]: {
@@ -802,6 +941,7 @@ export const entrantsMap: Record<
       rip14: 5,
       rip15: 13,
     },
+    seed: 5,
   },
   // Malia
   [627949]: {
@@ -820,6 +960,7 @@ export const entrantsMap: Record<
       itl2026: 471,
       itl2026rp: 300936,
     },
+    seed: 45,
   },
   // Matty Ice
   [231774]: {
@@ -832,6 +973,7 @@ export const entrantsMap: Record<
       rip14: 21,
       rip15: 25,
     },
+    seed: -1,
   },
   // mdx
   [605243]: {
@@ -848,6 +990,7 @@ export const entrantsMap: Record<
       panini2025: 9,
       rip15: 17,
     },
+    seed: 9,
   },
   // meowbois
   [473823]: {
@@ -860,6 +1003,7 @@ export const entrantsMap: Record<
       itl2026: 445,
       itl2026rp: 311990,
     },
+    seed: 52,
   },
   // midtown
   [2354355]: {
@@ -883,6 +1027,7 @@ export const entrantsMap: Record<
       rip15: 5,
       shine2025: 7,
     },
+    seed: 7,
   },
   // Miligram
   [727583]: {
@@ -899,6 +1044,7 @@ export const entrantsMap: Record<
       itl2026: 156,
       itl2026rp: 462263,
     },
+    seed: 29,
   },
   // PenguinMessiah
   [3291058]: {
@@ -911,6 +1057,7 @@ export const entrantsMap: Record<
       itl2026: 1123,
       itl2026rp: 83882,
     },
+    seed: 57,
   },
   // PolloxX
   [806211]: {
@@ -927,6 +1074,14 @@ export const entrantsMap: Record<
       itl2026: 1579,
       itl2026rp: 12630,
     },
+    seed: 30,
+  },
+  // ReformedSho#TWT
+  [3156620]: {
+    id: 3156620,
+    discriminator: "ca5e2ab0",
+    entrantPlacements: {},
+    seed: 68,
   },
   // RisaOzu
   [2152274]: {
@@ -943,6 +1098,7 @@ export const entrantsMap: Record<
       itl2026: 457,
       itl2026rp: 304463,
     },
+    seed: null,
   },
   // Rynker
   [437458]: {
@@ -975,6 +1131,7 @@ export const entrantsMap: Record<
       shine2024: 6,
       shine2025: 1,
     },
+    seed: 2,
   },
   // Ryuguu
   [3266358]: {
@@ -985,6 +1142,7 @@ export const entrantsMap: Record<
       itl2026: 285,
       itl2026rp: 388639,
     },
+    seed: 44,
   },
   // SailorMoonElite
   [2206880]: {
@@ -1002,6 +1160,7 @@ export const entrantsMap: Record<
       itl2026rp: 176011,
       rip135: 33,
     },
+    seed: 53,
   },
   // simplySOUF [STUUF]
   [2298424]: {
@@ -1009,6 +1168,7 @@ export const entrantsMap: Record<
     discriminator: "857ad296",
     membersId: 8535,
     entrantPlacements: {},
+    seed: 63,
   },
   // SirDelins
   [2275154]: {
@@ -1021,6 +1181,7 @@ export const entrantsMap: Record<
       itl2026: 1084,
       itl2026rp: 93959,
     },
+    seed: 56,
   },
   // Skate
   [2400497]: {
@@ -1043,6 +1204,7 @@ export const entrantsMap: Record<
       rip14: 73,
       rip15: 61,
     },
+    seed: 49,
   },
   // SpeakEZ
   [94078]: {
@@ -1057,6 +1219,21 @@ export const entrantsMap: Record<
       rip13: 53,
       rip15: 69,
     },
+    seed: 54,
+  },
+  // SpOwOky_Angu
+  [1655336]: {
+    id: 1655336,
+    discriminator: "ef27084b",
+    entrantPlacements: {},
+    seed: 71,
+  },
+  // STILL Gigas
+  [1630991]: {
+    id: 1630991,
+    discriminator: "b3184096",
+    entrantPlacements: {},
+    seed: 73,
   },
   // Sudzi
   [231667]: {
@@ -1079,6 +1256,7 @@ export const entrantsMap: Record<
       rip15: 9,
       shine2025: 4,
     },
+    seed: null,
   },
   // T. Swag
   [497819]: {
@@ -1097,6 +1275,14 @@ export const entrantsMap: Record<
       rip14: 13,
       rip15: 37,
     },
+    seed: 22,
+  },
+  // Taraun Anderson
+  [3374222]: {
+    id: 3374222,
+    discriminator: "5d3ec0fc",
+    entrantPlacements: {},
+    seed: 67,
   },
   // teejusb
   [90040]: {
@@ -1115,6 +1301,7 @@ export const entrantsMap: Record<
       rip135: 25,
       rip15: 45,
     },
+    seed: 36,
   },
   // TommyDoesntMiss
   [486388]: {
@@ -1136,6 +1323,7 @@ export const entrantsMap: Record<
       rip135: 9,
       rip15: 21,
     },
+    seed: null,
   },
   // Ty
   [792951]: {
@@ -1153,6 +1341,7 @@ export const entrantsMap: Record<
       itl2026: 18,
       itl2026rp: 596508,
     },
+    seed: 8,
   },
   // undrscore
   [2296976]: {
@@ -1169,6 +1358,7 @@ export const entrantsMap: Record<
       itl2026: 31,
       itl2026rp: 572209,
     },
+    seed: 16,
   },
   // VincentITG [ROBERTO]
   [656475]: {
@@ -1192,6 +1382,7 @@ export const entrantsMap: Record<
       rip14: 9,
       rip15: 21,
     },
+    seed: 11,
   },
   // VivaLaMoo [STORM]
   [143547]: {
@@ -1222,6 +1413,7 @@ export const entrantsMap: Record<
       shine2024: 3,
       wg2024: 4,
     },
+    seed: 3,
   },
   // WDRM
   [1838861]: {
@@ -1233,6 +1425,7 @@ export const entrantsMap: Record<
       itl2024: 487,
       itl2024rp: 240612,
     },
+    seed: 40,
   },
   // X!!
   [2214618]: {
@@ -1249,6 +1442,14 @@ export const entrantsMap: Record<
       itl2026: 139,
       itl2026rp: 476563,
     },
+    seed: 37,
+  },
+  // XEPHER
+  [1821389]: {
+    id: 1821389,
+    discriminator: "cdecc7e5",
+    entrantPlacements: {},
+    seed: 46,
   },
   // XjojoX
   [1785438]: {
@@ -1270,6 +1471,7 @@ export const entrantsMap: Record<
       rip14: 9,
       rip15: 21,
     },
+    seed: null,
   },
   // Yokamaa [MOISTBOIS]
   [1786551]: {
@@ -1288,5 +1490,6 @@ export const entrantsMap: Record<
       panini2024: 7,
       panini2025: 13,
     },
+    seed: 20,
   },
 };
