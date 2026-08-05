@@ -92,13 +92,7 @@ export type SchedulesState = Partial<Record<ScheduleDay, ScheduleDayState>>;
 
 export type PoolHistoryStage = `stage${1 | 2 | 3 | 4 | 5 | 6 | 7}`;
 
-export interface PoolHistorySelection {
-  stage: PoolHistoryStage;
-  poolCode: string;
-}
-
 export interface PoolHistoryState {
-  selection?: PoolHistorySelection;
   /** UTC timestamp (ISO string) of the last successful fetch across all stages */
   lastFetched?: string;
   /** raw fetch data from Google Sheets, keyed by stage */
@@ -296,18 +290,6 @@ export const eventSlice = createSlice({
         ...state.tournament.schedules[action.payload.day],
         items: action.payload.items,
       };
-    },
-    setPoolHistorySelection(
-      state,
-      action: PayloadAction<PoolHistorySelection>,
-    ) {
-      if (!state.tournament) {
-        state.tournament = {};
-      }
-      if (!state.tournament.poolHistory) {
-        state.tournament.poolHistory = {};
-      }
-      state.tournament.poolHistory.selection = action.payload;
     },
     setPoolHistoryData(
       state,

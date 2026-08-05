@@ -41,31 +41,6 @@
   transform: translate(-50%, -50%) scaleY(0.75);
 }
 
-.poolHistoryLabel {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: fit-content;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.poolHistoryStageLine {
-  font-family: "FOT-Rodin Pro";
-  letter-spacing: -0.05em;
-  transform: scaleY(0.75);
-}
-
-.poolHistoryPoolLine {
-  font-family: "Chiaro Std";
-}
-
 .alignLeft {
   text-align: left;
 }

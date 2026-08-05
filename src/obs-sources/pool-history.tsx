@@ -1,13 +1,10 @@
-import { useMemo } from "react";
 import type {
   PlayerAdvancement,
   PoolHistoryStage,
   PoolPlayer,
   PoolPlayerScore,
 } from "../state/event.slice";
-import { useAppState } from "../state/store";
 import entrants from "../assets/entrants/entrants.json";
-import { Pools, PoolsViewport } from "./pools";
 
 export const SPREADSHEET_URL =
   "https://docs.google.com/spreadsheets/d/1bWj8QnYeLFyWdON8XQjbcfqv1AsPf33nKg0qVJcSbm0" as const;
@@ -107,24 +104,4 @@ export async function fetchStageRows(
   const text = await res.text();
   const pp = await import("papaparse");
   return pp.parse<string[]>(text, { skipEmptyLines: false }).data;
-}
-
-export function PoolHistory() {
-  const poolHistory = useAppState((s) => s.event.tournament?.poolHistory);
-  const stage = poolHistory?.selection?.stage;
-  const poolCode = poolHistory?.selection?.poolCode;
-  const rows = stage
-    ? (poolHistory?.data?.[stage] as string[][] | undefined)
-    : undefined;
-
-  const poolPlayers = useMemo(() => {
-    if (!rows || !poolCode) return [];
-    return parsePoolPlayers(rows, poolCode);
-  }, [rows, poolCode]);
-
-  return (
-    <PoolsViewport>
-      <Pools poolPlayers={poolPlayers} forcePlayerAdvancement />
-    </PoolsViewport>
-  );
 }
