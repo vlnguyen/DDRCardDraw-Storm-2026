@@ -38,6 +38,12 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  transform: translateX(0);
+  transition: transform 0.5s ease-in-out;
+}
+
+.sidebarSlideOut {
+  transform: translateX(110%);
 }
 
 .sidebarEdgeBlur {
@@ -90,6 +96,7 @@
 }
 
 .pools {
+  position: relative;
   margin-top: 82px;
   padding-right: 100px;
   box-sizing: border-box;
@@ -100,10 +107,24 @@
 }
 
 .pool {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 22px;
+}
+
+.poolHighlight {
+  position: absolute;
+  background: rgba(0, 132, 254, 0.35);
+  border-radius: 12px;
+  box-sizing: border-box;
+  transition:
+    top 0.4s ease,
+    left 0.4s ease,
+    width 0.4s ease,
+    height 0.4s ease;
+  pointer-events: none;
 }
 
 .poolName {
