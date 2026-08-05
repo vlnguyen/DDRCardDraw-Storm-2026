@@ -29,6 +29,7 @@ export function StageProgression() {
   return (
     <div className={styles.canvas}>
       <div className={styles.sidebar}>
+        <div className={styles.sidebarEdgeBlur} />
         <div className={styles.titleWrap}>
           <p className={styles.titleStroke}>Stage {stageNumber}</p>
           <p className={styles.title}>Stage {stageNumber}</p>

@@ -30,14 +30,28 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 33.333%;
+  width: 28%;
   height: 100%;
-  background: red;
+  background: rgba(0, 0, 0, 0.95);
   box-sizing: border-box;
   padding: 100px 0 0 100px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.sidebarEdgeBlur {
+  position: absolute;
+  top: 0;
+  left: -192px;
+  width: 192px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  mask-image: linear-gradient(to right, transparent, black 30%);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 30%);
+  pointer-events: none;
 }
 
 .titleWrap {
