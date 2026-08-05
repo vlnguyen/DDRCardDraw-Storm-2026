@@ -26,6 +26,25 @@
   font-family: sans-serif;
 }
 
+.centerPanel {
+  position: absolute;
+  left: 192px;
+  /* sidebar is 28% wide; keep an action-safe gap from its left edge */
+  right: calc(28% + 192px);
+  bottom: 108px;
+  aspect-ratio: 3450 / 1250;
+  overflow: hidden;
+  /* gives Pools (rendered inside) a sized container to read cqw/% from,
+     instead of it assuming it owns the whole page viewport */
+  container-type: inline-size;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.centerPanelFading {
+  opacity: 0;
+}
+
 .sidebar {
   position: absolute;
   top: 0;

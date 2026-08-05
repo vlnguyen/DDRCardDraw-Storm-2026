@@ -7,7 +7,7 @@ import type {
 } from "../state/event.slice";
 import { useAppState } from "../state/store";
 import entrants from "../assets/entrants/entrants.json";
-import { Pools } from "./pools";
+import { Pools, PoolsViewport } from "./pools";
 
 export const SPREADSHEET_URL =
   "https://docs.google.com/spreadsheets/d/1bWj8QnYeLFyWdON8XQjbcfqv1AsPf33nKg0qVJcSbm0" as const;
@@ -122,5 +122,9 @@ export function PoolHistory() {
     return parsePoolPlayers(rows, poolCode);
   }, [rows, poolCode]);
 
-  return <Pools poolPlayers={poolPlayers} forcePlayerAdvancement />;
+  return (
+    <PoolsViewport>
+      <Pools poolPlayers={poolPlayers} forcePlayerAdvancement />
+    </PoolsViewport>
+  );
 }

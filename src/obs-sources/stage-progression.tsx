@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { PoolHistoryStage } from "../state/event.slice";
 import { useAppState } from "../state/store";
 import { getPoolCodesForStage, parsePoolPlayers } from "./pool-history";
-import { getPoolPlayersResults } from "./pools";
+import { Pools, getPoolPlayersResults } from "./pools";
 import styles from "./stage-progression.css";
 
 // How far the highlight box extends past each pool's own content box.
@@ -23,7 +23,13 @@ export function StageProgression() {
   // fully offscreen, then swaps before sliding back in.
   const [displayedStage, setDisplayedStage] =
     useState<PoolHistoryStage>(committedStage);
-  const [isExiting, setIsExiting] = useState(false);
+  // "exiting" = sliding offscreen (old content); "entering" = sliding back
+  // into view (new content, mid-transition); "idle" = fully settled. The
+  // center panel's fade-in waits on this reaching "idle" after a stage
+  // change, rather than running on its own independent timer.
+  const [sidebarPhase, setSidebarPhase] = useState<
+    "idle" | "exiting" | "entering"
+  >("idle");
   // Tracks the last committedStage seen, so a change can be detected and
   // reacted to during render instead of in an effect (avoids an extra
   // effect-triggered render pass for what's fundamentally derived state).
@@ -32,7 +38,7 @@ export function StageProgression() {
   if (committedStage !== prevCommittedStage) {
     setPrevCommittedStage(committedStage);
     if (committedStage !== displayedStage) {
-      setIsExiting(true);
+      setSidebarPhase("exiting");
     }
   }
 
@@ -42,9 +48,11 @@ export function StageProgression() {
     if (e.target !== e.currentTarget || e.propertyName !== "transform") {
       return;
     }
-    if (isExiting) {
+    if (sidebarPhase === "exiting") {
       setDisplayedStage(committedStage);
-      setIsExiting(false);
+      setSidebarPhase("entering");
+    } else if (sidebarPhase === "entering") {
+      setSidebarPhase("idle");
     }
   };
 
@@ -63,6 +71,78 @@ export function StageProgression() {
       players: getPoolPlayersResults(parsePoolPlayers(rows, poolCode)),
     }));
   }, [rows]);
+
+  // The stage+pool actually rendered in the center panel — lags behind the
+  // committed values while it's fading out, so old content stays visible
+  // until fully transparent, then swaps before fading back in. Independent
+  // of the sidebar's displayedStage since this fades on pool-only changes
+  // too, not just stage changes.
+  const [displayedCenterStage, setDisplayedCenterStage] =
+    useState<PoolHistoryStage>(committedStage);
+  const [displayedCenterPool, setDisplayedCenterPool] = useState(
+    selectedPool,
+  );
+  const [isCenterFading, setIsCenterFading] = useState(false);
+  // Once the center panel's own fade-out transition has finished (opacity
+  // reached 0). On a stage change we still hold at opacity 0 after this
+  // until the sidebar also reaches "idle", instead of fading back in on
+  // our own independent timer.
+  const [centerFadeOutDone, setCenterFadeOutDone] = useState(false);
+  const [centerFadeWaitsForSidebar, setCenterFadeWaitsForSidebar] =
+    useState(false);
+  const committedCenterKey = `${committedStage}:${selectedPool}`;
+  const [prevCommittedCenterKey, setPrevCommittedCenterKey] = useState(
+    committedCenterKey,
+  );
+  if (committedCenterKey !== prevCommittedCenterKey) {
+    setPrevCommittedCenterKey(committedCenterKey);
+    if (
+      committedStage !== displayedCenterStage ||
+      selectedPool !== displayedCenterPool
+    ) {
+      setIsCenterFading(true);
+      setCenterFadeOutDone(false);
+      setCenterFadeWaitsForSidebar(committedStage !== displayedCenterStage);
+    }
+  }
+
+  // Once faded out, swap to the new content and start fading back in —
+  // immediately for a pool-only change, or once the sidebar has fully
+  // settled back into view for a stage change.
+  if (
+    isCenterFading &&
+    centerFadeOutDone &&
+    (!centerFadeWaitsForSidebar || sidebarPhase === "idle")
+  ) {
+    setDisplayedCenterStage(committedStage);
+    setDisplayedCenterPool(selectedPool);
+    setIsCenterFading(false);
+    setCenterFadeOutDone(false);
+    setCenterFadeWaitsForSidebar(false);
+  }
+
+  const handleCenterPanelTransitionEnd = (
+    e: React.TransitionEvent<HTMLDivElement>,
+  ) => {
+    if (e.target !== e.currentTarget || e.propertyName !== "opacity") {
+      return;
+    }
+    if (isCenterFading && !centerFadeOutDone) {
+      setCenterFadeOutDone(true);
+    }
+  };
+
+  const centerRows = useAppState(
+    (s) =>
+      s.event.tournament?.poolHistory?.data?.[displayedCenterStage] as
+        | string[][]
+        | undefined,
+  );
+
+  const centerPoolPlayers = useMemo(() => {
+    if (!centerRows || !displayedCenterPool) return [];
+    return parsePoolPlayers(centerRows, displayedCenterPool);
+  }, [centerRows, displayedCenterPool]);
 
   const poolRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const highlightRef = useRef<HTMLDivElement>(null);
@@ -86,7 +166,17 @@ export function StageProgression() {
     <div className={styles.canvas}>
       <div
         className={
-          isExiting
+          isCenterFading
+            ? `${styles.centerPanel} ${styles.centerPanelFading}`
+            : styles.centerPanel
+        }
+        onTransitionEnd={handleCenterPanelTransitionEnd}
+      >
+        <Pools poolPlayers={centerPoolPlayers} forcePlayerAdvancement />
+      </div>
+      <div
+        className={
+          sidebarPhase === "exiting"
             ? `${styles.sidebar} ${styles.sidebarSlideOut}`
             : styles.sidebar
         }
