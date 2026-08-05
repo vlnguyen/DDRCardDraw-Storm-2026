@@ -345,19 +345,42 @@ const POOL_HISTORY_STAGES: { value: PoolHistoryStage; label: string }[] = [
   { value: "stage7", label: "Stage 7" },
 ];
 
+/** Stage -> pool codes, recomputed only when the fetched spreadsheet data
+ * changes rather than on every stage/pool selection. */
+function useStagePoolCodes(): Record<PoolHistoryStage, string[]> {
+  const data = useAppState((s) => s.event.tournament?.poolHistory?.data);
+  return useMemo(() => {
+    const map = {} as Record<PoolHistoryStage, string[]>;
+    for (const { value: stage } of POOL_HISTORY_STAGES) {
+      map[stage] = getPoolCodesForStage(
+        data?.[stage] as string[][] | undefined,
+      );
+    }
+    return map;
+  }, [data]);
+}
+
 function StageProgressionSelect() {
   const dispatch = useAppDispatch();
-  const saved = useAppState(
+  const savedStage = useAppState(
     (s) => s.event.tournament?.stageProgression?.selectedStage ?? "stage1",
+  );
+  const savedPool = useAppState(
+    (s) => s.event.tournament?.stageProgression?.selectedPool ?? "",
   );
   const lastFetched = useAppState(
     (s) => s.event.tournament?.poolHistory?.lastFetched,
   );
-  const [selectedStage, setSelectedStage] = useState<PoolHistoryStage>(saved);
+  const stagePoolCodes = useStagePoolCodes();
+  const [selectedStage, setSelectedStage] =
+    useState<PoolHistoryStage>(savedStage);
+  const [selectedPool, setSelectedPool] = useState(savedPool);
   const [isFetching, setIsFetching] = useState(false);
-  const isDirty = selectedStage !== saved;
+  const isDirty = selectedStage !== savedStage || selectedPool !== savedPool;
   // ticks once/sec purely to keep the "time ago" text below live
   useCurrentTime();
+
+  const poolCodes = stagePoolCodes[selectedStage];
 
   const fetchData = async () => {
     setIsFetching(true);
@@ -390,13 +413,30 @@ function StageProgressionSelect() {
       <div className={styles.formRow}>
         <HTMLSelect
           value={selectedStage}
-          onChange={(e) =>
-            setSelectedStage(e.currentTarget.value as PoolHistoryStage)
-          }
+          onChange={(e) => {
+            const stage = e.currentTarget.value as PoolHistoryStage;
+            setSelectedStage(stage);
+            setSelectedPool(stagePoolCodes[stage][0] ?? "");
+          }}
         >
           {POOL_HISTORY_STAGES.map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
+            </option>
+          ))}
+        </HTMLSelect>
+        <HTMLSelect
+          value={selectedPool}
+          onChange={(e) => setSelectedPool(e.currentTarget.value)}
+        >
+          {poolCodes.length === 0 && (
+            <option value="" disabled>
+              --
+            </option>
+          )}
+          {poolCodes.map((code) => (
+            <option key={code} value={code}>
+              {code}
             </option>
           ))}
         </HTMLSelect>
@@ -405,9 +445,10 @@ function StageProgressionSelect() {
           intent={isDirty ? "primary" : undefined}
           onClick={() =>
             dispatch(
-              eventSlice.actions.setStageProgressionSelectedStage(
-                selectedStage,
-              ),
+              eventSlice.actions.setStageProgressionSelection({
+                stage: selectedStage,
+                pool: selectedPool,
+              }),
             )
           }
         >
@@ -442,11 +483,11 @@ interface PoolOption {
 }
 
 function usePoolHistoryOptions(): PoolOption[] {
-  const data = useAppState((s) => s.event.tournament?.poolHistory?.data);
+  const stagePoolCodes = useStagePoolCodes();
   return useMemo(() => {
     const options: PoolOption[] = [];
     for (const { value: stage, label: stageLabel } of POOL_HISTORY_STAGES) {
-      for (const poolCode of getPoolCodesForStage(data?.[stage])) {
+      for (const poolCode of stagePoolCodes[stage]) {
         options.push({
           value: `${stage}:${poolCode}`,
           label: `${stageLabel} - Pool ${poolCode}`,
@@ -456,7 +497,7 @@ function usePoolHistoryOptions(): PoolOption[] {
       }
     }
     return options;
-  }, [data]);
+  }, [stagePoolCodes]);
 }
 
 function PoolHistorySelect() {

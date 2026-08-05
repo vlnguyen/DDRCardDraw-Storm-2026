@@ -108,6 +108,7 @@ export interface PoolHistoryState {
 export interface StageProgressionState {
   /** same stage keys as pool history, but not broken out by pool */
   selectedStage?: PoolHistoryStage;
+  selectedPool?: string;
 }
 
 /**
@@ -324,9 +325,9 @@ export const eventSlice = createSlice({
       state.tournament.poolHistory.data = action.payload.data;
       state.tournament.poolHistory.lastFetched = action.payload.lastFetched;
     },
-    setStageProgressionSelectedStage(
+    setStageProgressionSelection(
       state,
-      action: PayloadAction<PoolHistoryStage>,
+      action: PayloadAction<{ stage: PoolHistoryStage; pool: string }>,
     ) {
       if (!state.tournament) {
         state.tournament = {};
@@ -334,7 +335,8 @@ export const eventSlice = createSlice({
       if (!state.tournament.stageProgression) {
         state.tournament.stageProgression = {};
       }
-      state.tournament.stageProgression.selectedStage = action.payload;
+      state.tournament.stageProgression.selectedStage = action.payload.stage;
+      state.tournament.stageProgression.selectedPool = action.payload.pool;
     },
   },
   extraReducers(builder) {
