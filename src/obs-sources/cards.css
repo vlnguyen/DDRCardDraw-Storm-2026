@@ -1,0 +1,11 @@
+.container {
+  /* fixed + inset instead of height: 100vh — OBS's Browser Source zoom
+     doesn't reliably recompute vh, which drifted the bottom edge downward
+     as zoom changed. Pinning directly to the viewport box via fixed
+     positioning isn't affected by that. */
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}

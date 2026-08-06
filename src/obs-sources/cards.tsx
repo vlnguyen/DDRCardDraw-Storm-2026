@@ -3,6 +3,7 @@ import { ChartList } from "../drawn-set";
 import { useAppState } from "../state/store";
 import { DrawingProvider } from "../drawing-context";
 import { PlainDrawnSetGroup } from "../drawn-set-group";
+import styles from "./cards.css";
 /**
  * @todo figure out how/if we can assign/view sub-draws here?
  */
@@ -13,11 +14,17 @@ export function CabCards() {
     return null;
   }
   if (typeof drawingId === "string") {
-    return <PlainDrawnSetGroup drawingId={drawingId} style="persona" />;
+    return (
+      <div className={styles.container}>
+        <PlainDrawnSetGroup drawingId={drawingId} style="persona" />
+      </div>
+    );
   }
   return (
-    <DrawingProvider drawingId={drawingId}>
-      <ChartList style="persona" />
-    </DrawingProvider>
+    <div className={styles.container}>
+      <DrawingProvider drawingId={drawingId}>
+        <ChartList style="persona" />
+      </DrawingProvider>
+    </div>
   );
 }
