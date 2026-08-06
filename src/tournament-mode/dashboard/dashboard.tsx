@@ -347,7 +347,7 @@ function StageProgressionLink() {
 function UpcomingPoolLink() {
   const href = useHref(routableUpcomingPoolPath());
   return (
-    <Tooltip content="Upcoming Pool (3840x2160)">
+    <Tooltip content="Upcoming Pool (3840x3840), crop 1500">
       <AnchorButton
         icon={<Duplicate />}
         onClick={(e) => {
