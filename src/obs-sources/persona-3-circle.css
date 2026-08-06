@@ -1,0 +1,13 @@
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
+.outerText {
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
