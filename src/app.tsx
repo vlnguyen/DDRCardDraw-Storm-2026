@@ -197,32 +197,6 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "e/:roomName/pool-history",
-    element: <ObsSource />,
-    children: [
-      {
-        index: true,
-        lazy: async () => {
-          const { PoolHistory } = await import("./obs-sources/pool-history");
-          return { Component: PoolHistory };
-        },
-      },
-    ],
-  },
-  {
-    path: "e/:roomName/pool-history-label",
-    element: <ObsSource />,
-    children: [
-      {
-        index: true,
-        lazy: async () => {
-          const { PoolHistoryLabel } = await import("./obs-sources/text");
-          return { Component: PoolHistoryLabel };
-        },
-      },
-    ],
-  },
-  {
     path: "e/:roomName/chart-leaderboard",
     element: <ObsSource />,
     children: [
@@ -272,6 +246,36 @@ const router = createBrowserRouter([
         lazy: async () => {
           const { Stars } = await import("./obs-sources/stars");
           return { Component: Stars };
+        },
+      },
+    ],
+  },
+  {
+    path: "e/:roomName/stage-progression",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { StageProgression } = await import(
+            "./obs-sources/stage-progression"
+          );
+          return { Component: StageProgression };
+        },
+      },
+    ],
+  },
+  {
+    path: "e/:roomName/upcoming-pool",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { UpcomingPool } = await import(
+            "./obs-sources/upcoming-pool"
+          );
+          return { Component: UpcomingPool };
         },
       },
     ],

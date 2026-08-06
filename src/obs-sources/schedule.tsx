@@ -34,6 +34,7 @@ export function Schedule() {
   const [searchParams] = useSearchParams();
   const dayParam = searchParams.get("day");
   const day = isScheduleDay(dayParam) ? dayParam : null;
+  const bgaOff = searchParams.get("bgaOff") === "true";
   const items = useAppState((s) =>
     day ? (s.event.tournament?.schedules?.[day]?.items ?? []) : [],
   );
@@ -46,7 +47,11 @@ export function Schedule() {
 
   return (
     <div className={styles.canvas}>
-      <div className={styles.content}>
+      <div
+        className={
+          bgaOff ? `${styles.content} ${styles.contentNoBg}` : styles.content
+        }
+      >
         <div className={styles.header}>
           <div className={styles.titleWrap}>
             <h1 className={styles.titleStroke}>Schedule</h1>

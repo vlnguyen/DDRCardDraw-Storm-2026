@@ -92,17 +92,22 @@ export type SchedulesState = Partial<Record<ScheduleDay, ScheduleDayState>>;
 
 export type PoolHistoryStage = `stage${1 | 2 | 3 | 4 | 5 | 6 | 7}`;
 
-export interface PoolHistorySelection {
-  stage: PoolHistoryStage;
-  poolCode: string;
-}
-
 export interface PoolHistoryState {
-  selection?: PoolHistorySelection;
   /** UTC timestamp (ISO string) of the last successful fetch across all stages */
   lastFetched?: string;
   /** raw fetch data from Google Sheets, keyed by stage */
   data?: Partial<Record<PoolHistoryStage, any>>;
+}
+
+export interface StageProgressionState {
+  /** same stage keys as pool history, but not broken out by pool */
+  selectedStage?: PoolHistoryStage;
+  selectedPool?: string;
+}
+
+export interface UpcomingPoolState {
+  selectedStage?: PoolHistoryStage;
+  selectedPool?: string;
 }
 
 /**
@@ -122,6 +127,8 @@ interface TournamentState {
   toggleLowerThird?: boolean;
   schedules?: SchedulesState;
   poolHistory?: PoolHistoryState;
+  stageProgression?: StageProgressionState;
+  upcomingPool?: UpcomingPoolState;
 }
 
 
@@ -290,18 +297,6 @@ export const eventSlice = createSlice({
         items: action.payload.items,
       };
     },
-    setPoolHistorySelection(
-      state,
-      action: PayloadAction<PoolHistorySelection>,
-    ) {
-      if (!state.tournament) {
-        state.tournament = {};
-      }
-      if (!state.tournament.poolHistory) {
-        state.tournament.poolHistory = {};
-      }
-      state.tournament.poolHistory.selection = action.payload;
-    },
     setPoolHistoryData(
       state,
       action: PayloadAction<{
@@ -317,6 +312,32 @@ export const eventSlice = createSlice({
       }
       state.tournament.poolHistory.data = action.payload.data;
       state.tournament.poolHistory.lastFetched = action.payload.lastFetched;
+    },
+    setStageProgressionSelection(
+      state,
+      action: PayloadAction<{ stage: PoolHistoryStage; pool: string }>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      if (!state.tournament.stageProgression) {
+        state.tournament.stageProgression = {};
+      }
+      state.tournament.stageProgression.selectedStage = action.payload.stage;
+      state.tournament.stageProgression.selectedPool = action.payload.pool;
+    },
+    setUpcomingPoolSelection(
+      state,
+      action: PayloadAction<{ stage: PoolHistoryStage; pool: string }>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      if (!state.tournament.upcomingPool) {
+        state.tournament.upcomingPool = {};
+      }
+      state.tournament.upcomingPool.selectedStage = action.payload.stage;
+      state.tournament.upcomingPool.selectedPool = action.payload.pool;
     },
   },
   extraReducers(builder) {

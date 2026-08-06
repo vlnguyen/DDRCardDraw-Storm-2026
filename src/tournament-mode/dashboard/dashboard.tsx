@@ -56,11 +56,11 @@ import {
   routableGlobalSourcePath,
   routableLowerThirdPath,
   routablePersona3CirclePath,
-  routablePoolHistoryLabelPath,
-  routablePoolHistoryPath,
   routableSchedulePath,
+  routableStageProgressionPath,
   routableStarsPath,
   routableTrianglesPath,
+  routableUpcomingPoolPath,
   routableVsMeterPath,
 } from "../copy-obs-source";
 import {
@@ -286,10 +286,10 @@ function ScheduleDayEditor({ day }: { day: ScheduleDay }) {
   );
 }
 
-function PoolHistoryLink() {
-  const href = useHref(routablePoolHistoryPath());
+function StageProgressionLink() {
+  const href = useHref(routableStageProgressionPath());
   return (
-    <Tooltip content="Table view">
+    <Tooltip content="Stage Progression (3840x2160)">
       <AnchorButton
         icon={<Duplicate />}
         onClick={(e) => {
@@ -302,10 +302,10 @@ function PoolHistoryLink() {
   );
 }
 
-function PoolHistoryLabelLink() {
-  const href = useHref(routablePoolHistoryLabelPath());
+function UpcomingPoolLink() {
+  const href = useHref(routableUpcomingPoolPath());
   return (
-    <Tooltip content="Selected pool label">
+    <Tooltip content="Upcoming Pool (3840x2160)">
       <AnchorButton
         icon={<Duplicate />}
         onClick={(e) => {
@@ -328,57 +328,47 @@ const POOL_HISTORY_STAGES: { value: PoolHistoryStage; label: string }[] = [
   { value: "stage7", label: "Stage 7" },
 ];
 
-function formatLastFetched(iso: string): string {
-  const zoned = new Date(
-    new Date(iso).toLocaleString("en-US", { timeZone: EASTERN_TIME_ZONE }),
-  );
-  return `${format(zoned, "M/d/yyyy h:mm:ss a")} ET`;
-}
-
-interface PoolOption {
-  value: string;
-  label: string;
-  stage: PoolHistoryStage;
-  poolCode: string;
-}
-
-function usePoolHistoryOptions(): PoolOption[] {
+/** Stage -> pool codes, recomputed only when the fetched spreadsheet data
+ * changes rather than on every stage/pool selection. */
+function useStagePoolCodes(): Record<PoolHistoryStage, string[]> {
   const data = useAppState((s) => s.event.tournament?.poolHistory?.data);
   return useMemo(() => {
-    const options: PoolOption[] = [];
-    for (const { value: stage, label: stageLabel } of POOL_HISTORY_STAGES) {
-      for (const poolCode of getPoolCodesForStage(data?.[stage])) {
-        options.push({
-          value: `${stage}:${poolCode}`,
-          label: `${stageLabel} - Pool ${poolCode}`,
-          stage,
-          poolCode,
-        });
-      }
+    const map = {} as Record<PoolHistoryStage, string[]>;
+    for (const { value: stage } of POOL_HISTORY_STAGES) {
+      map[stage] = getPoolCodesForStage(
+        data?.[stage] as string[][] | undefined,
+      );
     }
-    return options;
+    return map;
   }, [data]);
 }
 
-function PoolHistorySelect() {
+/** Shared by any dashboard section that needs a stage+pool picker backed
+ * by the same fetched spreadsheet data (Stage Progression, Upcoming Pool,
+ * ...) — only what's submitted to differs between callers. */
+function StagePoolSelect({
+  savedStage,
+  savedPool,
+  onSubmit,
+}: {
+  savedStage: PoolHistoryStage;
+  savedPool: string;
+  onSubmit: (selection: { stage: PoolHistoryStage; pool: string }) => void;
+}) {
   const dispatch = useAppDispatch();
-  const saved = useAppState(
-    (s) =>
-      s.event.tournament?.poolHistory?.selection ?? {
-        stage: "stage1" as PoolHistoryStage,
-        poolCode: "",
-      },
-  );
   const lastFetched = useAppState(
     (s) => s.event.tournament?.poolHistory?.lastFetched,
   );
-  const poolOptions = usePoolHistoryOptions();
-  const savedValue = saved.poolCode ? `${saved.stage}:${saved.poolCode}` : "";
-  const [selectedValue, setSelectedValue] = useState(savedValue);
+  const stagePoolCodes = useStagePoolCodes();
+  const [selectedStage, setSelectedStage] =
+    useState<PoolHistoryStage>(savedStage);
+  const [selectedPool, setSelectedPool] = useState(savedPool);
   const [isFetching, setIsFetching] = useState(false);
-  const isDirty = selectedValue !== savedValue;
+  const isDirty = selectedStage !== savedStage || selectedPool !== savedPool;
   // ticks once/sec purely to keep the "time ago" text below live
   useCurrentTime();
+
+  const poolCodes = stagePoolCodes[selectedStage];
 
   const fetchData = async () => {
     setIsFetching(true);
@@ -407,38 +397,43 @@ function PoolHistorySelect() {
   };
 
   return (
-    <FormGroup label="Pool">
+    <>
       <div className={styles.formRow}>
         <HTMLSelect
-          value={selectedValue}
-          onChange={(e) => setSelectedValue(e.currentTarget.value)}
+          value={selectedStage}
+          onChange={(e) => {
+            const stage = e.currentTarget.value as PoolHistoryStage;
+            setSelectedStage(stage);
+            setSelectedPool(stagePoolCodes[stage][0] ?? "");
+          }}
         >
-          <option value="" disabled>
-            {poolOptions.length
-              ? "Select a pool"
-              : "--"}
-          </option>
-          {poolOptions.map(({ value, label }) => (
+          {POOL_HISTORY_STAGES.map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
+            </option>
+          ))}
+        </HTMLSelect>
+        <HTMLSelect
+          value={selectedPool}
+          onChange={(e) => setSelectedPool(e.currentTarget.value)}
+        >
+          {poolCodes.length === 0 && (
+            <option value="" disabled>
+              --
+            </option>
+          )}
+          {poolCodes.map((code) => (
+            <option key={code} value={code}>
+              {code}
             </option>
           ))}
         </HTMLSelect>
         <Button
           disabled={!isDirty}
           intent={isDirty ? "primary" : undefined}
-          onClick={() => {
-            const selected = poolOptions.find(
-              (option) => option.value === selectedValue,
-            );
-            if (!selected) return;
-            dispatch(
-              eventSlice.actions.setPoolHistorySelection({
-                stage: selected.stage,
-                poolCode: selected.poolCode,
-              }),
-            );
-          }}
+          onClick={() =>
+            onSubmit({ stage: selectedStage, pool: selectedPool })
+          }
         >
           Submit
         </Button>
@@ -452,8 +447,53 @@ function PoolHistorySelect() {
           ? `${formatLastFetched(lastFetched)} (${formatTimeAgo(lastFetched)})`
           : "never"}
       </div>
-    </FormGroup>
+    </>
   );
+}
+
+function StageProgressionSelect() {
+  const dispatch = useAppDispatch();
+  const savedStage = useAppState(
+    (s) => s.event.tournament?.stageProgression?.selectedStage ?? "stage1",
+  );
+  const savedPool = useAppState(
+    (s) => s.event.tournament?.stageProgression?.selectedPool ?? "",
+  );
+  return (
+    <StagePoolSelect
+      savedStage={savedStage}
+      savedPool={savedPool}
+      onSubmit={(selection) =>
+        dispatch(eventSlice.actions.setStageProgressionSelection(selection))
+      }
+    />
+  );
+}
+
+function UpcomingPoolSelect() {
+  const dispatch = useAppDispatch();
+  const savedStage = useAppState(
+    (s) => s.event.tournament?.upcomingPool?.selectedStage ?? "stage1",
+  );
+  const savedPool = useAppState(
+    (s) => s.event.tournament?.upcomingPool?.selectedPool ?? "",
+  );
+  return (
+    <StagePoolSelect
+      savedStage={savedStage}
+      savedPool={savedPool}
+      onSubmit={(selection) =>
+        dispatch(eventSlice.actions.setUpcomingPoolSelection(selection))
+      }
+    />
+  );
+}
+
+function formatLastFetched(iso: string): string {
+  const zoned = new Date(
+    new Date(iso).toLocaleString("en-US", { timeZone: EASTERN_TIME_ZONE }),
+  );
+  return `${format(zoned, "M/d/yyyy h:mm:ss a")} ET`;
 }
 
 function Sources() {
@@ -495,9 +535,15 @@ function Sources() {
       </section>
       <section className={styles.autoWidthSection}>
         <H3>
-          Pool History <PoolHistoryLink /> <PoolHistoryLabelLink />
+          Stage Progression <StageProgressionLink />
         </H3>
-        <PoolHistorySelect />
+        <StageProgressionSelect />
+      </section>
+      <section className={styles.autoWidthSection}>
+        <H3>
+          Upcoming Pool <UpcomingPoolLink />
+        </H3>
+        <UpcomingPoolSelect />
       </section>
       <Divider />
       <CssEditor />

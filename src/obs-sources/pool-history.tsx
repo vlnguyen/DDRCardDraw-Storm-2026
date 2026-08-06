@@ -1,13 +1,10 @@
-import { useMemo } from "react";
 import type {
   PlayerAdvancement,
   PoolHistoryStage,
   PoolPlayer,
   PoolPlayerScore,
 } from "../state/event.slice";
-import { useAppState } from "../state/store";
 import entrants from "../assets/entrants/entrants.json";
-import { Pools } from "./pools";
 
 export const SPREADSHEET_URL =
   "https://docs.google.com/spreadsheets/d/1bWj8QnYeLFyWdON8XQjbcfqv1AsPf33nKg0qVJcSbm0" as const;
@@ -29,10 +26,11 @@ const GAMER_TAG_COLUMN = 1;
 const SONGS_PER_POOL = 6;
 const PENDING_MARKER = "--- PENDING ---";
 
+// EX scores in the spreadsheet are integers from 0-10000 (e.g. 9523 = 95.23%).
 function parseExScore(cell: string | undefined): number | undefined {
   if (!cell) return undefined;
   const value = parseFloat(cell.replace("%", ""));
-  return Number.isNaN(value) ? undefined : value;
+  return Number.isNaN(value) ? undefined : value / 100;
 }
 
 function parseAdvancement(cell: string | undefined): PlayerAdvancement {
@@ -71,7 +69,10 @@ function rowToPoolPlayer(row: string[]): PoolPlayer {
   };
 }
 
-function parsePoolPlayers(rows: string[][], poolCode: string): PoolPlayer[] {
+export function parsePoolPlayers(
+  rows: string[][],
+  poolCode: string,
+): PoolPlayer[] {
   return rows
     .filter((row) => row[POOL_COLUMN] === poolCode)
     .filter((row) => row[GAMER_TAG_COLUMN])
@@ -103,20 +104,4 @@ export async function fetchStageRows(
   const text = await res.text();
   const pp = await import("papaparse");
   return pp.parse<string[]>(text, { skipEmptyLines: false }).data;
-}
-
-export function PoolHistory() {
-  const poolHistory = useAppState((s) => s.event.tournament?.poolHistory);
-  const stage = poolHistory?.selection?.stage;
-  const poolCode = poolHistory?.selection?.poolCode;
-  const rows = stage
-    ? (poolHistory?.data?.[stage] as string[][] | undefined)
-    : undefined;
-
-  const poolPlayers = useMemo(() => {
-    if (!rows || !poolCode) return [];
-    return parsePoolPlayers(rows, poolCode);
-  }, [rows, poolCode]);
-
-  return <Pools poolPlayers={poolPlayers} forcePlayerAdvancement />;
 }

@@ -1,0 +1,185 @@
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+.canvas {
+  position: relative;
+  width: 3840px;
+  height: 2160px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #fff;
+  font-size: 64px;
+  font-family: sans-serif;
+}
+
+.centerPanel {
+  position: absolute;
+  left: 192px;
+  /* sidebar is 28% wide; keep an action-safe gap from its left edge */
+  right: calc(28% + 192px);
+  bottom: 108px;
+  aspect-ratio: 3450 / 1250;
+  overflow: hidden;
+  /* gives Pools (rendered inside) a sized container to read cqw/% from,
+     instead of it assuming it owns the whole page viewport */
+  container-type: inline-size;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.centerPanelFading {
+  opacity: 0;
+}
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  box-sizing: border-box;
+  padding: 100px 0 0 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transform: translateX(0);
+  transition: transform 0.5s ease-in-out;
+}
+
+.sidebarSlideOut {
+  transform: translateX(110%);
+}
+
+.sidebarEdgeBlur {
+  position: absolute;
+  top: 0;
+  left: -192px;
+  width: 192px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  mask-image: linear-gradient(to right, transparent, black 30%);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 30%);
+  pointer-events: none;
+}
+
+.titleWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.titleStroke {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 190px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: #1a1a1a;
+  -webkit-text-stroke: 32px #1a1a1a;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.title {
+  position: relative;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 190px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.pools {
+  position: relative;
+  margin-top: 82px;
+  padding-right: 100px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 55px;
+  width: 100%;
+}
+
+.pool {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+
+.poolHighlight {
+  position: absolute;
+  background: rgba(0, 132, 254, 0.35);
+  border-radius: 12px;
+  box-sizing: border-box;
+  transition:
+    top 0.4s ease,
+    left 0.4s ease,
+    width 0.4s ease,
+    height 0.4s ease;
+  pointer-events: none;
+}
+
+.poolName {
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 88px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.playerList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: "Chiaro Std";
+  font-weight: 700;
+  font-size: 52px;
+  line-height: 1.15;
+  color: white;
+  text-align: left;
+}
+
+.medal {
+  font-size: 0.9em;
+}

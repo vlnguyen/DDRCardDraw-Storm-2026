@@ -1,10 +1,18 @@
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { PoolPlayer } from "../state/event.slice";
 import { useAppState } from "../state/store";
 
 import styles from "./pools.css";
 
-interface PoolPlayerResult extends PoolPlayer {
+/** Wraps Pools when it's the entire OBS source, establishing the
+ * container-query context Pools needs at the canvas's full 3840x2160
+ * size. Don't use this when nesting Pools inside another component —
+ * let that component's own sized container serve as the context instead. */
+export function PoolsViewport({ children }: { children: ReactNode }) {
+  return <div className={styles.viewportContainer}>{children}</div>;
+}
+
+export interface PoolPlayerResult extends PoolPlayer {
   wins: number[];
   rank: number;
   averageEx: number;
@@ -45,7 +53,9 @@ function PlayerName({
   );
 }
 
-function getPoolPlayersResults(poolPlayers: PoolPlayer[]): PoolPlayerResult[] {
+export function getPoolPlayersResults(
+  poolPlayers: PoolPlayer[],
+): PoolPlayerResult[] {
   const numSongs = poolPlayers[0]?.scores.length ?? 0;
   const poolPlayersResults: PoolPlayerResult[] = poolPlayers
     .filter((poolPlayer) => !poolPlayer.isDisabled)
@@ -138,7 +148,11 @@ function getDisplayScore(score: number): string {
 export function PoolsLive() {
   const poolPlayers =
     useAppState((s) => s.event.tournament?.poolState?.players) ?? [];
-  return <Pools poolPlayers={poolPlayers} />;
+  return (
+    <PoolsViewport>
+      <Pools poolPlayers={poolPlayers} />
+    </PoolsViewport>
+  );
 }
 
 export function Pools({

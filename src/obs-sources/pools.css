@@ -21,12 +21,28 @@
   }
 }
 
+/* Pools fills 100% of its nearest sized ancestor rather than the page
+   viewport, so it works both as a full OBS source and nested inside a
+   smaller container. font-size scales with that ancestor's width via a
+   container query unit — callers must give some ancestor an explicit
+   size and `container-type` (see .viewportContainer below). */
 .poolsScoresTable {
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   text-align: center;
   font-family: "Chiaro Std";
-  font-size: 1.67vw;
+  font-size: 1.67cqw;
   animation: fadeIn 0.5s ease;
+}
+
+/* For callers that render Pools as the entire OBS source (not nested in
+   another component) — establishes the container query context at
+   whatever size the browser source is actually configured to, rather
+   than assuming a fixed resolution. */
+.viewportContainer {
+  width: 100vw;
+  height: 100vh;
+  container-type: inline-size;
 }
 
 .rank {

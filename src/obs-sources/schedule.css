@@ -56,11 +56,19 @@
 
 .content {
   position: relative;
+  /* .content::before uses z-index: -1 to sit behind the header/list; without
+     a stacking context here that z-index is scoped to .canvas instead of
+     .content, and the box ends up invisible, sunk behind everything. */
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 110px 190px;
   border-radius: 30px;
+}
+
+.contentNoBg::before {
+  display: none;
 }
 
 .content::before {
