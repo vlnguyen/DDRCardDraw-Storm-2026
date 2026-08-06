@@ -52,3 +52,14 @@
 .alignRight {
   text-align: right;
 }
+
+.textStroke {
+  /* Rendered as a separate layer stacked behind the plain text (see
+     schedule.css/.titleStroke, stage-progression.css/.titleStroke,
+     lower-third.css/.titleStroke for the same pattern): color matches the
+     stroke color so the oversized stroke reads as a solid outline peeking
+     out from behind the crisp foreground copy, rather than fighting its own
+     fill. em, not px, so it scales with the fit-to-viewport font-size. */
+  color: #000000;
+  -webkit-text-stroke: 0.17em #000000;
+}

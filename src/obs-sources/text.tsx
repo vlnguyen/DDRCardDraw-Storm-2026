@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { ReactNode } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { ObsLabelType, ObsTextAlign } from "../state/event.slice";
 import { drawingsSlice } from "../state/drawings.slice";
 import { useAppState } from "../state/store";
@@ -13,25 +13,48 @@ function FitH1({
   children,
   fontClassName = styles.dialogFont,
   alignClassName = styles.alignCenter,
+  textStroke = false,
 }: {
   children: ReactNode;
   fontClassName?: string;
   alignClassName?: string;
+  textStroke?: boolean;
 }) {
-  const ref = useFitText<HTMLHeadingElement>(children, fontClassName);
+  const { ref, fontSize } = useFitText<HTMLHeadingElement>(
+    children,
+    fontClassName,
+  );
   return (
-    <h1
-      ref={ref}
-      className={classNames(styles.fitText, fontClassName, alignClassName)}
-    >
-      {children}
-    </h1>
+    <>
+      {textStroke && (
+        <h1
+          aria-hidden="true"
+          style={fontSize ? { fontSize: `${fontSize}px` } : undefined}
+          className={classNames(
+            styles.fitText,
+            fontClassName,
+            alignClassName,
+            styles.textStroke,
+          )}
+        >
+          {children}
+        </h1>
+      )}
+      <h1
+        ref={ref}
+        className={classNames(styles.fitText, fontClassName, alignClassName)}
+      >
+        {children}
+      </h1>
+    </>
   );
 }
 
 export function CurrentTime() {
   const now = useCurrentTime();
-  return <FitH1>{formatDate(now, "currentTime")}</FitH1>;
+  const [searchParams] = useSearchParams();
+  const textStroke = searchParams.get("stroke") === "true";
+  return <FitH1 textStroke={textStroke}>{formatDate(now, "currentTime")}</FitH1>;
 }
 
 const labelTypeFont: Record<ObsLabelType, string> = {
