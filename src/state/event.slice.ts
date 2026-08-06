@@ -13,7 +13,7 @@ export interface CabInfo {
 export type ObsLabelType = "dialog" | "title";
 export type ObsTextAlign = "left" | "center" | "right";
 
-interface EventState {
+export interface EventState {
   eventName: string;
   cabs: Record<string, CabInfo>;
   tournament: TournamentState;
@@ -338,6 +338,9 @@ export const eventSlice = createSlice({
       }
       state.tournament.upcomingPool.selectedStage = action.payload.stage;
       state.tournament.upcomingPool.selectedPool = action.payload.pool;
+    },
+    replaceState(_state, action: PayloadAction<EventState>) {
+      return action.payload;
     },
   },
   extraReducers(builder) {

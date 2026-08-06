@@ -2,12 +2,14 @@ import {
   AnchorButton,
   Button,
   ButtonGroup,
+  Callout,
   Card,
   CardList,
   Dialog,
   DialogBody,
   DialogFooter,
   Divider,
+  FileInput,
   FormGroup,
   H3,
   H4,
@@ -23,7 +25,17 @@ import {
 } from "@blueprintjs/core";
 import { TimePicker } from "@blueprintjs/datetime";
 import { Suggest } from "@blueprintjs/select";
-import { Add, Duplicate, Edit, FloppyDisk, Plus, Trash } from "@blueprintjs/icons";
+import {
+  Add,
+  Download,
+  Duplicate,
+  Edit,
+  FloppyDisk,
+  Plus,
+  Trash,
+  Upload,
+  WarningSign,
+} from "@blueprintjs/icons";
 import { css } from "@codemirror/lang-css";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { nanoid } from "nanoid";
@@ -31,6 +43,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { useHref } from "react-router-dom";
 import {
   type CardDrawPhase,
+  type EventState,
   type ObsLabelType,
   type ObsTextAlign,
   type PoolHistoryStage,
@@ -79,13 +92,15 @@ import {
   SYNCSTART_URL,
 } from "../../obs-sources/syncstart-connection";
 import { Players } from "./players";
+import { downloadDataUrl } from "../../utils/share";
 
 type DashboardTabId =
   | "sources"
   | "lobbies"
   | "match-log"
   | "players"
-  | "schedule";
+  | "schedule"
+  | "import-export";
 
 export function Dashboard() {
   const [currentTab, setCurrentTab] =
@@ -115,6 +130,9 @@ export function Dashboard() {
         </Tab>
         <Tab id="schedule" panel={<Schedule />}>
           Schedule
+        </Tab>
+        <Tab id="import-export" panel={<ImportExport />}>
+          Import/Export
         </Tab>
       </Tabs>
     </div>
@@ -553,6 +571,129 @@ function Sources() {
       <CssEditor />
       <OtherSources />
     </>
+  );
+}
+
+function isEventState(value: unknown): value is EventState {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.eventName === "string" &&
+    typeof v.cabs === "object" &&
+    v.cabs !== null &&
+    typeof v.tournament === "object" &&
+    v.tournament !== null &&
+    typeof v.obsLabels === "object" &&
+    v.obsLabels !== null &&
+    typeof v.obsCss === "string"
+  );
+}
+
+function ImportExport() {
+  const dispatch = useAppDispatch();
+  const eventState = useAppState((s) => s.event);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [parsed, setParsed] = useState<EventState | null>(null);
+  const [parseError, setParseError] = useState<string | null>(null);
+
+  function handleExport() {
+    const json = JSON.stringify(eventState, null, 2);
+    const dataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(json)}`;
+    const safeName = (eventState.eventName || "event").replace(
+      /[^a-z0-9-_]+/gi,
+      "_",
+    );
+    downloadDataUrl(
+      dataUrl,
+      `${safeName}-export-${new Date().toISOString().slice(0, 10)}.json`,
+    );
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setFileName(file.name);
+    setParsed(null);
+    setParseError(null);
+    file
+      .text()
+      .then((text) => {
+        const data = JSON.parse(text);
+        if (!isEventState(data)) {
+          throw new Error(
+            "File does not look like an event export (missing expected fields).",
+          );
+        }
+        setParsed(data);
+      })
+      .catch((err) => {
+        setParseError(err instanceof Error ? err.message : String(err));
+      });
+  }
+
+  function commitImport() {
+    if (!parsed) return;
+    if (
+      confirm(
+        "This will replace ALL current event data (sources, players, schedule, lobby settings, etc.) with the contents of the imported file. This cannot be undone. Continue?",
+      )
+    ) {
+      dispatch(eventSlice.actions.replaceState(parsed));
+      toaster.show({ message: "Event data imported.", intent: "success" });
+      setParsed(null);
+      setFileName(null);
+    }
+  }
+
+  return (
+    <section className={styles.autoWidthSection}>
+      <H3>Export</H3>
+      <p>
+        Download the entire current event state (sources, players, schedule,
+        lobby settings, etc.) as a JSON file.
+      </p>
+      <Button icon={<Download />} onClick={handleExport}>
+        Export event data
+      </Button>
+
+      <Divider />
+
+      <H3>Import</H3>
+      <p>
+        Select a previously exported JSON file to preview, then commit it to
+        replace the current event data.
+      </p>
+      <FileInput
+        text={fileName ?? "Choose .json file..."}
+        hasSelection={!!fileName}
+        inputProps={{ accept: "application/json,.json" }}
+        onInputChange={handleFileChange}
+      />
+      {parseError && (
+        <Callout intent="danger" icon={<WarningSign />} style={{ marginTop: 8 }}>
+          Failed to read file: {parseError}
+        </Callout>
+      )}
+      {parsed && (
+        <>
+          <H4>Preview</H4>
+          <Card className={styles.importPreview}>
+            <pre>{JSON.stringify(parsed, null, 2)}</pre>
+          </Card>
+          <Button
+            icon={<Upload />}
+            intent="danger"
+            onClick={commitImport}
+            style={{ marginTop: 8 }}
+          >
+            Commit Import
+          </Button>
+        </>
+      )}
+    </section>
   );
 }
 
