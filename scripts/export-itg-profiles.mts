@@ -35,6 +35,11 @@ interface Entrant {
   prefix: string;
 }
 
+const GUEST_PROFILES: Pick<Entrant, "gamerTag">[] = [
+  { gamerTag: "Guest P1" },
+  { gamerTag: "Guest P2" },
+];
+
 function toDirectoryName(gamerTag: string): string {
   const alphanumeric = gamerTag.replace(/[^a-zA-Z0-9]/g, "");
   if (!alphanumeric) {
@@ -68,7 +73,7 @@ const typeTemplate = await readFile(join(templateDir, "Type.ini"), "utf-8");
 await rm(outDir, { recursive: true, force: true });
 await mkdir(outDir, { recursive: true });
 
-for (const entrant of entrants) {
+for (const entrant of [...entrants, ...GUEST_PROFILES]) {
   const profileDir = join(outDir, toDirectoryName(entrant.gamerTag));
   await cp(templateDir, profileDir, { recursive: true });
 
@@ -103,4 +108,6 @@ for (const entrant of entrants) {
   await writeFile(join(profileDir, "Type.ini"), typeIni);
 }
 
-console.log(`Exported ${entrants.length} ITG profiles to ${outDir}`);
+console.log(
+  `Exported ${entrants.length + GUEST_PROFILES.length} ITG profiles to ${outDir}`,
+);
