@@ -179,20 +179,22 @@ function ScheduleDayLink({
 }) {
   const href = useHref(routableSchedulePath(day));
   return (
-    <AnchorButton
-      icon={<Duplicate />}
-      onClick={(e) => {
-        e.preventDefault();
-        const url = new URL(href, document.location.href);
-        if (disableBackground) {
-          url.searchParams.set("bgaOff", "true");
-        }
-        copyObsSource(url.href);
-      }}
-      href={href}
-    >
-      {label}
-    </AnchorButton>
+    <Tooltip content="Schedule (3840x2160)">
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          const url = new URL(href, document.location.href);
+          if (disableBackground) {
+            url.searchParams.set("bgaOff", "true");
+          }
+          copyObsSource(url.href);
+        }}
+        href={href}
+      >
+        {label}
+      </AnchorButton>
+    </Tooltip>
   );
 }
 
@@ -874,14 +876,16 @@ function LowerThirdEditor() {
     <>
       <H3>
         Lower Third{" "}
-        <AnchorButton
-          icon={<Duplicate />}
-          onClick={(e) => {
-            e.preventDefault();
-            copyObsSource(new URL(href, document.location.href).href);
-          }}
-          href={href}
-        />
+        <Tooltip content="Lower Third (3840x2160)">
+          <AnchorButton
+            icon={<Duplicate />}
+            onClick={(e) => {
+              e.preventDefault();
+              copyObsSource(new URL(href, document.location.href).href);
+            }}
+            href={href}
+          />
+        </Tooltip>
       </H3>
       <div className={styles.formRow}>
         <FormGroup label="Title">
