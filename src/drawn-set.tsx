@@ -12,6 +12,7 @@ import { ErrorFallback } from "./utils/error-fallback";
 export type SongCardStyle = "default" | "persona";
 
 const POOLS_PHASE_FIRST_ROW_SIZE = 6;
+const POOLS_4_PHASE_FIRST_ROW_SIZE = 4;
 
 /**
  * expects a drawing context wrapper
@@ -40,12 +41,16 @@ export function ChartList({
     isEntering && personaStyles.entering,
   );
 
-  if (isPersona && phase === "pools") {
-    const firstRow = charts.slice(0, POOLS_PHASE_FIRST_ROW_SIZE);
-    const remainingRows = charts.slice(POOLS_PHASE_FIRST_ROW_SIZE);
+  if (isPersona && (phase === "pools" || phase === "pools-4")) {
+    const firstRowSize =
+      phase === "pools-4"
+        ? POOLS_4_PHASE_FIRST_ROW_SIZE
+        : POOLS_PHASE_FIRST_ROW_SIZE;
+    const firstRow = charts.slice(0, firstRowSize);
+    const remainingRows = charts.slice(firstRowSize);
     return (
       <>
-        {/* forced to a single unwrapped line so it always holds exactly 6, regardless of container width */}
+        {/* forced to a single unwrapped line so it always holds exactly firstRowSize, regardless of container width */}
         <div className={chartListClass} style={{ flexWrap: "nowrap" }}>
           {firstRow.map((c) => (
             <ChartFromContext key={c.id} chartId={c.id} style={style} />
