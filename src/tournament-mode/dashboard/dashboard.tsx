@@ -113,6 +113,7 @@ export function Dashboard() {
     <div className={styles.container}>
       <Tabs
         id="dashboard"
+        className={styles.tabs}
         size="large"
         selectedTabId={currentTab}
         onChange={(newTabId: DashboardTabId) => setCurrentTab(newTabId)}
