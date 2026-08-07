@@ -57,6 +57,23 @@ export function CurrentTime() {
   return <FitH1 textStroke={textStroke}>{formatDate(now, "currentTime")}</FitH1>;
 }
 
+export function poolSongCounterText(
+  currentSong: number | undefined,
+  totalSongs: number | undefined,
+): string {
+  return `Song ${currentSong ?? 1}/${totalSongs ?? 6}`;
+}
+
+export function PoolSongCounter() {
+  const currentSong = useAppState(
+    (s) => s.event.tournament?.poolState?.currentSong,
+  );
+  const totalSongs = useAppState(
+    (s) => s.event.tournament?.poolState?.totalSongs,
+  );
+  return <FitH1>{poolSongCounterText(currentSong, totalSongs)}</FitH1>;
+}
+
 const labelTypeFont: Record<ObsLabelType, string> = {
   dialog: styles.dialogFont,
   title: styles.titleFont,

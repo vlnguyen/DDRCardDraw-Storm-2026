@@ -333,6 +333,19 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/pool-song-counter",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { PoolSongCounter } = await import("./obs-sources/text");
+          return { Component: PoolSongCounter };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/cab/:cabId/source",
     element: <ObsSource />,
     children: [

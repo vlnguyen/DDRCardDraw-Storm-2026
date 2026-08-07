@@ -66,6 +66,9 @@ export interface PoolPlayer {
 export interface PoolState {
   songs?: string[];
   players?: PoolPlayer[];
+  numPlayersAdvance?: number;
+  totalSongs?: number;
+  currentSong?: number;
 }
 
 export type CardDrawPhase = "pools" | "de-bo3" | "de-bo5";
@@ -235,6 +238,22 @@ export const eventSlice = createSlice({
         state.tournament.poolState = {};
       }
       state.tournament.poolState.songs = action.payload;
+    },
+    setPoolSettings(
+      state,
+      action: PayloadAction<{
+        numPlayersAdvance?: number;
+        totalSongs?: number;
+        currentSong?: number;
+      }>,
+    ) {
+      if (!state.tournament.poolState) {
+        state.tournament.poolState = {};
+      }
+      state.tournament.poolState.numPlayersAdvance =
+        action.payload.numPlayersAdvance;
+      state.tournament.poolState.totalSongs = action.payload.totalSongs;
+      state.tournament.poolState.currentSong = action.payload.currentSong;
     },
     updateLobbyConnection(
       state,

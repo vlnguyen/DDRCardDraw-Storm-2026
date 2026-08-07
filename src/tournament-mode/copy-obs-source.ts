@@ -21,6 +21,7 @@ export const routableSchedulePath = (day: "fri" | "sat" | "sun") =>
 export const routableStarsPath = () => `../stars`;
 export const routableStageProgressionPath = () => `../stage-progression`;
 export const routableUpcomingPoolPath = () => `../upcoming-pool`;
+export const routablePoolSongCounterPath = () => `../pool-song-counter`;
 
 export function copyObsSource(href: string) {
   void copyPlainTextToClipboard(href, "Copied OBS source URL to clipboard");

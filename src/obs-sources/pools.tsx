@@ -148,9 +148,12 @@ function getDisplayScore(score: number): string {
 export function PoolsLive() {
   const poolPlayers =
     useAppState((s) => s.event.tournament?.poolState?.players) ?? [];
+  const numPlayersAdvance = useAppState(
+    (s) => s.event.tournament?.poolState?.numPlayersAdvance ?? 2,
+  );
   return (
     <PoolsViewport>
-      <Pools poolPlayers={poolPlayers} />
+      <Pools poolPlayers={poolPlayers} numPlayersAdvance={numPlayersAdvance} />
     </PoolsViewport>
   );
 }
@@ -158,9 +161,11 @@ export function PoolsLive() {
 export function Pools({
   poolPlayers,
   forcePlayerAdvancement,
+  numPlayersAdvance = 2,
 }: {
   poolPlayers: PoolPlayer[];
   forcePlayerAdvancement?: boolean;
+  numPlayersAdvance?: number;
 }) {
   const numSongs = poolPlayers[0]?.scores.length ?? 0;
   const poolPlayersResults = useMemo(() => {
@@ -218,36 +223,14 @@ export function Pools({
         {poolPlayersResults.map((player, poolPlayerResultIndex) => {
           const { scores, wins, rank, averageEx, isEliminated, advancement } =
             player;
-          const medal = ((): string | null => {
-            if (isEliminated) {
-              return "💀";
-            }
-
-            if (forcePlayerAdvancement) {
-              switch (advancement) {
-                case "1st":
-                  return "🥇";
-                case "2nd":
-                  return "🥈";
-                default:
-                  return null;
-              }
-            }
-
-            switch (rank) {
-              case 1:
-                return "🥇";
-              case 2:
-                return "🥈";
-              // only two players advance from pools
-              default:
-                return null;
-            }
-          })();
+          const willAdvance = forcePlayerAdvancement
+            ? advancement === "1st" || advancement === "2nd"
+            : rank <= numPlayersAdvance;
+          const medal = isEliminated ? "💀" : willAdvance ? "🏆" : null;
 
           return (
             <tr key={poolPlayerResultIndex}>
-              <td className={getRankClassName(rank)}>
+              <td className={willAdvance ? getRankClassName(rank) : styles.rank}>
                 <b className={styles.squish}>{rank}</b>
               </td>
               <td className={styles.playerName}>
