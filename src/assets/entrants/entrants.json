@@ -454,5 +454,29 @@
     "discriminator": "f63b99dd",
     "gamerTag": "Rynker",
     "prefix": ""
+  },
+  {
+    "id": 487027,
+    "discriminator": "dbd9b614",
+    "gamerTag": "DIGI",
+    "prefix": "MAH MI"
+  },
+  {
+    "id": 739936,
+    "discriminator": "ff8ebf72",
+    "gamerTag": "EMCAT",
+    "prefix": "RNG"
+  },
+  {
+    "id": 631250,
+    "discriminator": "eb8dc0e6",
+    "gamerTag": "Angel_Who",
+    "prefix": "BITE"
+  },
+  {
+    "id": 916638,
+    "discriminator": "b6b3f83f",
+    "gamerTag": "Shinobee",
+    "prefix": ""
   }
 ]
