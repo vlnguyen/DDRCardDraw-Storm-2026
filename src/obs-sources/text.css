@@ -91,3 +91,9 @@
   background: transparent;
   border: 0.8vmin solid white;
 }
+
+.seed {
+  margin-left: 0.15em;
+  font-size: 0.5em;
+  opacity: 0.75;
+}

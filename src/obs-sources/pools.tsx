@@ -1,6 +1,7 @@
 import { ReactNode, useMemo } from "react";
 import { PoolPlayer } from "../state/event.slice";
 import { useAppState } from "../state/store";
+import { entrantsMap, SEED_DROPPED } from "../assets/entrants/entrantsMap";
 
 import styles from "./pools.css";
 
@@ -43,9 +44,17 @@ function PlayerName({
   medal?: string | null;
 }) {
   if (!player.gamerTag) return <>--</>;
+  const seed =
+    player.entrantId != null
+      ? (entrantsMap[player.entrantId]?.seed ?? null)
+      : null;
   return (
     <>
-      <span className={styles.gamerTag}>{player.gamerTag}</span> {medal}
+      <span className={styles.gamerTag}>{player.gamerTag}</span>
+      {seed != null && seed !== SEED_DROPPED && (
+        <sub className={styles.seed}>{seed}</sub>
+      )}{" "}
+      {medal}
       {player.prefix && (
         <div className={styles.prefix}>{player.prefix}</div>
       )}

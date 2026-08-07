@@ -22,9 +22,9 @@ import entrants from "../../assets/entrants/entrants.json";
 import { useLiveRankings } from "../../obs-sources/useLiveRankings";
 import {
   copyObsSource,
+  routablePoolPlayerNamePath,
   routablePoolSongCounterPath,
   routablePoolsPath,
-  routableStepStatsPath,
 } from "../copy-obs-source";
 import { MatchLog } from "./match-log";
 import { LobbyStateView } from "./lobbies";
@@ -84,20 +84,24 @@ function CabCell({
   cabNumber: 1 | 2;
   playerNumber: 1 | 2;
 }) {
-  const stepStatsHref = useHref(routableStepStatsPath(cabNumber, playerNumber));
+  const poolPlayerNameHref = useHref(
+    routablePoolPlayerNamePath(cabNumber, playerNumber),
+  );
 
   return (
     <td>
       {cabLabel}
       <div className={styles.stepStatsButton}>
-        <Tooltip content="Step Stats">
+        <Tooltip content="Player Name">
           <AnchorButton
             size="small"
             icon={<Duplicate />}
-            href={stepStatsHref}
+            href={poolPlayerNameHref}
             onClick={(e) => {
               e.preventDefault();
-              copyObsSource(new URL(stepStatsHref, document.location.href).href);
+              copyObsSource(
+                new URL(poolPlayerNameHref, document.location.href).href,
+              );
             }}
           />
         </Tooltip>

@@ -183,3 +183,9 @@
 .medal {
   font-size: 0.9em;
 }
+
+.seed {
+  margin-left: 0.15em;
+  font-size: 0.5em;
+  opacity: 0.75;
+}

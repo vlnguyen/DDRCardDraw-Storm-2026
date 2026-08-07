@@ -3,6 +3,7 @@ import type { PoolHistoryStage } from "../state/event.slice";
 import { useAppState } from "../state/store";
 import { getPoolCodesForStage, parsePoolPlayers } from "./pool-history";
 import { Pools, getPoolPlayersResults } from "./pools";
+import { entrantsMap, SEED_DROPPED } from "../assets/entrants/entrantsMap";
 import styles from "./stage-progression.css";
 
 // How far the highlight box extends past each pool's own content box.
@@ -203,17 +204,28 @@ export function StageProgression() {
             >
               <p className={styles.poolName}>Pool {poolCode}</p>
               <ul className={styles.playerList}>
-                {players.map((player, i) => (
-                  <li key={i} className={styles.player}>
-                    <span>{player.gamerTag}</span>
-                    {player.advancement === "1st" && (
-                      <span className={styles.medal}>🥇</span>
-                    )}
-                    {player.advancement === "2nd" && (
-                      <span className={styles.medal}>🥈</span>
-                    )}
-                  </li>
-                ))}
+                {players.map((player, i) => {
+                  const seed =
+                    player.entrantId != null
+                      ? (entrantsMap[player.entrantId]?.seed ?? null)
+                      : null;
+                  return (
+                    <li key={i} className={styles.player}>
+                      <span>
+                        {player.gamerTag}
+                        {seed != null && seed !== SEED_DROPPED && (
+                          <sub className={styles.seed}>{seed}</sub>
+                        )}
+                      </span>
+                      {player.advancement === "1st" && (
+                        <span className={styles.medal}>🥇</span>
+                      )}
+                      {player.advancement === "2nd" && (
+                        <span className={styles.medal}>🥈</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

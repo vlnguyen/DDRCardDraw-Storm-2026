@@ -7,6 +7,8 @@ import { useAppState } from "../state/store";
 import { getAllPlayers } from "../models/Drawing";
 import { formatDate, useCurrentTime } from "../hooks/useCurrentTime";
 import { useFitText } from "../hooks/useFitText";
+import { ROSTER_SLOTS } from "./step-stats";
+import { entrantsMap, SEED_DROPPED } from "../assets/entrants/entrantsMap";
 import styles from "./text.css";
 
 function FitH1({
@@ -72,6 +74,40 @@ export function PoolSongCounter() {
     (s) => s.event.tournament?.poolState?.totalSongs,
   );
   return <FitH1>{poolSongCounterText(currentSong, totalSongs)}</FitH1>;
+}
+
+/**
+ * The name of the player assigned to a pool roster slot (i.e. the entrant
+ * picked in the dropdown on the Players dashboard), not whoever is actually
+ * logged into that cab in the lobby — this intentionally never reads lobby
+ * state, unlike step-stats.tsx's ROSTER_SLOTS-based lookups.
+ */
+export function PoolPlayerName() {
+  const [searchParams] = useSearchParams();
+  const cab = searchParams.get("cab") === "2" ? "2" : "1";
+  const playerId = searchParams.get("player") === "2" ? "P2" : "P1";
+
+  const poolPlayers =
+    useAppState((s) => s.event.tournament?.poolState?.players) ?? [];
+
+  const rowIndex = ROSTER_SLOTS.findIndex(
+    (slot) => `${slot.cabNum}` === cab && slot.playerSlot === playerId,
+  );
+  const player = poolPlayers[rowIndex];
+  const name = player?.gamerTag ?? "";
+  const seed =
+    player?.entrantId != null
+      ? (entrantsMap[player.entrantId]?.seed ?? null)
+      : null;
+
+  return (
+    <FitH1>
+      {name}
+      {seed != null && seed !== SEED_DROPPED && (
+        <sub className={styles.seed}>{seed}</sub>
+      )}
+    </FitH1>
+  );
 }
 
 const labelTypeFont: Record<ObsLabelType, string> = {
