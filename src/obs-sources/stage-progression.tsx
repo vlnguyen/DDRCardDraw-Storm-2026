@@ -3,7 +3,7 @@ import type { PoolHistoryStage } from "../state/event.slice";
 import { useAppState } from "../state/store";
 import { getPoolCodesForStage, parsePoolPlayers } from "./pool-history";
 import { Pools, getPoolPlayersResults } from "./pools";
-import { entrantsMap, SEED_DROPPED } from "../assets/entrants/entrantsMap";
+import { entrantsMap, SEED_UNSEEDED } from "../assets/entrants/entrantsMap";
 import styles from "./stage-progression.css";
 
 // How far the highlight box extends past each pool's own content box.
@@ -213,7 +213,7 @@ export function StageProgression() {
                     <li key={i} className={styles.player}>
                       <span>
                         {player.gamerTag}
-                        {seed != null && seed !== SEED_DROPPED && (
+                        {seed != null && seed !== SEED_UNSEEDED && (
                           <sub className={styles.seed}>{seed}</sub>
                         )}
                       </span>

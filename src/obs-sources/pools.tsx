@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from "react";
 import { PoolPlayer } from "../state/event.slice";
 import { useAppState } from "../state/store";
-import { entrantsMap, SEED_DROPPED } from "../assets/entrants/entrantsMap";
+import { entrantsMap, SEED_UNSEEDED } from "../assets/entrants/entrantsMap";
 
 import styles from "./pools.css";
 
@@ -51,7 +51,7 @@ function PlayerName({
   return (
     <>
       <span className={styles.gamerTag}>{player.gamerTag}</span>
-      {seed != null && seed !== SEED_DROPPED && (
+      {seed != null && seed !== SEED_UNSEEDED && (
         <sub className={styles.seed}>{seed}</sub>
       )}{" "}
       {medal}

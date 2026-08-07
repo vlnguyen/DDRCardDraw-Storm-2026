@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 import { readFile, writeFile } from "node:fs/promises";
+import { SEED_UNSEEDED } from "../src/assets/entrants/entrantsMap.ts";
 
 const SPREADSHEET_URL =
   "https://docs.google.com/spreadsheets/d/1bWj8QnYeLFyWdON8XQjbcfqv1AsPf33nKg0qVJcSbm0";
 const SEEDS_GID = "1463525298";
 const ENTRANTS_JSON_PATH = "src/assets/entrants/entrants.json";
 const ENTRANTS_MAP_PATH = "src/assets/entrants/entrantsMap.ts";
-// Keep in sync with the exported `SEED_DROPPED` in entrantsMap.ts.
-const SEED_DROPPED = -1;
 
 interface Entrant {
   id: number;
@@ -68,7 +67,7 @@ interface MapEntry {
 // which distinguishes it from entrantPlacements' nested "    },".
 const ENTRY_RE =
   /\n {2}\/\/([^\n]*)\n {2}\[(\d+)\]: \{\n([\s\S]*?)\n {2}\},(?=\n|$)/g;
-const SEED_LINE_RE = /\n {4}seed: (?:-?\d+|null),$/;
+const SEED_LINE_RE = /\n {4}seed: (?:-?\d+|null|SEED_UNSEEDED),$/;
 
 function parseEntries(body: string): MapEntry[] {
   const entries: MapEntry[] = [];
@@ -102,7 +101,13 @@ function parseEntries(body: string): MapEntry[] {
 }
 
 function serializeEntry(entry: MapEntry, seed: number | null): string {
-  const seedLine = `\n    seed: ${seed === null ? "null" : seed},`;
+  const seedLiteral =
+    seed === null
+      ? "null"
+      : seed === SEED_UNSEEDED
+        ? "SEED_UNSEEDED"
+        : String(seed);
+  const seedLine = `\n    seed: ${seedLiteral},`;
   return `\n  // ${entry.comment}\n  [${entry.id}]: {\n${entry.coreBody}${seedLine}\n  },`;
 }
 
@@ -116,7 +121,7 @@ const seedByName = parseSeedsByName(seedRows);
 const seedByEntrantId = new Map<number, number>();
 for (const entrant of entrants) {
   const seed = seedByName.get(entrant.gamerTag.toLowerCase());
-  seedByEntrantId.set(entrant.id, seed ?? SEED_DROPPED);
+  seedByEntrantId.set(entrant.id, seed ?? SEED_UNSEEDED);
 }
 
 const entrantById = new Map(entrants.map((e) => [e.id, e]));
@@ -150,11 +155,11 @@ const finalEntries: { entry: MapEntry; seed: number | null }[] = [];
 
 for (const entry of existingEntries) {
   const entrant = entrantById.get(entry.id);
-  // Still registered for this event: a real seed, or SEED_DROPPED if they
+  // Still registered for this event: a real seed, or SEED_UNSEEDED if they
   // didn't end up seeded. Not in this event's entrants list: seed is
   // null, and the rest of the entry is left exactly as it was.
   const seed = entrant
-    ? (seedByEntrantId.get(entry.id) ?? SEED_DROPPED)
+    ? (seedByEntrantId.get(entry.id) ?? SEED_UNSEEDED)
     : null;
   finalEntries.push({ entry, seed });
 }
@@ -167,7 +172,7 @@ for (const entrant of entrants) {
       comment: commentFor(entrant),
       coreBody: `    id: ${entrant.id},\n    discriminator: "${entrant.discriminator}",\n    entrantPlacements: {},`,
     },
-    seed: seedByEntrantId.get(entrant.id) ?? SEED_DROPPED,
+    seed: seedByEntrantId.get(entrant.id) ?? SEED_UNSEEDED,
   });
 }
 

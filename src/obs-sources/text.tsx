@@ -8,7 +8,7 @@ import { getAllPlayers } from "../models/Drawing";
 import { formatDate, useCurrentTime } from "../hooks/useCurrentTime";
 import { useFitText } from "../hooks/useFitText";
 import { ROSTER_SLOTS } from "./step-stats";
-import { entrantsMap, SEED_DROPPED } from "../assets/entrants/entrantsMap";
+import { entrantsMap, SEED_UNSEEDED } from "../assets/entrants/entrantsMap";
 import styles from "./text.css";
 
 function FitH1({
@@ -103,7 +103,7 @@ export function PoolPlayerName() {
   return (
     <FitH1>
       {name}
-      {seed != null && seed !== SEED_DROPPED && (
+      {seed != null && seed !== SEED_UNSEEDED && (
         <sub className={styles.seed}>{seed}</sub>
       )}
     </FitH1>

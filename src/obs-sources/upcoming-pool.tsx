@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { entrantsMap, SEED_DROPPED } from "../assets/entrants/entrantsMap";
+import { entrantsMap, SEED_UNSEEDED } from "../assets/entrants/entrantsMap";
 import { useAppState } from "../state/store";
 import { parsePoolPlayers } from "./pool-history";
 import { Persona3Circle } from "./persona-3-circle";
@@ -47,7 +47,7 @@ export function UpcomingPool() {
         {players.map((player, i) => (
           <div key={i}>
             {player.gamerTag}
-            {player.seed != null && player.seed !== SEED_DROPPED && (
+            {player.seed != null && player.seed !== SEED_UNSEEDED && (
               <sub className={styles.seed}>{player.seed}</sub>
             )}
           </div>
