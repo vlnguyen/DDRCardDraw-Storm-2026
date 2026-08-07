@@ -14,7 +14,6 @@ interface Entrant {
   discriminator: string;
   gamerTag: string;
   prefix: string;
-  entrantId: number;
 }
 
 async function fetchSeedRows(): Promise<string[][]> {

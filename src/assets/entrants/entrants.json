@@ -3,532 +3,456 @@
     "id": 3442890,
     "discriminator": "49ee8d5d",
     "gamerTag": "Itss2Eazyy",
-    "prefix": "",
-    "entrantId": 22236079
+    "prefix": ""
   },
   {
     "id": 1630991,
     "discriminator": "b3184096",
     "gamerTag": "STILL Gigas",
-    "prefix": "",
-    "entrantId": 22234944
+    "prefix": ""
   },
   {
     "id": 3441225,
     "discriminator": "2b2eb2e3",
     "gamerTag": "JeauxColorado",
-    "prefix": "",
-    "entrantId": 22228876
+    "prefix": ""
   },
   {
     "id": 3442088,
     "discriminator": "",
     "gamerTag": "kickinnc2",
-    "prefix": "",
-    "entrantId": 22228128
+    "prefix": ""
   },
   {
     "id": 1655336,
     "discriminator": "ef27084b",
     "gamerTag": "SpOwOky_Angu",
-    "prefix": "",
-    "entrantId": 22226931
+    "prefix": ""
   },
   {
     "id": 3441371,
     "discriminator": "8df3e68c",
     "gamerTag": "BarinRojo",
-    "prefix": "",
-    "entrantId": 22221581
+    "prefix": ""
   },
   {
     "id": 781642,
     "discriminator": "05b58e89",
     "gamerTag": "Jhennyinthecup",
-    "prefix": "",
-    "entrantId": 22217554
+    "prefix": ""
   },
   {
     "id": 627949,
     "discriminator": "114a6fea",
     "gamerTag": "Malia",
-    "prefix": "",
-    "entrantId": 20863998
+    "prefix": ""
   },
   {
     "id": 2652265,
     "discriminator": "b6af19a7",
     "gamerTag": "Darkstar",
-    "prefix": "",
-    "entrantId": 22204745
+    "prefix": ""
   },
   {
     "id": 3439532,
     "discriminator": "73b1897a",
     "gamerTag": "Crash Cringle",
-    "prefix": "",
-    "entrantId": 22201357
+    "prefix": ""
   },
   {
     "id": 3439497,
     "discriminator": "7df3718e",
     "gamerTag": "BadAntelope",
-    "prefix": "",
-    "entrantId": 22200904
+    "prefix": ""
   },
   {
     "id": 3374222,
     "discriminator": "5d3ec0fc",
     "gamerTag": "Taraun Anderson",
-    "prefix": "",
-    "entrantId": 22194382
+    "prefix": ""
   },
   {
     "id": 3156620,
     "discriminator": "ca5e2ab0",
     "gamerTag": "ReformedSho#TWT",
-    "prefix": "",
-    "entrantId": 22178094
+    "prefix": ""
   },
   {
     "id": 3396838,
     "discriminator": "",
     "gamerTag": "Alex",
-    "prefix": "",
-    "entrantId": 22165752
+    "prefix": ""
   },
   {
     "id": 2403703,
     "discriminator": "5392e440",
     "gamerTag": "Goomba Roomba",
-    "prefix": "Bhop",
-    "entrantId": 22104132
+    "prefix": "Bhop"
   },
   {
     "id": 3065163,
     "discriminator": "a4c7a09f",
     "gamerTag": "GlitchedGoddess",
-    "prefix": "Twitch",
-    "entrantId": 22100165
+    "prefix": "Twitch"
   },
   {
     "id": 473954,
     "discriminator": "9d0dfc93",
     "gamerTag": "baraka",
-    "prefix": "",
-    "entrantId": 22055718
+    "prefix": ""
   },
   {
     "id": 1970499,
     "discriminator": "bdbeaaf0",
     "gamerTag": "Blizzrdball",
-    "prefix": "",
-    "entrantId": 22040840
+    "prefix": ""
   },
   {
     "id": 2027270,
     "discriminator": "97813247",
     "gamerTag": "itgalex",
-    "prefix": "",
-    "entrantId": 22036411
+    "prefix": ""
   },
   {
     "id": 2214618,
     "discriminator": "3cc8c8ed",
     "gamerTag": "X!!",
-    "prefix": "",
-    "entrantId": 21994796
+    "prefix": ""
   },
   {
     "id": 2354355,
     "discriminator": "649127bf",
     "gamerTag": "midtown",
-    "prefix": "",
-    "entrantId": 21989557
+    "prefix": ""
   },
   {
     "id": 3171983,
     "discriminator": "3d399b44",
     "gamerTag": "HeavyMode",
-    "prefix": "",
-    "entrantId": 21868830
+    "prefix": ""
   },
   {
     "id": 2409673,
     "discriminator": "d1207fcb",
     "gamerTag": "Koffee",
-    "prefix": "",
-    "entrantId": 21737492
+    "prefix": ""
   },
   {
     "id": 2275154,
     "discriminator": "97d82fb9",
     "gamerTag": "SirDelins",
-    "prefix": "",
-    "entrantId": 21481715
+    "prefix": ""
   },
   {
     "id": 1838861,
     "discriminator": "1f8376b0",
     "gamerTag": "WDRM",
-    "prefix": "",
-    "entrantId": 21184166
+    "prefix": ""
   },
   {
     "id": 231774,
     "discriminator": "1336c4bf",
     "gamerTag": "Matty Ice",
-    "prefix": "",
-    "entrantId": 21175052
+    "prefix": ""
   },
   {
     "id": 486724,
     "discriminator": "92e538cc",
     "gamerTag": "Captain Carbon",
-    "prefix": "TBD",
-    "entrantId": 21100332
+    "prefix": "TBD"
   },
   {
     "id": 2298424,
     "discriminator": "857ad296",
     "gamerTag": "simplySOUF",
-    "prefix": "STUUF",
-    "entrantId": 21047913
+    "prefix": "STUUF"
   },
   {
     "id": 12877,
     "discriminator": "db47f574",
     "gamerTag": "CarterTheQ",
-    "prefix": "DDRIllini",
-    "entrantId": 20994140
+    "prefix": "DDRIllini"
   },
   {
     "id": 3291058,
     "discriminator": "d3ca308a",
     "gamerTag": "PenguinMessiah",
-    "prefix": "",
-    "entrantId": 20920763
+    "prefix": ""
   },
   {
     "id": 3008718,
     "discriminator": "0669859a",
     "gamerTag": "idontevenknowyou",
-    "prefix": "",
-    "entrantId": 20916330
+    "prefix": ""
   },
   {
     "id": 2048909,
     "discriminator": "391ac297",
     "gamerTag": "KEAK",
-    "prefix": "",
-    "entrantId": 20871998
+    "prefix": ""
   },
   {
     "id": 473823,
     "discriminator": "6b96f2ab",
     "gamerTag": "meowbois",
-    "prefix": "",
-    "entrantId": 20871808
+    "prefix": ""
   },
   {
     "id": 155600,
     "discriminator": "e3964cf2",
     "gamerTag": "Limen",
-    "prefix": "",
-    "entrantId": 20870129
+    "prefix": ""
   },
   {
     "id": 436726,
     "discriminator": "1d674757",
     "gamerTag": "lolipo",
-    "prefix": "",
-    "entrantId": 20865606
+    "prefix": ""
   },
   {
     "id": 2008712,
     "discriminator": "3a372353",
     "gamerTag": "Chance R.",
-    "prefix": "",
-    "entrantId": 20865016
+    "prefix": ""
   },
   {
     "id": 656475,
     "discriminator": "226cd505",
     "gamerTag": "VincentITG",
-    "prefix": "ROBERTO",
-    "entrantId": 20864478
+    "prefix": "ROBERTO"
   },
   {
     "id": 1821389,
     "discriminator": "cdecc7e5",
     "gamerTag": "XEPHER",
-    "prefix": "",
-    "entrantId": 20864131
+    "prefix": ""
   },
   {
     "id": 2151595,
     "discriminator": "2121c3fa",
     "gamerTag": "LIGHTW8",
-    "prefix": "",
-    "entrantId": 20864350
+    "prefix": ""
   },
   {
     "id": 3286044,
     "discriminator": "edccd012",
     "gamerTag": "BMG!!",
-    "prefix": "",
-    "entrantId": 20864222
+    "prefix": ""
   },
   {
     "id": 2628662,
     "discriminator": "d4495286",
     "gamerTag": "Bostic300",
-    "prefix": "",
-    "entrantId": 20864207
+    "prefix": ""
   },
   {
     "id": 14485,
     "discriminator": "b1875b2d",
     "gamerTag": "cheesecake",
-    "prefix": "HFIL",
-    "entrantId": 20864199
+    "prefix": "HFIL"
   },
   {
     "id": 488761,
     "discriminator": "20fcba89",
     "gamerTag": "DomDeeKong",
-    "prefix": "",
-    "entrantId": 20864124
+    "prefix": ""
   },
   {
     "id": 2119088,
     "discriminator": "2f8f7845",
     "gamerTag": "dashark",
-    "prefix": "",
-    "entrantId": 20864103
+    "prefix": ""
   },
   {
     "id": 1956381,
     "discriminator": "f9901178",
     "gamerTag": "Yama",
-    "prefix": "pals",
-    "entrantId": 20864093
+    "prefix": "pals"
   },
   {
     "id": 806211,
     "discriminator": "613d4730",
     "gamerTag": "PolloxX",
-    "prefix": "",
-    "entrantId": 20864070
+    "prefix": ""
   },
   {
     "id": 1786551,
     "discriminator": "1ee0ca7e",
     "gamerTag": "Yokamaa",
-    "prefix": "MOISTBOIS",
-    "entrantId": 20864065
+    "prefix": "MOISTBOIS"
   },
   {
     "id": 630151,
     "discriminator": "76ce2ba6",
     "gamerTag": "FabSab440",
-    "prefix": "IIDX",
-    "entrantId": 20864060
+    "prefix": "IIDX"
   },
   {
     "id": 792951,
     "discriminator": "d0e4d8b9",
     "gamerTag": "Ty",
-    "prefix": "",
-    "entrantId": 20864050
+    "prefix": ""
   },
   {
     "id": 2230581,
     "discriminator": "e549c65b",
     "gamerTag": "datcoreedoe",
-    "prefix": "",
-    "entrantId": 20864045
+    "prefix": ""
   },
   {
     "id": 2400497,
     "discriminator": "3c532367",
     "gamerTag": "Skate",
-    "prefix": "",
-    "entrantId": 20864030
+    "prefix": ""
   },
   {
     "id": 2296976,
     "discriminator": "741bcead",
     "gamerTag": "undrscore",
-    "prefix": "",
-    "entrantId": 20858004
+    "prefix": ""
   },
   {
     "id": 2072594,
     "discriminator": "baf87bf4",
     "gamerTag": "Flash",
-    "prefix": "",
-    "entrantId": 20855320
+    "prefix": ""
   },
   {
     "id": 1955111,
     "discriminator": "e9b9f217",
     "gamerTag": "Andeh",
-    "prefix": "LONESTAR",
-    "entrantId": 20854236
+    "prefix": "LONESTAR"
   },
   {
     "id": 1787090,
     "discriminator": "c7bd7fec",
     "gamerTag": "ANDROO",
-    "prefix": "RNG",
-    "entrantId": 20852197
+    "prefix": "RNG"
   },
   {
     "id": 2158665,
     "discriminator": "63385614",
     "gamerTag": "cousinoer5",
-    "prefix": "",
-    "entrantId": 20787109
+    "prefix": ""
   },
   {
     "id": 2626971,
     "discriminator": "e4e1304b",
     "gamerTag": "Agent A",
-    "prefix": "",
-    "entrantId": 20774498
+    "prefix": ""
   },
   {
     "id": 2267114,
     "discriminator": "0d539df8",
     "gamerTag": "Lazor",
-    "prefix": "",
-    "entrantId": 20773407
+    "prefix": ""
   },
   {
     "id": 2206880,
     "discriminator": "1ec6593b",
     "gamerTag": "SailorMoonElite",
-    "prefix": "",
-    "entrantId": 20746746
+    "prefix": ""
   },
   {
     "id": 727583,
     "discriminator": "db6de701",
     "gamerTag": "Miligram",
-    "prefix": "",
-    "entrantId": 20695256
+    "prefix": ""
   },
   {
     "id": 94078,
     "discriminator": "03229ef1",
     "gamerTag": "SpeakEZ",
-    "prefix": "",
-    "entrantId": 20668368
+    "prefix": ""
   },
   {
     "id": 2121528,
     "discriminator": "8f9d2f17",
     "gamerTag": "Higgy",
-    "prefix": "",
-    "entrantId": 20652286
+    "prefix": ""
   },
   {
     "id": 3266358,
     "discriminator": "f04c1451",
     "gamerTag": "Ryuguu",
-    "prefix": "",
-    "entrantId": 20643110
+    "prefix": ""
   },
   {
     "id": 1451396,
     "discriminator": "9ab67a73",
     "gamerTag": "chezmix",
-    "prefix": "RNG",
-    "entrantId": 20637992
+    "prefix": "RNG"
   },
   {
     "id": 2099374,
     "discriminator": "04153250",
     "gamerTag": "Chief Skittles",
-    "prefix": "STORM",
-    "entrantId": 20636358
+    "prefix": "STORM"
   },
   {
     "id": 605243,
     "discriminator": "76f9d3bd",
     "gamerTag": "mdx",
-    "prefix": "",
-    "entrantId": 20633439
+    "prefix": ""
   },
   {
     "id": 2512771,
     "discriminator": "b8aaf24f",
     "gamerTag": "EvanS",
-    "prefix": "ASU",
-    "entrantId": 20632560
+    "prefix": "ASU"
   },
   {
     "id": 3265571,
     "discriminator": "",
     "gamerTag": "Emmp",
-    "prefix": "",
-    "entrantId": 20632559
+    "prefix": ""
   },
   {
     "id": 746713,
     "discriminator": "40382427",
     "gamerTag": "JONBUDDY",
-    "prefix": "OCG",
-    "entrantId": 20632527
+    "prefix": "OCG"
   },
   {
     "id": 143547,
     "discriminator": "3aadda80",
     "gamerTag": "VivaLaMoo",
-    "prefix": "STORM",
-    "entrantId": 20632351
+    "prefix": "STORM"
   },
   {
     "id": 497819,
     "discriminator": "2ddd55d0",
     "gamerTag": "T. Swag",
-    "prefix": "",
-    "entrantId": 20632299
+    "prefix": ""
   },
   {
     "id": 90040,
     "discriminator": "ea646ec3",
     "gamerTag": "teejusb",
-    "prefix": "",
-    "entrantId": 20632178
+    "prefix": ""
   },
   {
     "id": 1814321,
     "discriminator": "d9a6772f",
     "gamerTag": "Eesa",
-    "prefix": "",
-    "entrantId": 20632060
+    "prefix": ""
   },
   {
     "id": 2090414,
     "discriminator": "8a84a321",
     "gamerTag": "Flip",
-    "prefix": "",
-    "entrantId": 20631909
+    "prefix": ""
   },
   {
     "id": 436678,
     "discriminator": "96661b6c",
     "gamerTag": "EvilDave219",
-    "prefix": "TBD",
-    "entrantId": 20631810
+    "prefix": "TBD"
   },
   {
     "id": 437458,
     "discriminator": "f63b99dd",
     "gamerTag": "Rynker",
-    "prefix": "",
-    "entrantId": 20631808
+    "prefix": ""
   }
 ]

@@ -16,7 +16,6 @@ const ENTRANTS_QUERY = `
         nodes {
           id
           participants {
-            id
             gamerTag
             prefix
             user {
@@ -31,7 +30,6 @@ const ENTRANTS_QUERY = `
 `;
 
 interface Participant {
-  entrantId: string;
   gamerTag: string;
   prefix: string;
   id: string | null;
@@ -39,7 +37,6 @@ interface Participant {
 }
 
 interface RawParticipant {
-  id: string;
   gamerTag: string;
   prefix: string | null;
   user: { id: string; discriminator: string } | null;
@@ -60,8 +57,28 @@ interface EventEntrantsResponse {
 }
 
 function slugFromUrl(url: string): string {
-  const { pathname } = new URL(url);
+  const normalized = /^https?:\/\//.test(url) ? url : `https://${url}`;
+  const { pathname } = new URL(normalized);
   return pathname.replace(/^\/+|\/+$/g, "");
+}
+
+/** Merges participant lists (e.g. from multiple brackets of the same event),
+ * deduping by start.gg user id where one is present. Participants with no
+ * linked user account (`id === null`) can't be reliably deduped, so every
+ * such entry is kept as-is. */
+function mergeParticipants(lists: Participant[][]): Participant[] {
+  const seenUserIds = new Set<string>();
+  const merged: Participant[] = [];
+  for (const list of lists) {
+    for (const participant of list) {
+      if (participant.id != null) {
+        if (seenUserIds.has(participant.id)) continue;
+        seenUserIds.add(participant.id);
+      }
+      merged.push(participant);
+    }
+  }
+  return merged;
 }
 
 function csvField(value: string | null): string {
@@ -70,9 +87,9 @@ function csvField(value: string | null): string {
 }
 
 function toCsv(participants: Participant[]): string {
-  const header = ["id", "prefix", "gamerTag", "discriminator", "entrantId"];
+  const header = ["id", "prefix", "gamerTag", "discriminator"];
   const rows = participants.map((p) =>
-    [p.id, p.prefix, p.gamerTag, p.discriminator, p.entrantId].map(csvField).join(","),
+    [p.id, p.prefix, p.gamerTag, p.discriminator].map(csvField).join(","),
   );
   return [header.join(","), ...rows].join("\n");
 }
@@ -126,7 +143,6 @@ async function fetchAllParticipants(token: string, slug: string): Promise<Partic
         discriminator: participant.user?.discriminator ?? null,
         gamerTag: participant.gamerTag,
         prefix: participant.prefix ?? "",
-        entrantId: participant.id,
       });
     }
     totalPages = event.entrants.pageInfo.totalPages;
@@ -154,6 +170,8 @@ function getArg(name: string): string | undefined {
 }
 
 const eventUrl = getArg("url") ?? "https://www.start.gg/tournament/ceo-2026/event/itgmania/";
+const eventUrlWomen =
+  "www.start.gg/tournament/ceo-2026-community-tournaments/event/itgmania-women-non-binary/";
 
 const outputName = getArg("name") ?? "entrants";
 
@@ -164,12 +182,27 @@ if (!token) {
 }
 
 const slug = slugFromUrl(eventUrl);
-const participants = await fetchAllParticipants(token, slug);
+const slugWomen = slugFromUrl(eventUrlWomen);
 
-console.log(`Found ${participants.length} participants for ${slug}:`);
-for (const participant of participants) {
-  console.log(`${participant.id}\t${participant.prefix}\t${participant.gamerTag}`);
+const [participantsMain, participantsWomen] = await Promise.all([
+  fetchAllParticipants(token, slug),
+  fetchAllParticipants(token, slugWomen),
+]);
+
+for (const [label, list] of [
+  [slug, participantsMain],
+  [slugWomen, participantsWomen],
+] as const) {
+  console.log(`Found ${list.length} participants for ${label}:`);
+  for (const participant of list) {
+    console.log(`${participant.id}\t${participant.prefix}\t${participant.gamerTag}`);
+  }
 }
+
+const participants = mergeParticipants([participantsMain, participantsWomen]);
+console.log(
+  `Merged into ${participants.length} unique participants (from ${participantsMain.length + participantsWomen.length} total entries).`,
+);
 
 const outputPath = `src/assets/entrants/${outputName}`;
 
