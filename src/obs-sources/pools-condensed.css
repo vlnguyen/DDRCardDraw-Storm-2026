@@ -1,0 +1,133 @@
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+.canvas {
+  width: 1000px;
+  height: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.titleWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.titleStroke {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 72px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: #1a1a1a;
+  -webkit-text-stroke: 12px #1a1a1a;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.title {
+  position: relative;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 72px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.dialogList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 24px;
+  gap: 8px;
+}
+
+.dialogItem {
+  position: relative;
+  display: inline-block;
+}
+
+.dialogBox {
+  display: block;
+  width: 900px;
+  height: auto;
+}
+
+/* Sized to match the SVG's own box exactly (inset: 0 within .dialogItem,
+   which is itself sized to the img) — content is positioned relative to
+   this container rather than directly against the img, so its box can
+   later be tuned (e.g. inset further to just the drawn diamond) without
+   touching the img or the text. */
+.dialogInner {
+  position: absolute;
+  inset: 16px 40px 0 100px;
+}
+
+.playerName {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  margin: 0;
+  font-family: "Chiaro Std";
+  font-size: 64px;
+  line-height: 1;
+  color: white;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.playerPoints {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  margin: 0;
+  font-family: "Chiaro Std";
+  font-size: 64px;
+  line-height: 1;
+  color: white;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.seed {
+  margin-left: 0.15em;
+  font-size: 0.5em;
+  opacity: 0.75;
+}
+
+.winnerIcon {
+  position: absolute;
+  top: -19px;
+  left: -18px;
+  width: 121px;
+  height: auto;
+  transform: rotate(-5deg);
+}
