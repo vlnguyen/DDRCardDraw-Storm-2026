@@ -68,7 +68,7 @@ export interface PoolState {
   players?: PoolPlayer[];
 }
 
-export type CardDrawPhase = "pools" | "de";
+export type CardDrawPhase = "pools" | "de-bo3" | "de-bo5";
 
 export interface LowerThirdState {
   title: string;

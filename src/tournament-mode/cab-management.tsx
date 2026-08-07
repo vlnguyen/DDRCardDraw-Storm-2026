@@ -152,6 +152,12 @@ function CabSummary({ cab }: { cab: CabInfo }) {
               stub="player/1/score"
               cabId={cab.id}
             />
+            <CopySourceMenuItem
+              icon={<Numerical />}
+              text="Score (ticks)"
+              stub="player/1/score-ticks"
+              cabId={cab.id}
+            />
           </MenuItem>
           <MenuItem disabled text="(edit URL for players beyond 1)" />
         </MenuItem>

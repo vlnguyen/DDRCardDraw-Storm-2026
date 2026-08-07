@@ -722,7 +722,7 @@ function ImportExport() {
 }
 
 function isCardDrawPhase(value: string): value is CardDrawPhase {
-  return value === "pools" || value === "de";
+  return value === "pools" || value === "de-bo3" || value === "de-bo5";
 }
 
 function CardDrawPhaseSelect() {
@@ -745,7 +745,8 @@ function CardDrawPhaseSelect() {
           }}
         >
           <Radio label="Pools" value="pools" />
-          <Radio label="Double Elimination" value="de" />
+          <Radio label="DE BO3" value="de-bo3" />
+          <Radio label="DE BO5" value="de-bo5" />
         </RadioGroup>
         <Button
           disabled={!isDirty}

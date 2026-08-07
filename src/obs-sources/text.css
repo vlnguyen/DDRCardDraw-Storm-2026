@@ -63,3 +63,31 @@
   color: #000000;
   -webkit-text-stroke: 0.17em #000000;
 }
+
+.scoreTicks {
+  /* fixed + inset instead of vh-based sizing — see cards.css for why:
+     OBS's Browser Source zoom doesn't reliably recompute vh. */
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4vmin;
+}
+
+.tickFilled,
+.tickEmpty {
+  width: 16vmin;
+  height: 16vmin;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.tickFilled {
+  background: white;
+}
+
+.tickEmpty {
+  background: transparent;
+  border: 0.8vmin solid white;
+}

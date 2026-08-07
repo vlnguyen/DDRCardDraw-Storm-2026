@@ -109,17 +109,21 @@ export function CabPlayers() {
   return <FitH1>{text}</FitH1>;
 }
 
-export function toDisplayType(input: string | undefined) {
-  return input as "name" | "score" | undefined;
+export function toDisplayType(
+  input: string | undefined,
+): "name" | "score" | "scoreTicks" | undefined {
+  if (input === "score-ticks") return "scoreTicks";
+  if (input === "name" || input === "score") return input;
+  return undefined;
 }
 
 export function CabPlayer(props: {
   p: number;
-  displayType?: "name" | "score";
+  displayType?: "name" | "score" | "scoreTicks";
 }) {
   const { displayType } = props;
   const params = useParams<"roomName" | "cabId">();
-  const text = useAppState((s) => {
+  const info = useAppState((s) => {
     const drawingId = s.event.cabs[params.cabId!].activeMatch;
     if (!drawingId) return null;
     const [parent] = drawingsSlice.selectors.byCompoundOrPlainId(s, drawingId);
@@ -129,22 +133,50 @@ export function CabPlayer(props: {
     const name = player?.name || "";
     const hideWins =
       parent.meta.type === "startgg" && parent.meta.subtype === "gauntlet";
-    if (hideWins) {
-      return name;
-    }
-    const score = Object.values(parent.winners).reduce<number>((prev, curr) => {
-      if (curr === playerId) return prev + 1;
-      return prev;
-    }, 0);
-    if (displayType === "name") {
-      return name;
-    }
-    if (displayType === "score") {
-      return score;
-    }
-    return `${name} (${score})`;
+    const score = hideWins
+      ? 0
+      : Object.values(parent.winners).reduce<number>((prev, curr) => {
+          if (curr === playerId) return prev + 1;
+          return prev;
+        }, 0);
+    return { name, hideWins, score };
   });
+  const cardDrawPhase = useAppState(
+    (s) => s.event.tournament?.cardDrawPhase ?? "de-bo3",
+  );
+
+  if (displayType === "scoreTicks") {
+    const total = cardDrawPhase === "de-bo5" ? 3 : 2;
+    const won = Math.min(info?.score ?? 0, total);
+    return <ScoreTicks won={won} total={total} />;
+  }
+
+  let text: string | number | null = null;
+  if (info) {
+    if (info.hideWins) {
+      text = info.name;
+    } else if (displayType === "name") {
+      text = info.name;
+    } else if (displayType === "score") {
+      text = info.score;
+    } else {
+      text = `${info.name} (${info.score})`;
+    }
+  }
   return <FitH1>{text}</FitH1>;
+}
+
+function ScoreTicks({ won, total }: { won: number; total: number }) {
+  return (
+    <div className={styles.scoreTicks}>
+      {Array.from({ length: total }, (_, i) => (
+        <div
+          key={i}
+          className={i < won ? styles.tickFilled : styles.tickEmpty}
+        />
+      ))}
+    </div>
+  );
 }
 
 export function PhaseName() {
