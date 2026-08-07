@@ -71,7 +71,7 @@ export interface PoolState {
   currentSong?: number;
 }
 
-export type CardDrawPhase = "pools" | "de-bo3" | "de-bo5";
+export type CardDrawPhase = "pools" | "pools-4" | "de-bo3" | "de-bo5";
 
 export interface LowerThirdState {
   title: string;

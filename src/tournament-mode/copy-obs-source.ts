@@ -11,6 +11,7 @@ export const routableStepStatsPath = (cab: 1 | 2, player: 1 | 2) =>
 export const routablePoolPlayerNamePath = (cab: 1 | 2, player: 1 | 2) =>
   `../pool-player-name?cab=${cab}&player=${player}`;
 export const routablePoolsPath = () => `../pools`;
+export const routablePoolsCondensedPath = () => `../pools-condensed`;
 export const routableChartLeaderboardPath = () => `../chart-leaderboard`;
 export const routablePersona3CirclePath = () => `../persona-3-circle`;
 export const routableTrianglesPath = () => `../triangles`;

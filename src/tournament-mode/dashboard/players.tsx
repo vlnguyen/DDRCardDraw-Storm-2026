@@ -24,6 +24,7 @@ import {
   copyObsSource,
   routablePoolPlayerNamePath,
   routablePoolSongCounterPath,
+  routablePoolsCondensedPath,
   routablePoolsPath,
 } from "../copy-obs-source";
 import { MatchLog } from "./match-log";
@@ -113,6 +114,7 @@ function CabCell({
 export function Players() {
   const dispatch = useAppDispatch();
   const poolsHref = useHref(routablePoolsPath());
+  const poolsCondensedHref = useHref(routablePoolsCondensedPath());
   const poolSongCounterHref = useHref(routablePoolSongCounterPath());
   const savedPoolState = useAppState(
     (s) => s.event.tournament.poolState ?? {},
@@ -388,6 +390,19 @@ export function Players() {
                     onClick={(e) => {
                       e.preventDefault();
                       copyObsSource(new URL(poolsHref, document.location.href).href);
+                    }}
+                  />
+                </Tooltip>
+                <Tooltip content="Pools (condensed)">
+                  <AnchorButton
+                    size="small"
+                    icon={<Duplicate />}
+                    href={poolsCondensedHref}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      copyObsSource(
+                        new URL(poolsCondensedHref, document.location.href).href,
+                      );
                     }}
                   />
                 </Tooltip>

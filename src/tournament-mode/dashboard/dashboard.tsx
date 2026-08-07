@@ -113,6 +113,7 @@ export function Dashboard() {
     <div className={styles.container}>
       <Tabs
         id="dashboard"
+        className={styles.tabs}
         size="large"
         selectedTabId={currentTab}
         onChange={(newTabId: DashboardTabId) => setCurrentTab(newTabId)}
@@ -178,20 +179,22 @@ function ScheduleDayLink({
 }) {
   const href = useHref(routableSchedulePath(day));
   return (
-    <AnchorButton
-      icon={<Duplicate />}
-      onClick={(e) => {
-        e.preventDefault();
-        const url = new URL(href, document.location.href);
-        if (disableBackground) {
-          url.searchParams.set("bgaOff", "true");
-        }
-        copyObsSource(url.href);
-      }}
-      href={href}
-    >
-      {label}
-    </AnchorButton>
+    <Tooltip content="Schedule (3840x2160)">
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          const url = new URL(href, document.location.href);
+          if (disableBackground) {
+            url.searchParams.set("bgaOff", "true");
+          }
+          copyObsSource(url.href);
+        }}
+        href={href}
+      >
+        {label}
+      </AnchorButton>
+    </Tooltip>
   );
 }
 
@@ -544,8 +547,8 @@ function Sources() {
   const dispatch = useAppDispatch();
 
   return (
-    <>
-      <section className={styles.autoWidthSection}>
+    <div className={styles.formStack}>
+      <Card className={styles.autoWidthSection}>
         <EditDialog sourceId={currentEdit} close={() => setCurrentEdit(null)} />
         <H3>
           Sources{" "}
@@ -569,32 +572,31 @@ function Sources() {
             />
           ))}
         </CardList>
-      </section>
-      <section>
-        <CardDrawPhaseSelect />
-      </section>
-      <section>
-        <ChartLeaderboardSelect />
-      </section>
-      <section>
-        <LowerThirdEditor />
-      </section>
-      <section className={styles.autoWidthSection}>
-        <H3>
-          Stage Progression <StageProgressionLink />
-        </H3>
-        <StageProgressionSelect />
-      </section>
-      <section className={styles.autoWidthSection}>
+      </Card>
+      <Card className={styles.autoWidthSection}>
         <H3>
           Upcoming Pool <UpcomingPoolLink />
         </H3>
         <UpcomingPoolSelect />
-      </section>
-      <Divider />
-      <CssEditor />
+      </Card>
+      <Card className={styles.autoWidthSection}>
+        <LowerThirdEditor />
+      </Card>
+      <Card className={styles.autoWidthSection}>
+        <CardDrawPhaseSelect />
+      </Card>
+      <Card className={styles.autoWidthSection}>
+        <H3>
+          Stage Progression <StageProgressionLink />
+        </H3>
+        <StageProgressionSelect />
+      </Card>
+      <Card className={styles.autoWidthSection}>
+        <ChartLeaderboardSelect />
+      </Card>
       <OtherSources />
-    </>
+      <CssEditor />
+    </div>
   );
 }
 
@@ -722,7 +724,12 @@ function ImportExport() {
 }
 
 function isCardDrawPhase(value: string): value is CardDrawPhase {
-  return value === "pools" || value === "de-bo3" || value === "de-bo5";
+  return (
+    value === "pools" ||
+    value === "pools-4" ||
+    value === "de-bo3" ||
+    value === "de-bo5"
+  );
 }
 
 function CardDrawPhaseSelect() {
@@ -744,7 +751,8 @@ function CardDrawPhaseSelect() {
             }
           }}
         >
-          <Radio label="Pools" value="pools" />
+          <Radio label="Pools (6)" value="pools" />
+          <Radio label="Pools (4)" value="pools-4" />
           <Radio label="DE BO3" value="de-bo3" />
           <Radio label="DE BO5" value="de-bo5" />
         </RadioGroup>
@@ -873,14 +881,16 @@ function LowerThirdEditor() {
     <>
       <H3>
         Lower Third{" "}
-        <AnchorButton
-          icon={<Duplicate />}
-          onClick={(e) => {
-            e.preventDefault();
-            copyObsSource(new URL(href, document.location.href).href);
-          }}
-          href={href}
-        />
+        <Tooltip content="Lower Third (3840x2160)">
+          <AnchorButton
+            icon={<Duplicate />}
+            onClick={(e) => {
+              e.preventDefault();
+              copyObsSource(new URL(href, document.location.href).href);
+            }}
+            href={href}
+          />
+        </Tooltip>
       </H3>
       <div className={styles.formRow}>
         <FormGroup label="Title">
@@ -1143,7 +1153,7 @@ function CssEditor() {
   const theme = useTheme();
 
   return (
-    <section>
+    <Card>
       <H3>
         Global OBS Source Styles{" "}
         <Button
@@ -1171,13 +1181,13 @@ function CssEditor() {
           setLocalDoc(newDoc);
         }}
       />
-    </section>
+    </Card>
   );
 }
 
 function OtherSources() {
   return (
-    <section className={styles.autoWidthSection}>
+    <Card className={styles.autoWidthSection}>
       <H3>Other Sources</H3>
       <CardList>
         <OtherSourceCard label="Persona 3 Circle (3840x2160)" path={routablePersona3CirclePath()} />
@@ -1187,7 +1197,7 @@ function OtherSources() {
         <OtherSourceCard label="Bracket (3840x2160)" path={routableBracketPath()} />
         <OtherSourceCard label="Stars (3840x2160)" path={routableStarsPath()} />
       </CardList>
-    </section>
+    </Card>
   );
 }
 

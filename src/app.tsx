@@ -210,6 +210,21 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/pools-condensed",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { PoolsCondensed } = await import(
+            "./obs-sources/pools-condensed"
+          );
+          return { Component: PoolsCondensed };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/chart-leaderboard",
     element: <ObsSource />,
     children: [
