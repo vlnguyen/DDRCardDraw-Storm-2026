@@ -46,7 +46,7 @@ function derivePlayerStatus(_row: string[]): {
   return { isEliminated: false, isDisabled: false };
 }
 
-function findEntrant(gamerTag: string) {
+export function findEntrant(gamerTag: string) {
   return entrants.find(
     (entrant) => entrant.gamerTag.toLowerCase() === gamerTag.toLowerCase(),
   );

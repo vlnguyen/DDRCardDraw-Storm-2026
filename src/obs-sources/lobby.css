@@ -1,6 +1,28 @@
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+/* Matches pillbox.svg's own aspect ratio (viewBox 542.45 x 209.55) at a
+   fixed 1920px width, rather than assuming the OBS browser source's
+   configured dimensions. */
+.canvas {
+  width: 1920px;
+  aspect-ratio: 542.45 / 209.55;
+  background-image: url("../assets/img/pillbox.svg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  container-type: inline-size;
+}
+
 .list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   list-style: none;
-  margin: 0;
+  margin: 128px 130px 0 150px;
   padding: 0;
 }
 
@@ -11,8 +33,15 @@
 }
 
 .rankOrdinal {
-  font-size: 9vw;
-  text-shadow: 2px 2px 0px black;
+  font-family: "Chiaro Std";
+  font-size: 6cqw;
+  line-height: 1;
   margin-left: 10px;
   margin-right: 10px;
+}
+
+.seed {
+  margin-left: 0.15em;
+  font-size: 0.5em;
+  opacity: 0.75;
 }

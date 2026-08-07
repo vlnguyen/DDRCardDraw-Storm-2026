@@ -178,14 +178,16 @@ export function Lobbies() {
       <section className={styles.lobbyState}>
         <H3>
           Lobby State{" "}
-          <AnchorButton
-            icon={<Duplicate />}
-            href={liveRankingsHref}
-            onClick={(e) => {
-              e.preventDefault();
-              copyObsSource(new URL(liveRankingsHref, document.location.href).href);
-            }}
-          />
+          <Tooltip content="Live Rankings (1920x742)">
+            <AnchorButton
+              icon={<Duplicate />}
+              href={liveRankingsHref}
+              onClick={(e) => {
+                e.preventDefault();
+                copyObsSource(new URL(liveRankingsHref, document.location.href).href);
+              }}
+            />
+          </Tooltip>
           {" "}
           {selectedLobby && (
             <Tooltip
