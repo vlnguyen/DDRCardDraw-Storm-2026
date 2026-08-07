@@ -1,18 +1,14 @@
 import { useMemo } from "react";
-import { entrantsMap, SEED_DROPPED } from "../assets/entrants/entrantsMap";
+import { entrantsMap, SEED_UNSEEDED } from "../assets/entrants/entrantsMap";
 import { useAppState } from "../state/store";
 import { parsePoolPlayers } from "./pool-history";
 import { Persona3Circle } from "./persona-3-circle";
 import styles from "./upcoming-pool.css";
 
-// Position shared between the circle and the player list overlaid on it —
-// keep both in sync since the list is placed relative to the circle.
-const CIRCLE_CX = 0.17;
-const CIRCLE_CY = 0.3;
 const CIRCLE_RADIUS = 0.1;
 
-// Scaffold OBS source — 3840x2160 canvas, transparent background, ready for
-// dashboard-driven content once that's added.
+// Scaffold OBS source — 3840x3840 square canvas, transparent background,
+// circle rendered centered.
 export function UpcomingPool() {
   const selectedStage = useAppState(
     (s) => s.event.tournament?.upcomingPool?.selectedStage ?? "stage1",
@@ -42,19 +38,16 @@ export function UpcomingPool() {
   return (
     <div className={styles.canvas}>
       <Persona3Circle
-        cx={CIRCLE_CX}
-        cy={CIRCLE_CY}
+        cx={0.5}
+        cy={0.5}
         radius={CIRCLE_RADIUS}
         outerText={`Stage ${stageNumber} - Pool ${selectedPool ?? ""}`}
       />
-      <div
-        className={styles.playerList}
-        style={{ left: `${CIRCLE_CX * 3840}px`, top: `${CIRCLE_CY * 2160}px` }}
-      >
+      <div className={styles.playerList}>
         {players.map((player, i) => (
           <div key={i}>
             {player.gamerTag}
-            {player.seed != null && player.seed !== SEED_DROPPED && (
+            {player.seed != null && player.seed !== SEED_UNSEEDED && (
               <sub className={styles.seed}>{player.seed}</sub>
             )}
           </div>

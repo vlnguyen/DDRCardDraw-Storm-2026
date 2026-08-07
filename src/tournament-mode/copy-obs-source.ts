@@ -8,6 +8,8 @@ export const routableCabSourcePath = (cabId: string, sourceName: string) =>
 export const routableLiveRankingsPath = () => `../live-rankings`;
 export const routableStepStatsPath = (cab: 1 | 2, player: 1 | 2) =>
   `../step-stats?cab=${cab}&player=${player}`;
+export const routablePoolPlayerNamePath = (cab: 1 | 2, player: 1 | 2) =>
+  `../pool-player-name?cab=${cab}&player=${player}`;
 export const routablePoolsPath = () => `../pools`;
 export const routableChartLeaderboardPath = () => `../chart-leaderboard`;
 export const routablePersona3CirclePath = () => `../persona-3-circle`;
@@ -21,6 +23,7 @@ export const routableSchedulePath = (day: "fri" | "sat" | "sun") =>
 export const routableStarsPath = () => `../stars`;
 export const routableStageProgressionPath = () => `../stage-progression`;
 export const routableUpcomingPoolPath = () => `../upcoming-pool`;
+export const routablePoolSongCounterPath = () => `../pool-song-counter`;
 
 export function copyObsSource(href: string) {
   void copyPlainTextToClipboard(href, "Copied OBS source URL to clipboard");

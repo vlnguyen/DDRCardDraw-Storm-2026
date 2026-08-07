@@ -184,6 +184,19 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/pool-player-name",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { PoolPlayerName } = await import("./obs-sources/text");
+          return { Component: PoolPlayerName };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/pools",
     element: <ObsSource />,
     children: [
@@ -328,6 +341,19 @@ const router = createBrowserRouter([
         lazy: async () => {
           const { CurrentTime } = await import("./obs-sources/text");
           return { Component: CurrentTime };
+        },
+      },
+    ],
+  },
+  {
+    path: "e/:roomName/pool-song-counter",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { PoolSongCounter } = await import("./obs-sources/text");
+          return { Component: PoolSongCounter };
         },
       },
     ],

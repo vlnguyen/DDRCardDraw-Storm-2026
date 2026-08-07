@@ -5,6 +5,7 @@ import {
   Callout,
   Card,
   CardList,
+  Checkbox,
   Dialog,
   DialogBody,
   DialogFooter,
@@ -166,14 +167,26 @@ const SCHEDULE_DAYS: { id: ScheduleDay; label: string }[] = [
   { id: "sun", label: "Sunday" },
 ];
 
-function ScheduleDayLink({ day, label }: { day: ScheduleDay; label: string }) {
+function ScheduleDayLink({
+  day,
+  label,
+  disableBackground,
+}: {
+  day: ScheduleDay;
+  label: string;
+  disableBackground: boolean;
+}) {
   const href = useHref(routableSchedulePath(day));
   return (
     <AnchorButton
       icon={<Duplicate />}
       onClick={(e) => {
         e.preventDefault();
-        copyObsSource(new URL(href, document.location.href).href);
+        const url = new URL(href, document.location.href);
+        if (disableBackground) {
+          url.searchParams.set("bgaOff", "true");
+        }
+        copyObsSource(url.href);
       }}
       href={href}
     >
@@ -184,15 +197,26 @@ function ScheduleDayLink({ day, label }: { day: ScheduleDay; label: string }) {
 
 function Schedule() {
   const [currentDay, setCurrentDay] = useState<ScheduleDay>("fri");
+  const [disableBackground, setDisableBackground] = useState(false);
 
   return (
     <section className={styles.autoWidthSection}>
       <H3>Schedule</H3>
       <div className={styles.formRow}>
         {SCHEDULE_DAYS.map(({ id, label }) => (
-          <ScheduleDayLink key={id} day={id} label={label} />
+          <ScheduleDayLink
+            key={id}
+            day={id}
+            label={label}
+            disableBackground={disableBackground}
+          />
         ))}
       </div>
+      <Checkbox
+        label="Disable background"
+        checked={disableBackground}
+        onChange={(e) => setDisableBackground(e.currentTarget.checked)}
+      />
       <Tabs
         id="schedule-days"
         selectedTabId={currentDay}
@@ -323,7 +347,7 @@ function StageProgressionLink() {
 function UpcomingPoolLink() {
   const href = useHref(routableUpcomingPoolPath());
   return (
-    <Tooltip content="Upcoming Pool (3840x2160)">
+    <Tooltip content="Upcoming Pool (3840x3840), crop 1500">
       <AnchorButton
         icon={<Duplicate />}
         onClick={(e) => {
@@ -698,7 +722,7 @@ function ImportExport() {
 }
 
 function isCardDrawPhase(value: string): value is CardDrawPhase {
-  return value === "pools" || value === "de";
+  return value === "pools" || value === "de-bo3" || value === "de-bo5";
 }
 
 function CardDrawPhaseSelect() {
@@ -721,7 +745,8 @@ function CardDrawPhaseSelect() {
           }}
         >
           <Radio label="Pools" value="pools" />
-          <Radio label="Double Elimination" value="de" />
+          <Radio label="DE BO3" value="de-bo3" />
+          <Radio label="DE BO5" value="de-bo5" />
         </RadioGroup>
         <Button
           disabled={!isDirty}
@@ -1151,8 +1176,6 @@ function CssEditor() {
 }
 
 function OtherSources() {
-  const now = useCurrentTime();
-
   return (
     <section className={styles.autoWidthSection}>
       <H3>Other Sources</H3>
@@ -1160,10 +1183,7 @@ function OtherSources() {
         <OtherSourceCard label="Persona 3 Circle (3840x2160)" path={routablePersona3CirclePath()} />
         <OtherSourceCard label="Triangles (3840x2160)" path={routableTrianglesPath()} />
         <OtherSourceCard label="VS Meter (EX Delta) (3840x2160)" path={routableVsMeterPath()} />
-        <OtherSourceCard
-          label={formatDate(now, "currentTime")}
-          path={routableCurrentTimePath()}
-        />
+        <CurrentTimeCard />
         <OtherSourceCard label="Bracket (3840x2160)" path={routableBracketPath()} />
         <OtherSourceCard label="Stars (3840x2160)" path={routableStarsPath()} />
       </CardList>
@@ -1184,6 +1204,35 @@ function OtherSourceCard(props: { label: string; path: string }) {
         href={href}
       />
       <p>{props.label}</p>
+    </Card>
+  );
+}
+
+function CurrentTimeCard() {
+  const now = useCurrentTime();
+  const [applyStroke, setApplyStroke] = useState(false);
+  const href = useHref(routableCurrentTimePath());
+
+  return (
+    <Card className={styles.otherSourceCard}>
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          const url = new URL(href, document.location.href);
+          if (applyStroke) {
+            url.searchParams.set("stroke", "true");
+          }
+          copyObsSource(url.href);
+        }}
+        href={href}
+      />
+      <p>{formatDate(now, "currentTime")}</p>
+      <Checkbox
+        label="Apply text stroke"
+        checked={applyStroke}
+        onChange={(e) => setApplyStroke(e.currentTarget.checked)}
+      />
     </Card>
   );
 }

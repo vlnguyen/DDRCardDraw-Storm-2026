@@ -188,10 +188,10 @@ export const eventsMap: Record<
   },
 };
 
-/** Registered for the current event but didn't end up with a seed
- * (dropped before seeding closed). Distinguished from `null`, which means
+/** Registered for the current event but didn't end up with a seed.
+ * Distinguished from `null`, which means
  * the player isn't in this event's entrants list at all. */
-export const SEED_DROPPED = -1;
+export const SEED_UNSEEDED = -1;
 
 export const entrantsMap: Record<
   number,
@@ -204,7 +204,7 @@ export const entrantsMap: Record<
       membersId?: number;
       entrantPlacements: Partial<Record<EventKey, number>> &
         Partial<Record<ItlRankingPointsKey, number>>;
-      /** Current event seed. `SEED_DROPPED` if registered but unseeded,
+      /** Current event seed. `SEED_UNSEEDED` if registered but unseeded,
        * `null` if not registered for the current event. Never undefined —
        * every entry must explicitly say which of these applies. */
       seed: number | null;
@@ -260,6 +260,13 @@ export const entrantsMap: Record<
     discriminator: "c7bd7fec",
     entrantPlacements: {},
     seed: 34,
+  },
+  // Angel_Who [BITE]
+  [631250]: {
+    id: 631250,
+    discriminator: "eb8dc0e6",
+    entrantPlacements: {},
+    seed: SEED_UNSEEDED,
   },
   // BadAntelope
   [3439497]: {
@@ -368,7 +375,7 @@ export const entrantsMap: Record<
       itl2026: 100,
       itl2026rp: 503370,
     },
-    seed: -1,
+    seed: SEED_UNSEEDED,
   },
   // CarterTheQ [DDRIllini]
   [12877]: {
@@ -524,6 +531,7 @@ export const entrantsMap: Record<
   [2119088]: {
     id: 2119088,
     discriminator: "2f8f7845",
+    membersId: 124751,
     entrantPlacements: {},
     seed: 25,
   },
@@ -533,6 +541,13 @@ export const entrantsMap: Record<
     discriminator: "e549c65b",
     entrantPlacements: {},
     seed: 50,
+  },
+  // DIGI [MAH MI]
+  [487027]: {
+    id: 487027,
+    discriminator: "dbd9b614",
+    entrantPlacements: {},
+    seed: SEED_UNSEEDED,
   },
   // DomDeeKong
   [488761]: {
@@ -571,6 +586,13 @@ export const entrantsMap: Record<
       rip15: 45,
     },
     seed: 26,
+  },
+  // EMCAT [RNG]
+  [739936]: {
+    id: 739936,
+    discriminator: "ff8ebf72",
+    entrantPlacements: {},
+    seed: SEED_UNSEEDED,
   },
   // Emmp
   [3265571]: {
@@ -973,7 +995,7 @@ export const entrantsMap: Record<
       rip14: 21,
       rip15: 25,
     },
-    seed: -1,
+    seed: SEED_UNSEEDED,
   },
   // mdx
   [605243]: {
@@ -1161,6 +1183,13 @@ export const entrantsMap: Record<
       rip135: 33,
     },
     seed: 53,
+  },
+  // Shinobee
+  [916638]: {
+    id: 916638,
+    discriminator: "b6b3f83f",
+    entrantPlacements: {},
+    seed: SEED_UNSEEDED,
   },
   // simplySOUF [STUUF]
   [2298424]: {
@@ -1492,4 +1521,5 @@ export const entrantsMap: Record<
     },
     seed: 20,
   },
+
 };

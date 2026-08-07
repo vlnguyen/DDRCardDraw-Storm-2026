@@ -42,7 +42,7 @@ const JUDGMENT_FIELDS: Array<{ key: keyof Judgments; className: string }> = [
 ];
 
 // Mirrors players.tsx's CAB_LABELS ordering: cab 1 [P1, P2], then cab 2 [P1, P2].
-const ROSTER_SLOTS: Array<{ cabNum: 1 | 2; playerSlot: "P1" | "P2" }> = [
+export const ROSTER_SLOTS: Array<{ cabNum: 1 | 2; playerSlot: "P1" | "P2" }> = [
   { cabNum: 1, playerSlot: "P1" },
   { cabNum: 1, playerSlot: "P2" },
   { cabNum: 2, playerSlot: "P1" },

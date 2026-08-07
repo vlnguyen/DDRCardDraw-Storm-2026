@@ -1,4 +1,4 @@
-import { AnchorButton, Button, Card, Checkbox, Dialog, DialogBody, FormGroup, H3, HTMLSelect, InputGroup, MenuItem, Tooltip } from "@blueprintjs/core";
+import { AnchorButton, Button, Card, Checkbox, Dialog, DialogBody, FormGroup, H3, HTMLSelect, InputGroup, MenuItem, Radio, RadioGroup, Tooltip } from "@blueprintjs/core";
 import {
   Desktop,
   DragHandleVertical,
@@ -22,12 +22,14 @@ import entrants from "../../assets/entrants/entrants.json";
 import { useLiveRankings } from "../../obs-sources/useLiveRankings";
 import {
   copyObsSource,
+  routablePoolPlayerNamePath,
+  routablePoolSongCounterPath,
   routablePoolsPath,
-  routableStepStatsPath,
 } from "../copy-obs-source";
 import { MatchLog } from "./match-log";
 import { LobbyStateView } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
+import { poolSongCounterText } from "../../obs-sources/text";
 import styles from "./players.css";
 
 const sortedEntrants = [...entrants].sort((a, b) =>
@@ -82,20 +84,24 @@ function CabCell({
   cabNumber: 1 | 2;
   playerNumber: 1 | 2;
 }) {
-  const stepStatsHref = useHref(routableStepStatsPath(cabNumber, playerNumber));
+  const poolPlayerNameHref = useHref(
+    routablePoolPlayerNamePath(cabNumber, playerNumber),
+  );
 
   return (
     <td>
       {cabLabel}
       <div className={styles.stepStatsButton}>
-        <Tooltip content="Step Stats">
+        <Tooltip content="Player Name">
           <AnchorButton
             size="small"
             icon={<Duplicate />}
-            href={stepStatsHref}
+            href={poolPlayerNameHref}
             onClick={(e) => {
               e.preventDefault();
-              copyObsSource(new URL(stepStatsHref, document.location.href).href);
+              copyObsSource(
+                new URL(poolPlayerNameHref, document.location.href).href,
+              );
             }}
           />
         </Tooltip>
@@ -107,6 +113,7 @@ function CabCell({
 export function Players() {
   const dispatch = useAppDispatch();
   const poolsHref = useHref(routablePoolsPath());
+  const poolSongCounterHref = useHref(routablePoolSongCounterPath());
   const savedPoolState = useAppState(
     (s) => s.event.tournament.poolState ?? {},
   );
@@ -159,6 +166,9 @@ export function Players() {
       savedPoolState.players ?? [],
       (savedPoolState.songs ?? []).length,
     ),
+    numPlayersAdvance: savedPoolState.numPlayersAdvance ?? 2,
+    totalSongs: savedPoolState.totalSongs ?? 6,
+    currentSong: savedPoolState.currentSong ?? 1,
   }));
 
   const players = poolState.players ?? [];
@@ -189,6 +199,13 @@ export function Players() {
       eventSlice.actions.setCabMachines({
         cab1: cab1MachineId,
         cab2: cab2MachineId,
+      }),
+    );
+    dispatch(
+      eventSlice.actions.setPoolSettings({
+        numPlayersAdvance: poolState.numPlayersAdvance,
+        totalSongs: poolState.totalSongs,
+        currentSong: poolState.currentSong,
       }),
     );
     toaster.show({ message: "Pool state updated.", intent: "success" });
@@ -290,6 +307,72 @@ export function Players() {
               </option>
             ))}
           </HTMLSelect>
+        </FormGroup>
+      </div>
+      <div className={styles.poolSettings}>
+        <FormGroup label={<strong>Players Advance</strong>}>
+          <RadioGroup
+            inline
+            selectedValue={String(poolState.numPlayersAdvance)}
+            onChange={(e) =>
+              setPoolState((prev) => ({
+                ...prev,
+                numPlayersAdvance: Number(e.currentTarget.value),
+              }))
+            }
+          >
+            <Radio label="1" value="1" />
+            <Radio label="2" value="2" />
+          </RadioGroup>
+        </FormGroup>
+        <FormGroup label={<strong>Current Song</strong>}>
+          <InputGroup
+            type="number"
+            value={
+              poolState.currentSong != null ? String(poolState.currentSong) : ""
+            }
+            onChange={(e) =>
+              setPoolState((prev) => ({
+                ...prev,
+                currentSong:
+                  e.target.value === "" ? undefined : Number(e.target.value),
+              }))
+            }
+          />
+        </FormGroup>
+        <FormGroup label={<strong>Total Songs</strong>}>
+          <div className={styles.formRow}>
+            <InputGroup
+              type="number"
+              value={
+                poolState.totalSongs != null ? String(poolState.totalSongs) : ""
+              }
+              onChange={(e) =>
+                setPoolState((prev) => ({
+                  ...prev,
+                  totalSongs:
+                    e.target.value === "" ? undefined : Number(e.target.value),
+                }))
+              }
+            />
+            <Tooltip
+              content={poolSongCounterText(
+                poolState.currentSong,
+                poolState.totalSongs,
+              )}
+            >
+              <AnchorButton
+                icon={<Duplicate />}
+                href={poolSongCounterHref}
+                onClick={(e) => {
+                  e.preventDefault();
+                  copyObsSource(
+                    new URL(poolSongCounterHref, document.location.href).href,
+                  );
+                }}
+              />
+            </Tooltip>
+          </div>
         </FormGroup>
       </div>
       <div className={styles.tablesRow}>

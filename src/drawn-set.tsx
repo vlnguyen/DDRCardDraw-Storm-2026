@@ -22,7 +22,9 @@ export function ChartList({
   style?: SongCardStyle;
 } = {}) {
   const charts = useDrawing((d) => d.charts);
-  const phase = useAppState((s) => s.event.tournament?.cardDrawPhase ?? "de");
+  const phase = useAppState(
+    (s) => s.event.tournament?.cardDrawPhase ?? "de-bo3",
+  );
   const isPersona = style === "persona";
 
   // seed as null (not `charts`) so a mount with already-resolved charts
