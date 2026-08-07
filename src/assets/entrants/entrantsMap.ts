@@ -524,6 +524,7 @@ export const entrantsMap: Record<
   [2119088]: {
     id: 2119088,
     discriminator: "2f8f7845",
+    membersId: 124751,
     entrantPlacements: {},
     seed: 25,
   },
