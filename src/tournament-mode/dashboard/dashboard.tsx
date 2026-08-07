@@ -547,8 +547,8 @@ function Sources() {
   const dispatch = useAppDispatch();
 
   return (
-    <>
-      <section className={styles.autoWidthSection}>
+    <div className={styles.formStack}>
+      <Card className={styles.autoWidthSection}>
         <EditDialog sourceId={currentEdit} close={() => setCurrentEdit(null)} />
         <H3>
           Sources{" "}
@@ -572,32 +572,31 @@ function Sources() {
             />
           ))}
         </CardList>
-      </section>
-      <section>
-        <CardDrawPhaseSelect />
-      </section>
-      <section>
-        <ChartLeaderboardSelect />
-      </section>
-      <section>
-        <LowerThirdEditor />
-      </section>
-      <section className={styles.autoWidthSection}>
-        <H3>
-          Stage Progression <StageProgressionLink />
-        </H3>
-        <StageProgressionSelect />
-      </section>
-      <section className={styles.autoWidthSection}>
+      </Card>
+      <Card className={styles.autoWidthSection}>
         <H3>
           Upcoming Pool <UpcomingPoolLink />
         </H3>
         <UpcomingPoolSelect />
-      </section>
-      <Divider />
-      <CssEditor />
+      </Card>
+      <Card className={styles.autoWidthSection}>
+        <LowerThirdEditor />
+      </Card>
+      <Card className={styles.autoWidthSection}>
+        <CardDrawPhaseSelect />
+      </Card>
+      <Card className={styles.autoWidthSection}>
+        <H3>
+          Stage Progression <StageProgressionLink />
+        </H3>
+        <StageProgressionSelect />
+      </Card>
+      <Card className={styles.autoWidthSection}>
+        <ChartLeaderboardSelect />
+      </Card>
       <OtherSources />
-    </>
+      <CssEditor />
+    </div>
   );
 }
 
@@ -1148,7 +1147,7 @@ function CssEditor() {
   const theme = useTheme();
 
   return (
-    <section>
+    <Card>
       <H3>
         Global OBS Source Styles{" "}
         <Button
@@ -1176,13 +1175,13 @@ function CssEditor() {
           setLocalDoc(newDoc);
         }}
       />
-    </section>
+    </Card>
   );
 }
 
 function OtherSources() {
   return (
-    <section className={styles.autoWidthSection}>
+    <Card className={styles.autoWidthSection}>
       <H3>Other Sources</H3>
       <CardList>
         <OtherSourceCard label="Persona 3 Circle (3840x2160)" path={routablePersona3CirclePath()} />
@@ -1192,7 +1191,7 @@ function OtherSources() {
         <OtherSourceCard label="Bracket (3840x2160)" path={routableBracketPath()} />
         <OtherSourceCard label="Stars (3840x2160)" path={routableStarsPath()} />
       </CardList>
-    </section>
+    </Card>
   );
 }
 
