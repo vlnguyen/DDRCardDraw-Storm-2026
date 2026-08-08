@@ -13,6 +13,9 @@ export function PoolsCondensed() {
   const selectedPool = useAppState(
     (s) => s.event.tournament?.upcomingPool?.selectedPool,
   );
+  const stageNameOverride = useAppState(
+    (s) => s.event.tournament?.upcomingPool?.stageNameOverride,
+  );
   const players = useAppState(
     (s) => s.event.tournament?.poolState?.players ?? [],
   );
@@ -24,7 +27,10 @@ export function PoolsCondensed() {
     [players],
   );
   const stageNumber = selectedStage.slice("stage".length);
-  const text = `Stage ${stageNumber} - Pool ${selectedPool ?? ""}`;
+  const text =
+    stageNameOverride !== undefined
+      ? stageNameOverride
+      : `Stage ${stageNumber} - Pool ${selectedPool ?? ""}`;
 
   return (
     <div className={styles.canvas}>

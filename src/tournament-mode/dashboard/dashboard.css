@@ -63,6 +63,10 @@
   gap: 8px;
 }
 
+.stageNameOverrideRow {
+  margin-top: 8px;
+}
+
 .chartLeaderboardInput {
   width: 320px;
 }

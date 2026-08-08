@@ -534,6 +534,61 @@ function UpcomingPoolSelect() {
   );
 }
 
+function StageNameOverrideEditor() {
+  const dispatch = useAppDispatch();
+  const savedOverride = useAppState(
+    (s) => s.event.tournament?.upcomingPool?.stageNameOverride,
+  );
+  const selectedStage = useAppState(
+    (s) => s.event.tournament?.upcomingPool?.selectedStage ?? "stage1",
+  );
+  const selectedPool = useAppState(
+    (s) => s.event.tournament?.upcomingPool?.selectedPool ?? "",
+  );
+  const [localOverride, setLocalOverride] = useState(savedOverride);
+  const isEditing = localOverride !== undefined;
+  const isDirty = localOverride !== savedOverride;
+  const stageNumber = selectedStage.slice("stage".length);
+  const defaultText = `Stage ${stageNumber} - Pool ${selectedPool}`;
+
+  return (
+    <FormGroup
+      label="Stage Name Override"
+      className={styles.stageNameOverrideRow}
+    >
+      <div className={styles.formRow}>
+        <InputGroup
+          disabled={!isEditing}
+          placeholder={isEditing ? undefined : defaultText}
+          value={isEditing ? localOverride : defaultText}
+          onChange={(e) => setLocalOverride(e.target.value)}
+        />
+        {isEditing ? (
+          <Button
+            icon={<Trash />}
+            onClick={() => setLocalOverride(undefined)}
+          />
+        ) : (
+          <Button icon={<Edit />} onClick={() => setLocalOverride("")} />
+        )}
+        <Button
+          disabled={!isDirty}
+          intent={isDirty ? "primary" : undefined}
+          onClick={() =>
+            dispatch(
+              eventSlice.actions.setUpcomingPoolStageNameOverride(
+                localOverride,
+              ),
+            )
+          }
+        >
+          Submit
+        </Button>
+      </div>
+    </FormGroup>
+  );
+}
+
 function formatLastFetched(iso: string): string {
   const zoned = new Date(
     new Date(iso).toLocaleString("en-US", { timeZone: EASTERN_TIME_ZONE }),
@@ -578,6 +633,7 @@ function Sources() {
           Upcoming Pool <UpcomingPoolLink />
         </H3>
         <UpcomingPoolSelect />
+        <StageNameOverrideEditor />
       </Card>
       <Card className={styles.autoWidthSection}>
         <LowerThirdEditor />
