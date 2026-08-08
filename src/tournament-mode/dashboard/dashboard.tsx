@@ -41,7 +41,7 @@ import { css } from "@codemirror/lang-css";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { nanoid } from "nanoid";
 import React, { useMemo, useRef, useState } from "react";
-import { useHref } from "react-router-dom";
+import { useHref, useSearchParams } from "react-router-dom";
 import {
   type CardDrawPhase,
   type EventState,
@@ -104,11 +104,36 @@ type DashboardTabId =
   | "schedule"
   | "import-export";
 
+const DEFAULT_DASHBOARD_TAB: DashboardTabId = "sources";
+
+function isDashboardTabId(value: string | null): value is DashboardTabId {
+  return (
+    value === "sources" ||
+    value === "lobbies" ||
+    value === "match-log" ||
+    value === "players" ||
+    value === "schedule" ||
+    value === "import-export"
+  );
+}
+
 export function Dashboard() {
-  const [currentTab, setCurrentTab] =
-    useState<DashboardTabId>("sources");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const currentTab = isDashboardTabId(tabParam) ? tabParam : DEFAULT_DASHBOARD_TAB;
   const matchCount = useMatchLogStore((s) => s.matches.length);
   const lobbyCount = useLobbiesStore((s) => s.lobbies.length);
+
+  function handleTabChange(newTabId: DashboardTabId) {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("tab", newTabId);
+        return next;
+      },
+      { replace: true },
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -117,7 +142,7 @@ export function Dashboard() {
         className={styles.tabs}
         size="large"
         selectedTabId={currentTab}
-        onChange={(newTabId: DashboardTabId) => setCurrentTab(newTabId)}
+        onChange={handleTabChange}
       >
         <Tab id="sources" panel={<Sources />}>
           Sources
