@@ -24,6 +24,9 @@
 .titleWrap {
   position: relative;
   display: inline-block;
+  /* reserved even when the override text is an empty string, since an
+     empty <p> collapses to zero height and would shift .dialogList up */
+  min-height: 72px;
 }
 
 .titleStroke {

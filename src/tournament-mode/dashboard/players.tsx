@@ -18,7 +18,12 @@ import { PoolPlayer, PoolPlayerScore, PoolState } from "../../state/event.slice"
 import { toaster } from "../../toaster";
 import { eventSlice } from "../../state/event.slice";
 import { useAppDispatch, useAppState } from "../../state/store";
-import entrants from "../../assets/entrants/entrants.json";
+import {
+  type EntrantOption,
+  entrantOptions,
+  fuzzyMatchEntrant,
+  sortedEntrants,
+} from "../../models/entrant-options";
 import { useLiveRankings } from "../../obs-sources/useLiveRankings";
 import {
   copyObsSource,
@@ -32,10 +37,6 @@ import { LobbyStateView } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
 import { poolSongCounterText } from "../../obs-sources/text";
 import styles from "./players.css";
-
-const sortedEntrants = [...entrants].sort((a, b) =>
-  a.gamerTag.localeCompare(b.gamerTag),
-);
 
 const MIN_PLAYER_COUNT = 4;
 const CAB_LABELS = ["Cab 1 [P1]", "Cab 1 [P2]", "Cab 2 [P1]", "Cab 2 [P2]"];
@@ -57,23 +58,6 @@ function padToPlayerCount(
     padded.push(makeEmptyPlayer(scoreCount));
   }
   return padded;
-}
-
-type EntrantOption = { value: number; label: string };
-
-const options: EntrantOption[] = sortedEntrants.map((e) => ({
-  value: e.id,
-  label: e.prefix ? `${e.gamerTag} [${e.prefix}]` : e.gamerTag,
-}));
-
-function fuzzyMatch(query: string, item: EntrantOption): boolean {
-  const q = query.toLowerCase();
-  const s = item.label.toLowerCase();
-  let qi = 0;
-  for (let si = 0; si < s.length && qi < q.length; si++) {
-    if (s[si] === q[qi]) qi++;
-  }
-  return qi === q.length;
 }
 
 function CabCell({
@@ -714,7 +698,7 @@ function PlayerRow({
             <Suggest<EntrantOption>
               fill
               disabled={player.isDisabled}
-              items={options}
+              items={entrantOptions}
               inputProps={{
                 leftIcon: <Person />,
                 placeholder: player.isDisabled ? "n/a" : undefined,
@@ -722,9 +706,9 @@ function PlayerRow({
               selectedItem={
                 player.isDisabled
                   ? null
-                  : options.find((o) => o.value === player.entrantId) ?? null
+                  : entrantOptions.find((o) => o.value === player.entrantId) ?? null
               }
-              itemPredicate={(query, item) => fuzzyMatch(query, item)}
+              itemPredicate={(query, item) => fuzzyMatchEntrant(query, item)}
               itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
                 <MenuItem
                   key={item.value}

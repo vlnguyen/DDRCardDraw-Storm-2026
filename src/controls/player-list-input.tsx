@@ -1,8 +1,15 @@
-import { Button, InputGroup } from "@blueprintjs/core";
-import { Cross, DragHandleVertical, Plus } from "@blueprintjs/icons";
+import { Button, InputGroup, MenuItem } from "@blueprintjs/core";
+import { Cross, DragHandleVertical, Person, Plus } from "@blueprintjs/icons";
+import { Suggest } from "@blueprintjs/select";
 import { useRef } from "react";
 import { List, arrayMove } from "react-movable";
+import { useAppMode } from "../common-components/app-mode";
 import { Player, newPlayer } from "../models/Drawing";
+import {
+  type EntrantOption,
+  entrantOptions,
+  fuzzyMatchEntrant,
+} from "../models/entrant-options";
 
 /**
  * Cap on the height of the scrollable list region. Once enough players are
@@ -14,8 +21,13 @@ const LIST_HEIGHT = "10.5em";
 
 /**
  * A vertical, drag-to-reorder list of players. Each row has a dedicated drag
- * handle (so text can still be selected/edited in the name field), an editable
- * name input, and a remove button, with an "add player" button below.
+ * handle (so text can still be selected/edited in the name field), a name
+ * input, and a remove button, with an "add player" button below.
+ *
+ * In event mode, the name field suggests matches from the tournament's
+ * entrants.json roster (labeled `gamerTag [prefix]` when a prefix is set),
+ * but typing a name that isn't on the roster is still allowed — e.g. for
+ * walk-ins or byes. Classic mode keeps plain free-text names.
  *
  * The list is simply the players in display order. Since each player carries a
  * stable id that drawn-card actions reference, reordering/renaming/removing here
@@ -26,9 +38,8 @@ export function PlayerListInput(props: {
   onChange: (next: Player[]) => void;
 }) {
   const { value: players, onChange } = props;
+  const isEventMode = useAppMode() === "event";
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  // Index of a freshly-added row that should grab focus once it renders.
-  const focusIndexRef = useRef<number | null>(null);
 
   function renameAt(index: number, name: string) {
     onChange(players.map((p, i) => (i === index ? { ...p, name } : p)));
@@ -39,8 +50,7 @@ export function PlayerListInput(props: {
   }
 
   function addPlayer() {
-    focusIndexRef.current = players.length;
-    onChange([...players, newPlayer(`P${players.length + 1}`)]);
+    onChange([...players, newPlayer("")]);
     requestAnimationFrame(() => {
       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
     });
@@ -93,22 +103,47 @@ export function PlayerListInput(props: {
               >
                 <DragHandleVertical />
               </span>
-              <InputGroup
-                fill
-                value={value.name}
-                inputRef={
-                  index === focusIndexRef.current
-                    ? (el) => {
-                        if (el) {
-                          el.focus();
-                          focusIndexRef.current = null;
-                        }
-                      }
-                    : undefined
-                }
-                onFocus={(e) => e.currentTarget.select()}
-                onChange={(e) => renameAt(index!, e.currentTarget.value)}
-              />
+              {isEventMode ? (
+                <Suggest<EntrantOption>
+                  fill
+                  items={entrantOptions}
+                  inputProps={{ leftIcon: <Person /> }}
+                  selectedItem={
+                    entrantOptions.find((o) => o.label === value.name) ?? null
+                  }
+                  itemPredicate={(query, item) => fuzzyMatchEntrant(query, item)}
+                  itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
+                    <MenuItem
+                      key={item.value}
+                      text={item.label}
+                      active={modifiers.active}
+                      disabled={modifiers.disabled}
+                      onClick={handleClick}
+                      onFocus={handleFocus}
+                    />
+                  )}
+                  createNewItemFromQuery={(query) => ({ value: -1, label: query })}
+                  createNewItemRenderer={(query, active, handleClick) => (
+                    <MenuItem
+                      key="create-new-player"
+                      text={`Use "${query}"`}
+                      icon={<Plus />}
+                      active={active}
+                      onClick={handleClick}
+                    />
+                  )}
+                  onItemSelect={(item) => renameAt(index!, item.label)}
+                  inputValueRenderer={(item) => item.label}
+                  noResults={<MenuItem disabled text="No matching players" />}
+                />
+              ) : (
+                <InputGroup
+                  fill
+                  value={value.name}
+                  onFocus={(e) => e.currentTarget.select()}
+                  onChange={(e) => renameAt(index!, e.currentTarget.value)}
+                />
+              )}
               <Button
                 aria-label="Remove player"
                 variant="minimal"

@@ -111,12 +111,14 @@ export interface StageProgressionState {
 export interface UpcomingPoolState {
   selectedStage?: PoolHistoryStage;
   selectedPool?: string;
+  /** overrides the "Stage # - Pool ##" text shown in pools-condensed; undefined means use the default text */
+  stageNameOverride?: string;
 }
 
 /**
  * Event state properties that are unique to use at Project Storm
  */
-interface TournamentState {
+export interface TournamentState {
   lobbyConnection?: {
     code?: string;
     password?: string;
@@ -358,8 +360,35 @@ export const eventSlice = createSlice({
       state.tournament.upcomingPool.selectedStage = action.payload.stage;
       state.tournament.upcomingPool.selectedPool = action.payload.pool;
     },
+    setUpcomingPoolStageNameOverride(
+      state,
+      action: PayloadAction<string | undefined>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      if (!state.tournament.upcomingPool) {
+        state.tournament.upcomingPool = {};
+      }
+      state.tournament.upcomingPool.stageNameOverride = action.payload;
+    },
     replaceState(_state, action: PayloadAction<EventState>) {
       return action.payload;
+    },
+    /**
+     * Shallow-merges only the top-level keys present in the payload, leaving
+     * the rest of state untouched. `tournament` is merged one level deeper
+     * so a partial tournament import doesn't clobber untouched sub-fields.
+     */
+    mergeState(state, action: PayloadAction<Partial<EventState>>) {
+      const { tournament, ...rest } = action.payload;
+      Object.assign(state, rest);
+      if (tournament) {
+        if (!state.tournament) {
+          state.tournament = {};
+        }
+        Object.assign(state.tournament, tournament);
+      }
     },
   },
   extraReducers(builder) {

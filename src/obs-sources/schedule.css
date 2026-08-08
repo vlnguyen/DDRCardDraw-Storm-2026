@@ -171,6 +171,7 @@
 }
 
 .row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 64px;
@@ -181,6 +182,42 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   opacity: 0;
   animation: slideDown 0.5s ease both;
+}
+
+@keyframes nowPulse {
+  0%,
+  100% {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 10px rgba(107, 232, 200, 0.9),
+      0 0 60px 10px rgba(107, 232, 200, 0.7);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(107, 232, 200, 0.1),
+      0 0 10px 0 rgba(107, 232, 200, 0);
+  }
+}
+
+.rowCurrent {
+  outline: 6px solid #6be8c8;
+  outline-offset: 0;
+  animation:
+    slideDown 0.5s ease both,
+    nowPulse 1.2s ease-in-out infinite;
+}
+
+.nowBadge {
+  position: absolute;
+  top: -28px;
+  right: 32px;
+  background: #6be8c8;
+  color: #1a1a1a;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 36px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  padding: 6px 24px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .time {
