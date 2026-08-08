@@ -40,8 +40,6 @@ export function PlayerListInput(props: {
   const { value: players, onChange } = props;
   const isEventMode = useAppMode() === "event";
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  // Index of a freshly-added row that should grab focus once it renders.
-  const focusIndexRef = useRef<number | null>(null);
 
   function renameAt(index: number, name: string) {
     onChange(players.map((p, i) => (i === index ? { ...p, name } : p)));
@@ -52,7 +50,6 @@ export function PlayerListInput(props: {
   }
 
   function addPlayer() {
-    focusIndexRef.current = players.length;
     onChange([...players, newPlayer("")]);
     requestAnimationFrame(() => {
       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -110,18 +107,7 @@ export function PlayerListInput(props: {
                 <Suggest<EntrantOption>
                   fill
                   items={entrantOptions}
-                  inputProps={{
-                    leftIcon: <Person />,
-                    inputRef:
-                      index === focusIndexRef.current
-                        ? (el) => {
-                            if (el) {
-                              el.focus();
-                              focusIndexRef.current = null;
-                            }
-                          }
-                        : undefined,
-                  }}
+                  inputProps={{ leftIcon: <Person /> }}
                   selectedItem={
                     entrantOptions.find((o) => o.label === value.name) ?? null
                   }
@@ -154,16 +140,6 @@ export function PlayerListInput(props: {
                 <InputGroup
                   fill
                   value={value.name}
-                  inputRef={
-                    index === focusIndexRef.current
-                      ? (el) => {
-                          if (el) {
-                            el.focus();
-                            focusIndexRef.current = null;
-                          }
-                        }
-                      : undefined
-                  }
                   onFocus={(e) => e.currentTarget.select()}
                   onChange={(e) => renameAt(index!, e.currentTarget.value)}
                 />
