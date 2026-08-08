@@ -5,7 +5,10 @@ import {
   Tab,
   InputGroup,
   Button,
+  MenuItem,
 } from "@blueprintjs/core";
+import { Plus } from "@blueprintjs/icons";
+import { Suggest } from "@blueprintjs/select";
 import { ConfigSelect } from ".";
 import { PlayerListInput } from "./player-list-input";
 import { MatchPicker, GauntletPicker, PickedMatch } from "../matches";
@@ -13,6 +16,8 @@ import { StartggApiKeyGated } from "../startgg-gql/components";
 import { createDraw } from "../state/thunks";
 import { useAppDispatch } from "../state/store";
 import { Player, SimpleMeta, newPlayer } from "../models/Drawing";
+import { poolMatchOptions } from "../models/pool-match-options";
+import { fuzzySubsequenceMatch } from "../utils/fuzzy-match";
 import { useState } from "react";
 import { useAppMode } from "../common-components/app-mode";
 import { DrawingMeta } from "../card-draw";
@@ -102,9 +107,12 @@ export function CustomDrawForm(props: {
 }) {
   // meta.players is already in display order
   const [players, setPlayers] = useState<Player[]>(
-    () => props.initialMeta?.players ?? [newPlayer("P1"), newPlayer("P2")],
+    () => props.initialMeta?.players ?? [newPlayer(""), newPlayer("")],
   );
   const [title, setTitle] = useState<string>(props.initialMeta?.title || "");
+  const isEventMode = useAppMode() === "event";
+  const hasEmptyPlayerName = players.some((p) => !p.name.trim());
+  const hasEmptyTitle = !title.trim();
 
   function handleSubmit() {
     props.onSubmit({
@@ -116,10 +124,43 @@ export function CustomDrawForm(props: {
   return (
     <>
       <FormGroup label="title">
-        <InputGroup
-          value={title}
-          onChange={(e) => setTitle(e.currentTarget.value)}
-        />
+        {isEventMode ? (
+          <Suggest<string>
+            fill
+            items={poolMatchOptions}
+            selectedItem={poolMatchOptions.includes(title) ? title : null}
+            itemPredicate={(query, item) => fuzzySubsequenceMatch(query, item)}
+            itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
+              <MenuItem
+                key={item}
+                text={item}
+                active={modifiers.active}
+                disabled={modifiers.disabled}
+                onClick={handleClick}
+                onFocus={handleFocus}
+              />
+            )}
+            createNewItemFromQuery={(query) => query}
+            createNewItemRenderer={(query, active, handleClick) => (
+              <MenuItem
+                key="create-new-title"
+                text={`Use "${query}"`}
+                icon={<Plus />}
+                active={active}
+                onClick={handleClick}
+              />
+            )}
+            onItemSelect={setTitle}
+            inputValueRenderer={(item) => item}
+            inputProps={{ placeholder: title || undefined }}
+            noResults={<MenuItem disabled text="No matching pools" />}
+          />
+        ) : (
+          <InputGroup
+            value={title}
+            onChange={(e) => setTitle(e.currentTarget.value)}
+          />
+        )}
       </FormGroup>
       <FormGroup label="players">
         <PlayerListInput value={players} onChange={setPlayers} />
@@ -127,7 +168,7 @@ export function CustomDrawForm(props: {
       <Button
         intent="primary"
         onClick={handleSubmit}
-        disabled={props.disableCreate}
+        disabled={props.disableCreate || hasEmptyPlayerName || hasEmptyTitle}
       >
         {props.submitText || "Create"}
       </Button>
