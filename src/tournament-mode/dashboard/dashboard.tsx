@@ -76,7 +76,6 @@ import {
   routableStarsPath,
   routableTrianglesPath,
   routableUpcomingPoolPath,
-  routableVsMeterPath,
 } from "../copy-obs-source";
 import {
   fetchStageRows,
@@ -1455,7 +1454,6 @@ function OtherSources() {
       <CardList>
         <OtherSourceCard label="Persona 3 Circle (3840x2160)" path={routablePersona3CirclePath()} />
         <OtherSourceCard label="Triangles (3840x2160)" path={routableTrianglesPath()} />
-        <OtherSourceCard label="VS Meter (EX Delta) (3840x2160)" path={routableVsMeterPath()} />
         <CurrentTimeCard />
         <OtherSourceCard label="Bracket (3840x2160)" path={routableBracketPath()} />
         <OtherSourceCard label="Stars (3840x2160)" path={routableStarsPath()} />
