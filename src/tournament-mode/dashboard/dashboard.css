@@ -81,9 +81,27 @@
   margin-top: 8px;
 }
 
+.scheduleDescriptionInput {
+  width: 480px;
+}
+
 .importPreview {
   max-height: 400px;
   max-width: 800px;
   overflow: auto;
   padding: 8px;
+}
+
+.exportKeysList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.exportKeysSublist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 26px;
 }

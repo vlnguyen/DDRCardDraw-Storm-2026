@@ -50,6 +50,7 @@ import {
   type PoolHistoryStage,
   type ScheduleDay,
   type ScheduleItem,
+  type TournamentState,
   eventSlice,
 } from "../../state/event.slice";
 import { useStockGameData } from "../../state/game-data.atoms";
@@ -250,7 +251,10 @@ function ScheduleDayEditor({ day }: { day: ScheduleDay }) {
   }
 
   function addRow() {
-    setSchedule((prev) => [...prev, emptyScheduleItem()]);
+    setSchedule((prev) => [
+      ...prev,
+      { ...emptyScheduleItem(), time: prev[prev.length - 1]?.time ?? "" },
+    ]);
   }
 
   function removeRow(index: number) {
@@ -299,6 +303,7 @@ function ScheduleDayEditor({ day }: { day: ScheduleDay }) {
               </td>
               <td>
                 <InputGroup
+                  className={styles.scheduleDescriptionInput}
                   value={row.description ?? ""}
                   onChange={(e) =>
                     updateRow(i, { description: e.target.value })
@@ -656,32 +661,161 @@ function Sources() {
   );
 }
 
-function isEventState(value: unknown): value is EventState {
+// Only these top-level EventState keys, and only these tournament sub-keys,
+// are allowed to be exported/imported.
+const TOP_LEVEL_KEY_LABELS: Record<"cabs" | "obsLabels" | "obsCss", string> =
+  {
+    cabs: "Cabs",
+    obsLabels: "OBS Labels",
+    obsCss: "OBS CSS",
+  };
+
+const TOP_LEVEL_KEYS = Object.keys(
+  TOP_LEVEL_KEY_LABELS,
+) as (keyof typeof TOP_LEVEL_KEY_LABELS)[];
+
+const TOP_LEVEL_KEY_TYPE_CHECKS: {
+  [K in keyof typeof TOP_LEVEL_KEY_LABELS]: (value: unknown) => boolean;
+} = {
+  cabs: (v) => typeof v === "object" && v !== null,
+  obsLabels: (v) => typeof v === "object" && v !== null,
+  obsCss: (v) => typeof v === "string",
+};
+
+const TOURNAMENT_KEY_LABELS: Record<"schedules", string> = {
+  schedules: "Schedules",
+};
+
+const TOURNAMENT_KEYS = Object.keys(
+  TOURNAMENT_KEY_LABELS,
+) as (keyof typeof TOURNAMENT_KEY_LABELS)[];
+
+const TOURNAMENT_KEY_TYPE_CHECKS: {
+  [K in keyof typeof TOURNAMENT_KEY_LABELS]: (value: unknown) => boolean;
+} = {
+  schedules: (v) => typeof v === "object" && v !== null,
+};
+
+function parsePartialTournamentState(
+  value: unknown,
+): Partial<TournamentState> | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return false;
+    return null;
   }
   const v = value as Record<string, unknown>;
-  return (
-    typeof v.eventName === "string" &&
-    typeof v.cabs === "object" &&
-    v.cabs !== null &&
-    typeof v.tournament === "object" &&
-    v.tournament !== null &&
-    typeof v.obsLabels === "object" &&
-    v.obsLabels !== null &&
-    typeof v.obsCss === "string"
+  const result: Partial<TournamentState> = {};
+  for (const key of TOURNAMENT_KEYS) {
+    if (key in v && TOURNAMENT_KEY_TYPE_CHECKS[key](v[key])) {
+      (result as Record<string, unknown>)[key] = v[key];
+    }
+  }
+  return Object.keys(result).length > 0 ? result : null;
+}
+
+/**
+ * Picks out whichever recognized EventState keys are present in `value` and
+ * have the right shape, so imports don't have to contain every key. The
+ * `tournament` key is recursed into so it can be imported partially too.
+ */
+function parsePartialEventState(value: unknown): Partial<EventState> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+  const v = value as Record<string, unknown>;
+  const result: Partial<EventState> = {};
+  for (const key of TOP_LEVEL_KEYS) {
+    if (key in v && TOP_LEVEL_KEY_TYPE_CHECKS[key](v[key])) {
+      (result as Record<string, unknown>)[key] = v[key];
+    }
+  }
+  if ("tournament" in v) {
+    const tournament = parsePartialTournamentState(v.tournament);
+    if (tournament) {
+      result.tournament = tournament;
+    }
+  }
+  return Object.keys(result).length > 0 ? result : null;
+}
+
+/** Human-readable list of the fields a partial EventState touches, tournament sub-fields included. */
+function describeParsedFields(parsed: Partial<EventState>): string {
+  const parts = TOP_LEVEL_KEYS.filter((key) => key in parsed).map(
+    (key) => TOP_LEVEL_KEY_LABELS[key],
   );
+  if (parsed.tournament) {
+    const subLabels = TOURNAMENT_KEYS.filter(
+      (key) => key in parsed.tournament!,
+    ).map((key) => TOURNAMENT_KEY_LABELS[key]);
+    parts.push(`Tournament (${subLabels.join(", ")})`);
+  }
+  return parts.join(", ");
 }
 
 function ImportExport() {
   const dispatch = useAppDispatch();
   const eventState = useAppState((s) => s.event);
+  const [exportKeys, setExportKeys] = useState<
+    Set<keyof typeof TOP_LEVEL_KEY_LABELS>
+  >(() => new Set(TOP_LEVEL_KEYS));
+  const [tournamentExportKeys, setTournamentExportKeys] = useState<
+    Set<keyof typeof TOURNAMENT_KEY_LABELS>
+  >(() => new Set(TOURNAMENT_KEYS));
   const [fileName, setFileName] = useState<string | null>(null);
-  const [parsed, setParsed] = useState<EventState | null>(null);
+  const [parsed, setParsed] = useState<Partial<EventState> | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
 
+  function toggleExportKey(
+    key: keyof typeof TOP_LEVEL_KEY_LABELS,
+    checked: boolean,
+  ) {
+    setExportKeys((prev) => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(key);
+      } else {
+        next.delete(key);
+      }
+      return next;
+    });
+  }
+
+  function toggleTournamentKey(
+    key: keyof typeof TOURNAMENT_KEY_LABELS,
+    checked: boolean,
+  ) {
+    setTournamentExportKeys((prev) => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(key);
+      } else {
+        next.delete(key);
+      }
+      return next;
+    });
+  }
+
+  function toggleAllTournamentKeys(checked: boolean) {
+    setTournamentExportKeys(checked ? new Set(TOURNAMENT_KEYS) : new Set());
+  }
+
   function handleExport() {
-    const json = JSON.stringify(eventState, null, 2);
+    const data: Partial<EventState> = {};
+    for (const key of TOP_LEVEL_KEYS) {
+      if (exportKeys.has(key)) {
+        (data as Record<string, unknown>)[key] = eventState[key];
+      }
+    }
+    if (tournamentExportKeys.size > 0) {
+      const tournament: Partial<TournamentState> = {};
+      for (const key of TOURNAMENT_KEYS) {
+        if (tournamentExportKeys.has(key)) {
+          (tournament as Record<string, unknown>)[key] =
+            eventState.tournament?.[key];
+        }
+      }
+      data.tournament = tournament;
+    }
+    const json = JSON.stringify(data, null, 2);
     const dataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(json)}`;
     const safeName = (eventState.eventName || "event").replace(
       /[^a-z0-9-_]+/gi,
@@ -704,12 +838,13 @@ function ImportExport() {
       .text()
       .then((text) => {
         const data = JSON.parse(text);
-        if (!isEventState(data)) {
+        const partial = parsePartialEventState(data);
+        if (!partial) {
           throw new Error(
-            "File does not look like an event export (missing expected fields).",
+            "File does not look like an event export (no recognized fields).",
           );
         }
-        setParsed(data);
+        setParsed(partial);
       })
       .catch((err) => {
         setParseError(err instanceof Error ? err.message : String(err));
@@ -720,24 +855,69 @@ function ImportExport() {
     if (!parsed) return;
     if (
       confirm(
-        "This will replace ALL current event data (sources, players, schedule, lobby settings, etc.) with the contents of the imported file. This cannot be undone. Continue?",
+        `This will replace the following event data: ${describeParsedFields(parsed)}. Data outside these fields will be left untouched. This cannot be undone. Continue?`,
       )
     ) {
-      dispatch(eventSlice.actions.replaceState(parsed));
+      dispatch(eventSlice.actions.mergeState(parsed));
       toaster.show({ message: "Event data imported.", intent: "success" });
       setParsed(null);
       setFileName(null);
     }
   }
 
+  const allTournamentSelected =
+    tournamentExportKeys.size === TOURNAMENT_KEYS.length;
+  const someTournamentSelected =
+    tournamentExportKeys.size > 0 && !allTournamentSelected;
+
   return (
     <section className={styles.autoWidthSection}>
       <H3>Export</H3>
-      <p>
-        Download the entire current event state (sources, players, schedule,
-        lobby settings, etc.) as a JSON file.
-      </p>
-      <Button icon={<Download />} onClick={handleExport}>
+      <p>Choose which parts of the event state to include, then download.</p>
+      <div className={styles.exportKeysList}>
+        <Checkbox
+          label={TOP_LEVEL_KEY_LABELS.cabs}
+          checked={exportKeys.has("cabs")}
+          onChange={(e) => toggleExportKey("cabs", e.currentTarget.checked)}
+        />
+        <Checkbox
+          label="Tournament"
+          checked={allTournamentSelected}
+          indeterminate={someTournamentSelected}
+          onChange={(e) =>
+            toggleAllTournamentKeys(e.currentTarget.checked)
+          }
+        />
+        <div className={styles.exportKeysSublist}>
+          {TOURNAMENT_KEYS.map((key) => (
+            <Checkbox
+              key={key}
+              label={TOURNAMENT_KEY_LABELS[key]}
+              checked={tournamentExportKeys.has(key)}
+              onChange={(e) =>
+                toggleTournamentKey(key, e.currentTarget.checked)
+              }
+            />
+          ))}
+        </div>
+        <Checkbox
+          label={TOP_LEVEL_KEY_LABELS.obsLabels}
+          checked={exportKeys.has("obsLabels")}
+          onChange={(e) =>
+            toggleExportKey("obsLabels", e.currentTarget.checked)
+          }
+        />
+        <Checkbox
+          label={TOP_LEVEL_KEY_LABELS.obsCss}
+          checked={exportKeys.has("obsCss")}
+          onChange={(e) => toggleExportKey("obsCss", e.currentTarget.checked)}
+        />
+      </div>
+      <Button
+        icon={<Download />}
+        onClick={handleExport}
+        disabled={exportKeys.size === 0 && tournamentExportKeys.size === 0}
+      >
         Export event data
       </Button>
 
@@ -745,8 +925,9 @@ function ImportExport() {
 
       <H3>Import</H3>
       <p>
-        Select a previously exported JSON file to preview, then commit it to
-        replace the current event data.
+        Select a previously exported JSON file to preview, then commit it.
+        Only the fields present in the file will be replaced — the rest of
+        the current event data is left untouched.
       </p>
       <FileInput
         text={fileName ?? "Choose .json file..."}
@@ -762,6 +943,7 @@ function ImportExport() {
       {parsed && (
         <>
           <H4>Preview</H4>
+          <p>Fields to be replaced: {describeParsedFields(parsed)}</p>
           <Card className={styles.importPreview}>
             <pre>{JSON.stringify(parsed, null, 2)}</pre>
           </Card>

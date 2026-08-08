@@ -1,10 +1,37 @@
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { ScheduleDay, ScheduleItem } from "../state/event.slice";
 import { useAppState } from "../state/store";
 import styles from "./schedule.css";
 
+const MAX_VISIBLE_ITEMS = 4;
+const CLOCK_REFRESH_MS = 30_000;
+
 function isScheduleDay(value: string | null): value is ScheduleDay {
   return value === "fri" || value === "sat" || value === "sun";
+}
+
+// Current wall-clock time in the Eastern US timezone, as "HH:mm" (24hr,
+// zero-padded) to match the format schedule items store their `time` in.
+function currentEasternTime(): string {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    hourCycle: "h23",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date());
+}
+
+// Drop items that have already started once a later item's start time has
+// also passed, then cap the remaining list to MAX_VISIBLE_ITEMS.
+function visibleRows(rows: ScheduleItem[], now: string): ScheduleItem[] {
+  let start = 0;
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i].time && rows[i].time! <= now) {
+      start = i;
+    }
+  }
+  return rows.slice(start, start + MAX_VISIBLE_ITEMS);
 }
 
 const DAY_LABELS: Record<ScheduleDay, string> = {
@@ -38,12 +65,19 @@ export function Schedule() {
   const items = useAppState((s) =>
     day ? (s.event.tournament?.schedules?.[day]?.items ?? []) : [],
   );
+  const [now, setNow] = useState(currentEasternTime);
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(currentEasternTime()), CLOCK_REFRESH_MS);
+    return () => clearInterval(id);
+  }, []);
 
   if (!day) {
     return null;
   }
 
-  const rows = sortedByTime(items).filter((row) => row.time || row.event);
+  const allRows = sortedByTime(items).filter((row) => row.time || row.event);
+  const rows = visibleRows(allRows, now);
 
   return (
     <div className={styles.canvas}>

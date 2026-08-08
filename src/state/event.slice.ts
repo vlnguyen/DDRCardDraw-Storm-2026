@@ -118,7 +118,7 @@ export interface UpcomingPoolState {
 /**
  * Event state properties that are unique to use at Project Storm
  */
-interface TournamentState {
+export interface TournamentState {
   lobbyConnection?: {
     code?: string;
     password?: string;
@@ -374,6 +374,21 @@ export const eventSlice = createSlice({
     },
     replaceState(_state, action: PayloadAction<EventState>) {
       return action.payload;
+    },
+    /**
+     * Shallow-merges only the top-level keys present in the payload, leaving
+     * the rest of state untouched. `tournament` is merged one level deeper
+     * so a partial tournament import doesn't clobber untouched sub-fields.
+     */
+    mergeState(state, action: PayloadAction<Partial<EventState>>) {
+      const { tournament, ...rest } = action.payload;
+      Object.assign(state, rest);
+      if (tournament) {
+        if (!state.tournament) {
+          state.tournament = {};
+        }
+        Object.assign(state.tournament, tournament);
+      }
     },
   },
   extraReducers(builder) {
