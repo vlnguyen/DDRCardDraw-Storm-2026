@@ -1,0 +1,124 @@
+@font-face {
+  font-family: "FOT-Rodin Pro";
+  font-style: normal;
+  font-weight: 800;
+  src: url("../assets/font/FOT-Rodin Pro UB.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Chiaro Std";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../assets/font/chiarostd_b.otf") format("opentype");
+}
+
+.canvas {
+  position: relative;
+  width: 3840px;
+  height: 2160px;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ghostLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.p1,
+.p2 {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.97);
+  white-space: nowrap;
+}
+
+.p1 {
+  text-align: left;
+}
+
+.p2 {
+  text-align: right;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+  justify-content: center;
+  /* reserves room for gamerTag (128px line-height) + prefix (72px line-height)
+     stacked, so height matches the other side whether or not this entrant
+     actually has a prefix; when it doesn't, justify-content centers the
+     lone gamerTag within that reserved height instead of leaving it stuck
+     to the top with blank space below. */
+  min-height: calc(128px + 72px + 32px * 2);
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+.p1 .nameBlock {
+  /* borrowed from stage-progression.css .poolHighlight */
+  background: rgba(0, 132, 254, 0.5);
+}
+
+.p2 .nameBlock {
+  /* borrowed from stage-progression.css .poolHighlightRed */
+  background: rgba(255, 59, 48, 0.5);
+}
+
+.gamerTag {
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 128px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+}
+
+.seed {
+  margin-left: 0.15em;
+  font-size: 0.5em;
+}
+
+.prefix {
+  font-family: "Chiaro Std";
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 1;
+  color: white;
+}
+
+.placements {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 16px 32px 32px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.placement {
+  font-family: "Chiaro Std";
+  font-weight: 700;
+  font-size: 56px;
+  color: white;
+}

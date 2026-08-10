@@ -23,7 +23,9 @@ export const routableSchedulePath = (day: "fri" | "sat" | "sun") =>
   `../schedule?day=${day}`;
 export const routableStarsPath = () => `../stars`;
 export const routableStageProgressionPath = () => `../stage-progression`;
+export const routableRulesPath = () => `../rules`;
 export const routableUpcomingPoolPath = () => `../upcoming-pool`;
+export const routableWeighInPath = () => `../weigh-in`;
 export const routablePoolSongCounterPath = () => `../pool-song-counter`;
 
 export function copyObsSource(href: string) {

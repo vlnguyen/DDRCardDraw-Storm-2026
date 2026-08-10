@@ -10,7 +10,11 @@ import {
 } from "../../obs-sources/syncstart-connection";
 import { eventSlice } from "../../state/event.slice";
 import { useAppDispatch, useAppState } from "../../state/store";
-import { copyObsSource, routableLiveRankingsPath } from "../copy-obs-source";
+import {
+  copyObsSource,
+  routableLiveRankingsPath,
+  routableVsMeterPath,
+} from "../copy-obs-source";
 import { formatRatio } from "./match-log";
 import { useLobbiesStore } from "./lobbies.store";
 import matchLogStyles from "./match-log.css";
@@ -32,6 +36,7 @@ export function Lobbies() {
   );
 
   const liveRankingsHref = useHref(routableLiveRankingsPath());
+  const vsMeterHref = useHref(routableVsMeterPath());
 
   const selectedLobbyRef = useRef(selectedLobby);
   selectedLobbyRef.current = selectedLobby;
@@ -187,6 +192,18 @@ export function Lobbies() {
                 copyObsSource(new URL(liveRankingsHref, document.location.href).href);
               }}
             />
+          </Tooltip>
+          {" "}
+          <Tooltip content="VS Meter (EX Delta) (3840x2160)">
+            <AnchorButton
+              href={vsMeterHref}
+              onClick={(e) => {
+                e.preventDefault();
+                copyObsSource(new URL(vsMeterHref, document.location.href).href);
+              }}
+            >
+              VS
+            </AnchorButton>
           </Tooltip>
           {" "}
           {selectedLobby && (

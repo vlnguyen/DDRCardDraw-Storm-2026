@@ -41,7 +41,13 @@ export function ChartList({
     isEntering && personaStyles.entering,
   );
 
-  if (isPersona && (phase === "pools" || phase === "pools-4")) {
+  if (
+    isPersona &&
+    (phase === "pools-6-lower" ||
+      phase === "pools-6-upper" ||
+      phase === "pools-6-final" ||
+      phase === "pools-4")
+  ) {
     const firstRowSize =
       phase === "pools-4"
         ? POOLS_4_PHASE_FIRST_ROW_SIZE

@@ -294,6 +294,19 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "e/:roomName/rules",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { Rules } = await import("./obs-sources/rules");
+          return { Component: Rules };
+        },
+      },
+    ],
+  },
+  {
     path: "e/:roomName/upcoming-pool",
     element: <ObsSource />,
     children: [
@@ -330,6 +343,19 @@ const router = createBrowserRouter([
         lazy: async () => {
           const { LowerThird } = await import("./obs-sources/lower-third");
           return { Component: LowerThird };
+        },
+      },
+    ],
+  },
+  {
+    path: "e/:roomName/weigh-in",
+    element: <ObsSource />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { WeighIn } = await import("./obs-sources/weigh-in");
+          return { Component: WeighIn };
         },
       },
     ],

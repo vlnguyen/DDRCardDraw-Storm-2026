@@ -33,6 +33,7 @@ import {
   Edit,
   FloppyDisk,
   Plus,
+  SwapHorizontal,
   Trash,
   Upload,
   WarningSign,
@@ -41,7 +42,7 @@ import { css } from "@codemirror/lang-css";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { nanoid } from "nanoid";
 import React, { useMemo, useRef, useState } from "react";
-import { useHref } from "react-router-dom";
+import { useHref, useSearchParams } from "react-router-dom";
 import {
   type CardDrawPhase,
   type EventState,
@@ -71,12 +72,13 @@ import {
   routableGlobalSourcePath,
   routableLowerThirdPath,
   routablePersona3CirclePath,
+  routableRulesPath,
   routableSchedulePath,
   routableStageProgressionPath,
   routableStarsPath,
   routableTrianglesPath,
   routableUpcomingPoolPath,
-  routableVsMeterPath,
+  routableWeighInPath,
 } from "../copy-obs-source";
 import {
   fetchStageRows,
@@ -95,6 +97,13 @@ import {
 } from "../../obs-sources/syncstart-connection";
 import { Players } from "./players";
 import { downloadDataUrl } from "../../utils/share";
+import { PlayerListInput } from "../../controls/player-list-input";
+import type { Player } from "../../models/Drawing";
+import {
+  type EntrantOption,
+  entrantOptions,
+  fuzzyMatchEntrant,
+} from "../../models/entrant-options";
 
 type DashboardTabId =
   | "sources"
@@ -104,11 +113,36 @@ type DashboardTabId =
   | "schedule"
   | "import-export";
 
+const DEFAULT_DASHBOARD_TAB: DashboardTabId = "sources";
+
+function isDashboardTabId(value: string | null): value is DashboardTabId {
+  return (
+    value === "sources" ||
+    value === "lobbies" ||
+    value === "match-log" ||
+    value === "players" ||
+    value === "schedule" ||
+    value === "import-export"
+  );
+}
+
 export function Dashboard() {
-  const [currentTab, setCurrentTab] =
-    useState<DashboardTabId>("sources");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const currentTab = isDashboardTabId(tabParam) ? tabParam : DEFAULT_DASHBOARD_TAB;
   const matchCount = useMatchLogStore((s) => s.matches.length);
   const lobbyCount = useLobbiesStore((s) => s.lobbies.length);
+
+  function handleTabChange(newTabId: DashboardTabId) {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("tab", newTabId);
+        return next;
+      },
+      { replace: true },
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -117,7 +151,7 @@ export function Dashboard() {
         className={styles.tabs}
         size="large"
         selectedTabId={currentTab}
-        onChange={(newTabId: DashboardTabId) => setCurrentTab(newTabId)}
+        onChange={handleTabChange}
       >
         <Tab id="sources" panel={<Sources />}>
           Sources
@@ -340,6 +374,22 @@ function StageProgressionLink() {
   const href = useHref(routableStageProgressionPath());
   return (
     <Tooltip content="Stage Progression (3840x2160)">
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          copyObsSource(new URL(href, document.location.href).href);
+        }}
+        href={href}
+      />
+    </Tooltip>
+  );
+}
+
+function RulesLink() {
+  const href = useHref(routableRulesPath());
+  return (
+    <Tooltip content="Rules (3840x2160)">
       <AnchorButton
         icon={<Duplicate />}
         onClick={(e) => {
@@ -642,6 +692,9 @@ function Sources() {
       </Card>
       <Card className={styles.autoWidthSection}>
         <LowerThirdEditor />
+      </Card>
+      <Card className={styles.autoWidthSection}>
+        <WeighInSelect />
       </Card>
       <Card className={styles.autoWidthSection}>
         <CardDrawPhaseSelect />
@@ -963,7 +1016,9 @@ function ImportExport() {
 
 function isCardDrawPhase(value: string): value is CardDrawPhase {
   return (
-    value === "pools" ||
+    value === "pools-6-lower" ||
+    value === "pools-6-upper" ||
+    value === "pools-6-final" ||
     value === "pools-4" ||
     value === "de-bo3" ||
     value === "de-bo5"
@@ -977,7 +1032,13 @@ function CardDrawPhaseSelect() {
   const isDirty = localPhase !== savedPhase;
 
   return (
-    <FormGroup label="Card Draw Phase">
+    <FormGroup
+      label={
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          Tournament Phase <RulesLink />
+        </span>
+      }
+    >
       <div className={styles.formRow}>
         <RadioGroup
           inline
@@ -989,10 +1050,12 @@ function CardDrawPhaseSelect() {
             }
           }}
         >
-          <Radio label="Pools (6)" value="pools" />
-          <Radio label="Pools (4)" value="pools-4" />
+          <Radio label="Pools (6) (Stage 1-4)" value="pools-6-lower" />
+          <Radio label="Pools (6) (Stage 5+)" value="pools-6-upper" />
+          <Radio label="Pools (Stage 7)" value="pools-6-final" />
           <Radio label="DE BO3" value="de-bo3" />
           <Radio label="DE BO5" value="de-bo5" />
+          <Radio label="Pools (4)" value="pools-4" />
         </RadioGroup>
         <Button
           disabled={!isDirty}
@@ -1024,12 +1087,19 @@ function ChartLeaderboardSelect() {
   const dispatch = useAppDispatch();
   const gameData = useStockGameData("storm2026");
   const savedChartLeaderboard = useAppState(
-    (s) => s.event.tournament?.chartLeaderboard ?? "",
+    (s) => s.event.tournament?.chartLeaderboard?.songDir ?? "",
+  );
+  const savedParticipants = useAppState(
+    (s) => s.event.tournament?.chartLeaderboard?.participants ?? [],
   );
   const [localChartLeaderboard, setLocalChartLeaderboard] = useState(
     savedChartLeaderboard,
   );
-  const isDirty = localChartLeaderboard !== savedChartLeaderboard;
+  const [localParticipants, setLocalParticipants] =
+    useState<Player[]>(savedParticipants);
+  const isDirty =
+    localChartLeaderboard !== savedChartLeaderboard ||
+    JSON.stringify(localParticipants) !== JSON.stringify(savedParticipants);
   const href = useHref(routableChartLeaderboardPath());
 
   const songOptions: SongOption[] = (gameData?.songs ?? [])
@@ -1065,25 +1135,125 @@ function ChartLeaderboardSelect() {
           inputValueRenderer={(item) => item.label}
           noResults={<MenuItem disabled text="No matching songs" />}
         />
+        <Tooltip content="Chart Leaderboard (3840x2160)">
+          <AnchorButton
+            icon={<Duplicate />}
+            onClick={(e) => {
+              e.preventDefault();
+              copyObsSource(new URL(href, document.location.href).href);
+            }}
+            href={href}
+          />
+        </Tooltip>
+      </div>
+      <FormGroup label="Participants">
+        <PlayerListInput
+          value={localParticipants}
+          onChange={setLocalParticipants}
+          minPlayers={0}
+        />
+      </FormGroup>
+      <Button
+        disabled={!isDirty}
+        intent={isDirty ? "primary" : undefined}
+        onClick={() =>
+          dispatch(
+            eventSlice.actions.setChartLeaderboard({
+              songDir: localChartLeaderboard,
+              participants: localParticipants,
+            }),
+          )
+        }
+      >
+        Submit
+      </Button>
+    </FormGroup>
+  );
+}
+
+function EntrantPicker({
+  selectedId,
+  onSelect,
+}: {
+  selectedId: number | undefined;
+  onSelect: (id: number | undefined) => void;
+}) {
+  return (
+    <Suggest<EntrantOption>
+      resetOnClose
+      items={entrantOptions}
+      selectedItem={
+        entrantOptions.find((o) => o.value === selectedId) ?? null
+      }
+      itemPredicate={(query, item) => fuzzyMatchEntrant(query, item)}
+      itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
+        <MenuItem
+          key={item.value}
+          text={item.label}
+          active={modifiers.active}
+          disabled={modifiers.disabled}
+          onClick={handleClick}
+          onFocus={handleFocus}
+        />
+      )}
+      onItemSelect={(item) => onSelect(item.value)}
+      inputValueRenderer={(item) => item.label}
+      noResults={<MenuItem disabled text="No matching players" />}
+    />
+  );
+}
+
+function WeighInSelect() {
+  const dispatch = useAppDispatch();
+  const savedP1 = useAppState((s) => s.event.tournament?.weighIn?.p1Player);
+  const savedP2 = useAppState((s) => s.event.tournament?.weighIn?.p2Player);
+  const [p1Player, setP1Player] = useState(savedP1);
+  const [p2Player, setP2Player] = useState(savedP2);
+  const isDirty = p1Player !== savedP1 || p2Player !== savedP2;
+  const href = useHref(routableWeighInPath());
+
+  return (
+    <FormGroup
+      label={
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          Weigh-In{" "}
+          <Tooltip content="Weigh-In (3840x2160)">
+            <AnchorButton
+              icon={<Duplicate />}
+              onClick={(e) => {
+                e.preventDefault();
+                copyObsSource(new URL(href, document.location.href).href);
+              }}
+              href={href}
+            />
+          </Tooltip>
+        </span>
+      }
+    >
+      <div className={styles.formRow}>
+        <FormGroup label="Player 1">
+          <EntrantPicker selectedId={p1Player} onSelect={setP1Player} />
+        </FormGroup>
+        <Button
+          icon={<SwapHorizontal />}
+          aria-label="Swap sides"
+          onClick={() => {
+            setP1Player(p2Player);
+            setP2Player(p1Player);
+          }}
+        />
+        <FormGroup label="Player 2">
+          <EntrantPicker selectedId={p2Player} onSelect={setP2Player} />
+        </FormGroup>
         <Button
           disabled={!isDirty}
           intent={isDirty ? "primary" : undefined}
           onClick={() =>
-            dispatch(
-              eventSlice.actions.setChartLeaderboard(localChartLeaderboard),
-            )
+            dispatch(eventSlice.actions.setWeighIn({ p1Player, p2Player }))
           }
         >
           Submit
         </Button>
-        <AnchorButton
-          icon={<Duplicate />}
-          onClick={(e) => {
-            e.preventDefault();
-            copyObsSource(new URL(href, document.location.href).href);
-          }}
-          href={href}
-        />
       </div>
     </FormGroup>
   );
@@ -1430,7 +1600,6 @@ function OtherSources() {
       <CardList>
         <OtherSourceCard label="Persona 3 Circle (3840x2160)" path={routablePersona3CirclePath()} />
         <OtherSourceCard label="Triangles (3840x2160)" path={routableTrianglesPath()} />
-        <OtherSourceCard label="VS Meter (EX Delta) (3840x2160)" path={routableVsMeterPath()} />
         <CurrentTimeCard />
         <OtherSourceCard label="Bracket (3840x2160)" path={routableBracketPath()} />
         <OtherSourceCard label="Stars (3840x2160)" path={routableStarsPath()} />

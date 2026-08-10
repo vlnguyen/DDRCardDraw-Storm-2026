@@ -58,6 +58,10 @@ export function StageProgression() {
   };
 
   const stageNumber = displayedStage.slice("stage".length);
+  const isUpperDivision =
+    displayedStage === "stage5" ||
+    displayedStage === "stage6" ||
+    displayedStage === "stage7";
   const rows = useAppState(
     (s) =>
       s.event.tournament?.poolHistory?.data?.[displayedStage] as
@@ -191,7 +195,11 @@ export function StageProgression() {
         <div className={styles.pools}>
           <div
             ref={highlightRef}
-            className={styles.poolHighlight}
+            className={
+              isUpperDivision
+                ? `${styles.poolHighlight} ${styles.poolHighlightRed}`
+                : styles.poolHighlight
+            }
             style={{ display: "none" }}
           />
           {pools.map(({ poolCode, players }) => (
