@@ -1523,3 +1523,11 @@ export const entrantsMap: Record<
   },
 
 };
+
+/** GrooveStats member id -> start.gg entrant id, for entrants with both known. */
+export const startggIdByMemberId = new Map<number, number>();
+for (const [startggIdStr, entrant] of Object.entries(entrantsMap)) {
+  if (entrant?.membersId != null) {
+    startggIdByMemberId.set(entrant.membersId, Number(startggIdStr));
+  }
+}

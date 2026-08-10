@@ -12,6 +12,17 @@
   src: url("../assets/font/chiarostd_b.otf") format("opentype");
 }
 
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 .canvas {
   width: 3840px;
   height: 2160px;
@@ -19,15 +30,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 160px;
 }
 
-/* raises the banner+title above vertical-center within the canvas */
+/* left half: banner/title/credit/tech counts */
+.detailsPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  width: 1760px;
+}
+
+/* right half: top-10 leaderboard */
+.leaderboardPanel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1760px;
+  height: 100%;
+}
+
 .header {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 40px;
-  margin-bottom: 1200px;
 }
 
 /* Jackets in this pack are ~64:25 wide banners (e.g. 1024x400), not square. */
@@ -61,4 +90,138 @@
   color: white;
   text-align: center;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+.techCounts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+}
+
+.techRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px 40px;
+  width: 100%;
+}
+
+.techStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.techLabel {
+  margin: 0;
+  font-family: "Chiaro Std";
+  font-weight: 700;
+  font-size: 32px;
+  color: white;
+  opacity: 0.65;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+.techValue {
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 64px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  text-align: center;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+.leaderboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.leaderboardTitle {
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 100px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  text-transform: uppercase;
+  text-align: center;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+.leaderboardSubtitle {
+  /* leaderboard's flex `gap` applies to both gaps uniformly; pull this one
+     in closer to the title without affecting the title-to-table spacing */
+  margin: -28px 0 0;
+  font-family: "Chiaro Std";
+  font-weight: 700;
+  font-size: 58px;
+  color: white;
+  text-align: center;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+.leaderboardTable {
+  border-collapse: collapse;
+  font-family: "Chiaro Std";
+}
+
+.leaderboardRow {
+  animation: slideDown 0.4s ease both;
+}
+
+.leaderboardRank {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+  font-family: "FOT-Rodin Pro";
+  font-size: 60px;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  padding: 4px 24px;
+}
+
+.leaderboardName {
+  font-size: 60px;
+  color: white;
+  text-align: left;
+  padding: 4px 24px;
+}
+
+.gamerTag {
+  font-family: "FOT-Rodin Pro";
+  display: inline-block;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+}
+
+.prefix {
+  font-size: 0.75em;
+}
+
+.seed {
+  margin-left: 0.15em;
+  font-size: 0.5em;
+  opacity: 0.75;
+}
+
+.leaderboardPercent {
+  font-size: 60px;
+  color: white;
+  text-align: right;
+  padding: 4px 24px;
 }
