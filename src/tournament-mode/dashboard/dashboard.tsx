@@ -33,6 +33,7 @@ import {
   Edit,
   FloppyDisk,
   Plus,
+  SwapHorizontal,
   Trash,
   Upload,
   WarningSign,
@@ -77,6 +78,7 @@ import {
   routableStarsPath,
   routableTrianglesPath,
   routableUpcomingPoolPath,
+  routableWeighInPath,
 } from "../copy-obs-source";
 import {
   fetchStageRows,
@@ -97,6 +99,11 @@ import { Players } from "./players";
 import { downloadDataUrl } from "../../utils/share";
 import { PlayerListInput } from "../../controls/player-list-input";
 import type { Player } from "../../models/Drawing";
+import {
+  type EntrantOption,
+  entrantOptions,
+  fuzzyMatchEntrant,
+} from "../../models/entrant-options";
 
 type DashboardTabId =
   | "sources"
@@ -687,6 +694,9 @@ function Sources() {
         <LowerThirdEditor />
       </Card>
       <Card className={styles.autoWidthSection}>
+        <WeighInSelect />
+      </Card>
+      <Card className={styles.autoWidthSection}>
         <CardDrawPhaseSelect />
       </Card>
       <Card className={styles.autoWidthSection}>
@@ -1157,6 +1167,94 @@ function ChartLeaderboardSelect() {
       >
         Submit
       </Button>
+    </FormGroup>
+  );
+}
+
+function EntrantPicker({
+  selectedId,
+  onSelect,
+}: {
+  selectedId: number | undefined;
+  onSelect: (id: number | undefined) => void;
+}) {
+  return (
+    <Suggest<EntrantOption>
+      resetOnClose
+      items={entrantOptions}
+      selectedItem={
+        entrantOptions.find((o) => o.value === selectedId) ?? null
+      }
+      itemPredicate={(query, item) => fuzzyMatchEntrant(query, item)}
+      itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
+        <MenuItem
+          key={item.value}
+          text={item.label}
+          active={modifiers.active}
+          disabled={modifiers.disabled}
+          onClick={handleClick}
+          onFocus={handleFocus}
+        />
+      )}
+      onItemSelect={(item) => onSelect(item.value)}
+      inputValueRenderer={(item) => item.label}
+      noResults={<MenuItem disabled text="No matching players" />}
+    />
+  );
+}
+
+function WeighInSelect() {
+  const dispatch = useAppDispatch();
+  const savedP1 = useAppState((s) => s.event.tournament?.weighIn?.p1Player);
+  const savedP2 = useAppState((s) => s.event.tournament?.weighIn?.p2Player);
+  const [p1Player, setP1Player] = useState(savedP1);
+  const [p2Player, setP2Player] = useState(savedP2);
+  const isDirty = p1Player !== savedP1 || p2Player !== savedP2;
+  const href = useHref(routableWeighInPath());
+
+  return (
+    <FormGroup
+      label={
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          Weigh-In{" "}
+          <Tooltip content="Weigh-In (3840x2160)">
+            <AnchorButton
+              icon={<Duplicate />}
+              onClick={(e) => {
+                e.preventDefault();
+                copyObsSource(new URL(href, document.location.href).href);
+              }}
+              href={href}
+            />
+          </Tooltip>
+        </span>
+      }
+    >
+      <div className={styles.formRow}>
+        <FormGroup label="Player 1">
+          <EntrantPicker selectedId={p1Player} onSelect={setP1Player} />
+        </FormGroup>
+        <Button
+          icon={<SwapHorizontal />}
+          aria-label="Swap sides"
+          onClick={() => {
+            setP1Player(p2Player);
+            setP2Player(p1Player);
+          }}
+        />
+        <FormGroup label="Player 2">
+          <EntrantPicker selectedId={p2Player} onSelect={setP2Player} />
+        </FormGroup>
+        <Button
+          disabled={!isDirty}
+          intent={isDirty ? "primary" : undefined}
+          onClick={() =>
+            dispatch(eventSlice.actions.setWeighIn({ p1Player, p2Player }))
+          }
+        >
+          Submit
+        </Button>
+      </div>
     </FormGroup>
   );
 }

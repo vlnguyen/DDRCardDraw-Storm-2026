@@ -121,6 +121,13 @@ export interface UpcomingPoolState {
   stageNameOverride?: string;
 }
 
+export interface WeighInState {
+  /** entrant id (from entrants.json) picked for player 1 */
+  p1Player?: number;
+  /** entrant id (from entrants.json) picked for player 2 */
+  p2Player?: number;
+}
+
 export interface ChartDetailState {
   /** folder name of the song whose chart is shown on the leaderboard */
   songDir?: string;
@@ -149,6 +156,7 @@ export interface TournamentState {
   poolHistory?: PoolHistoryState;
   stageProgression?: StageProgressionState;
   upcomingPool?: UpcomingPoolState;
+  weighIn?: WeighInState;
 }
 
 
@@ -392,6 +400,15 @@ export const eventSlice = createSlice({
         state.tournament.upcomingPool = {};
       }
       state.tournament.upcomingPool.stageNameOverride = action.payload;
+    },
+    setWeighIn(
+      state,
+      action: PayloadAction<{ p1Player?: number; p2Player?: number }>,
+    ) {
+      if (!state.tournament) {
+        state.tournament = {};
+      }
+      state.tournament.weighIn = action.payload;
     },
     replaceState(_state, action: PayloadAction<EventState>) {
       return action.payload;
