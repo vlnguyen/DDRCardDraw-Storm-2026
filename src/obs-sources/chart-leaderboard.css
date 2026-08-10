@@ -20,3 +20,45 @@
   align-items: center;
   justify-content: center;
 }
+
+/* raises the banner+title above vertical-center within the canvas */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 1200px;
+}
+
+/* Jackets in this pack are ~64:25 wide banners (e.g. 1024x400), not square. */
+.banner {
+  width: 1600px;
+  height: 625px;
+  object-fit: contain;
+}
+
+.chartTitle {
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 100px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  text-transform: uppercase;
+  text-align: center;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+.creditDescription {
+  /* header's flex `gap` applies to both gaps uniformly; pull this one in
+     closer to the title without affecting the banner-to-title spacing */
+  margin: -28px 0 0;
+  font-family: "Chiaro Std";
+  font-weight: 700;
+  font-size: 72px;
+  color: white;
+  text-align: center;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
