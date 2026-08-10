@@ -50,7 +50,7 @@ function EntrantName({
 
 export function ChartLeaderboard() {
   const selectedFolder = useAppState(
-    (s) => s.event.tournament?.chartLeaderboard,
+    (s) => s.event.tournament?.chartLeaderboard?.songDir,
   );
   const gameData = useStockGameData("storm2026");
 

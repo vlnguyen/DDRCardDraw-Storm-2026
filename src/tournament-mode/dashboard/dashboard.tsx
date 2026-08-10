@@ -1048,7 +1048,7 @@ function ChartLeaderboardSelect() {
   const dispatch = useAppDispatch();
   const gameData = useStockGameData("storm2026");
   const savedChartLeaderboard = useAppState(
-    (s) => s.event.tournament?.chartLeaderboard ?? "",
+    (s) => s.event.tournament?.chartLeaderboard?.songDir ?? "",
   );
   const [localChartLeaderboard, setLocalChartLeaderboard] = useState(
     savedChartLeaderboard,

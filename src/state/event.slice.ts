@@ -115,6 +115,11 @@ export interface UpcomingPoolState {
   stageNameOverride?: string;
 }
 
+export interface ChartDetailState {
+  /** folder name of the song whose chart is shown on the leaderboard */
+  songDir?: string;
+}
+
 /**
  * Event state properties that are unique to use at Project Storm
  */
@@ -126,7 +131,7 @@ export interface TournamentState {
   poolState?: PoolState;
   machineCodeCab1?: string;
   machineCodeCab2?: string;
-  chartLeaderboard?: string;
+  chartLeaderboard?: ChartDetailState;
   cardDrawPhase?: CardDrawPhase;
   lowerThird?: LowerThirdState;
   toggleLowerThird?: boolean;
@@ -283,7 +288,7 @@ export const eventSlice = createSlice({
       if (!state.tournament) {
         state.tournament = {};
       }
-      state.tournament.chartLeaderboard = action.payload;
+      state.tournament.chartLeaderboard = { songDir: action.payload };
     },
     setCardDrawPhase(state, action: PayloadAction<CardDrawPhase>) {
       if (!state.tournament) {
