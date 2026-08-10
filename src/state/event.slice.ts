@@ -74,6 +74,7 @@ export interface PoolState {
 export type CardDrawPhase =
   | "pools-6-lower"
   | "pools-6-upper"
+  | "pools-6-final"
   | "pools-4"
   | "de-bo3"
   | "de-bo5";

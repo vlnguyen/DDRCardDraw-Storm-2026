@@ -20,3 +20,49 @@
   align-items: center;
   justify-content: center;
 }
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 48px;
+  max-width: 2800px;
+}
+
+.title {
+  align-self: center;
+  margin: 0;
+  font-family: "FOT-Rodin Pro";
+  font-weight: 800;
+  font-size: 120px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  transform: scaleY(0.75);
+  color: white;
+  text-transform: uppercase;
+  text-align: center;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+.rulesList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.rule {
+  font-family: "Chiaro Std";
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 1.3;
+  color: white;
+  text-align: left;
+}
+
+.rule::before {
+  content: "\2022  ";
+  color: #6be8c8;
+}

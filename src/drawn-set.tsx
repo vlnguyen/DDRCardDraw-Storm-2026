@@ -45,6 +45,7 @@ export function ChartList({
     isPersona &&
     (phase === "pools-6-lower" ||
       phase === "pools-6-upper" ||
+      phase === "pools-6-final" ||
       phase === "pools-4")
   ) {
     const firstRowSize =

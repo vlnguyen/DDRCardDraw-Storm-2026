@@ -1008,6 +1008,7 @@ function isCardDrawPhase(value: string): value is CardDrawPhase {
   return (
     value === "pools-6-lower" ||
     value === "pools-6-upper" ||
+    value === "pools-6-final" ||
     value === "pools-4" ||
     value === "de-bo3" ||
     value === "de-bo5"
@@ -1041,6 +1042,7 @@ function CardDrawPhaseSelect() {
         >
           <Radio label="Pools (6) (Stage 1-4)" value="pools-6-lower" />
           <Radio label="Pools (6) (Stage 5+)" value="pools-6-upper" />
+          <Radio label="Pools (Stage 7)" value="pools-6-final" />
           <Radio label="DE BO3" value="de-bo3" />
           <Radio label="DE BO5" value="de-bo5" />
           <Radio label="Pools (4)" value="pools-4" />
