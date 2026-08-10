@@ -1,6 +1,6 @@
 import { PayloadAction, createSelector, createSlice } from "@reduxjs/toolkit";
 import { nanoid } from "nanoid";
-import { CompoundSetId } from "../models/Drawing";
+import { CompoundSetId, Player } from "../models/Drawing";
 import { mergeDraws } from "./central";
 
 export interface CabInfo {
@@ -118,6 +118,10 @@ export interface UpcomingPoolState {
 export interface ChartDetailState {
   /** folder name of the song whose chart is shown on the leaderboard */
   songDir?: string;
+  /** entrants forced to appear on the leaderboard even if their score
+   * wouldn't otherwise place in the top results (or if they haven't
+   * played the chart at all yet) */
+  participants?: Player[];
 }
 
 /**
@@ -284,11 +288,17 @@ export const eventSlice = createSlice({
       state.tournament.machineCodeCab1 = action.payload.cab1;
       state.tournament.machineCodeCab2 = action.payload.cab2;
     },
-    setChartLeaderboard(state, action: PayloadAction<string>) {
+    setChartLeaderboard(
+      state,
+      action: PayloadAction<{ songDir: string; participants: Player[] }>,
+    ) {
       if (!state.tournament) {
         state.tournament = {};
       }
-      state.tournament.chartLeaderboard = { songDir: action.payload };
+      state.tournament.chartLeaderboard = {
+        songDir: action.payload.songDir,
+        participants: action.payload.participants,
+      };
     },
     setCardDrawPhase(state, action: PayloadAction<CardDrawPhase>) {
       if (!state.tournament) {

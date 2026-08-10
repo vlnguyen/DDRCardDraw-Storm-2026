@@ -175,12 +175,19 @@
 }
 
 .leaderboardTable {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 16px;
   font-family: "Chiaro Std";
 }
 
 .leaderboardRow {
   animation: slideDown 0.4s ease both;
+}
+
+.participantRow {
+  outline: 4px solid #6be8c8;
+  outline-offset: -4px;
+  border-radius: 12px;
 }
 
 .leaderboardRank {

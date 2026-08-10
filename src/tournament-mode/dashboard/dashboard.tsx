@@ -94,6 +94,8 @@ import {
 } from "../../obs-sources/syncstart-connection";
 import { Players } from "./players";
 import { downloadDataUrl } from "../../utils/share";
+import { PlayerListInput } from "../../controls/player-list-input";
+import type { Player } from "../../models/Drawing";
 
 type DashboardTabId =
   | "sources"
@@ -1050,10 +1052,17 @@ function ChartLeaderboardSelect() {
   const savedChartLeaderboard = useAppState(
     (s) => s.event.tournament?.chartLeaderboard?.songDir ?? "",
   );
+  const savedParticipants = useAppState(
+    (s) => s.event.tournament?.chartLeaderboard?.participants ?? [],
+  );
   const [localChartLeaderboard, setLocalChartLeaderboard] = useState(
     savedChartLeaderboard,
   );
-  const isDirty = localChartLeaderboard !== savedChartLeaderboard;
+  const [localParticipants, setLocalParticipants] =
+    useState<Player[]>(savedParticipants);
+  const isDirty =
+    localChartLeaderboard !== savedChartLeaderboard ||
+    JSON.stringify(localParticipants) !== JSON.stringify(savedParticipants);
   const href = useHref(routableChartLeaderboardPath());
 
   const songOptions: SongOption[] = (gameData?.songs ?? [])
@@ -1089,17 +1098,6 @@ function ChartLeaderboardSelect() {
           inputValueRenderer={(item) => item.label}
           noResults={<MenuItem disabled text="No matching songs" />}
         />
-        <Button
-          disabled={!isDirty}
-          intent={isDirty ? "primary" : undefined}
-          onClick={() =>
-            dispatch(
-              eventSlice.actions.setChartLeaderboard(localChartLeaderboard),
-            )
-          }
-        >
-          Submit
-        </Button>
         <Tooltip content="Chart Leaderboard (3840x2160)">
           <AnchorButton
             icon={<Duplicate />}
@@ -1111,6 +1109,27 @@ function ChartLeaderboardSelect() {
           />
         </Tooltip>
       </div>
+      <FormGroup label="Participants">
+        <PlayerListInput
+          value={localParticipants}
+          onChange={setLocalParticipants}
+          minPlayers={0}
+        />
+      </FormGroup>
+      <Button
+        disabled={!isDirty}
+        intent={isDirty ? "primary" : undefined}
+        onClick={() =>
+          dispatch(
+            eventSlice.actions.setChartLeaderboard({
+              songDir: localChartLeaderboard,
+              participants: localParticipants,
+            }),
+          )
+        }
+      >
+        Submit
+      </Button>
     </FormGroup>
   );
 }

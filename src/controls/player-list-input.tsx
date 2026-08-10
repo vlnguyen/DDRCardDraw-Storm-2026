@@ -36,8 +36,12 @@ const LIST_HEIGHT = "10.5em";
 export function PlayerListInput(props: {
   value: Player[];
   onChange: (next: Player[]) => void;
+  /** Smallest the list is allowed to shrink to via the remove button.
+   * Defaults to 1 (a draw always needs at least one named player); pass 0
+   * for optional lists like a "participants to highlight" field. */
+  minPlayers?: number;
 }) {
-  const { value: players, onChange } = props;
+  const { value: players, onChange, minPlayers = 1 } = props;
   const isEventMode = useAppMode() === "event";
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -148,7 +152,7 @@ export function PlayerListInput(props: {
                 aria-label="Remove player"
                 variant="minimal"
                 icon={<Cross />}
-                disabled={players.length <= 1}
+                disabled={players.length <= minPlayers}
                 onClick={() => removeAt(index!)}
               />
             </div>
