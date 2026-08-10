@@ -71,6 +71,7 @@ import {
   routableGlobalSourcePath,
   routableLowerThirdPath,
   routablePersona3CirclePath,
+  routableRulesPath,
   routableSchedulePath,
   routableStageProgressionPath,
   routableStarsPath,
@@ -366,6 +367,22 @@ function StageProgressionLink() {
   const href = useHref(routableStageProgressionPath());
   return (
     <Tooltip content="Stage Progression (3840x2160)">
+      <AnchorButton
+        icon={<Duplicate />}
+        onClick={(e) => {
+          e.preventDefault();
+          copyObsSource(new URL(href, document.location.href).href);
+        }}
+        href={href}
+      />
+    </Tooltip>
+  );
+}
+
+function RulesLink() {
+  const href = useHref(routableRulesPath());
+  return (
+    <Tooltip content="Rules (3840x2160)">
       <AnchorButton
         icon={<Duplicate />}
         onClick={(e) => {
@@ -989,7 +1006,8 @@ function ImportExport() {
 
 function isCardDrawPhase(value: string): value is CardDrawPhase {
   return (
-    value === "pools" ||
+    value === "pools-6-lower" ||
+    value === "pools-6-upper" ||
     value === "pools-4" ||
     value === "de-bo3" ||
     value === "de-bo5"
@@ -1003,7 +1021,13 @@ function CardDrawPhaseSelect() {
   const isDirty = localPhase !== savedPhase;
 
   return (
-    <FormGroup label="Card Draw Phase">
+    <FormGroup
+      label={
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          Tournament Phase <RulesLink />
+        </span>
+      }
+    >
       <div className={styles.formRow}>
         <RadioGroup
           inline
@@ -1015,10 +1039,11 @@ function CardDrawPhaseSelect() {
             }
           }}
         >
-          <Radio label="Pools (6)" value="pools" />
-          <Radio label="Pools (4)" value="pools-4" />
+          <Radio label="Pools (6) (Stage 1-4)" value="pools-6-lower" />
+          <Radio label="Pools (6) (Stage 5+)" value="pools-6-upper" />
           <Radio label="DE BO3" value="de-bo3" />
           <Radio label="DE BO5" value="de-bo5" />
+          <Radio label="Pools (4)" value="pools-4" />
         </RadioGroup>
         <Button
           disabled={!isDirty}
