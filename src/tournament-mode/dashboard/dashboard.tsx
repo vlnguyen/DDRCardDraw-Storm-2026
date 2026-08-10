@@ -1100,14 +1100,16 @@ function ChartLeaderboardSelect() {
         >
           Submit
         </Button>
-        <AnchorButton
-          icon={<Duplicate />}
-          onClick={(e) => {
-            e.preventDefault();
-            copyObsSource(new URL(href, document.location.href).href);
-          }}
-          href={href}
-        />
+        <Tooltip content="Chart Leaderboard (3840x2160)">
+          <AnchorButton
+            icon={<Duplicate />}
+            onClick={(e) => {
+              e.preventDefault();
+              copyObsSource(new URL(href, document.location.href).href);
+            }}
+            href={href}
+          />
+        </Tooltip>
       </div>
     </FormGroup>
   );
