@@ -142,8 +142,13 @@
     top 0.4s ease,
     left 0.4s ease,
     width 0.4s ease,
-    height 0.4s ease;
+    height 0.4s ease,
+    background 0.4s ease;
   pointer-events: none;
+}
+
+.poolHighlightRed {
+  background: rgba(255, 59, 48, 0.35);
 }
 
 .poolName {
