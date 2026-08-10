@@ -9,9 +9,8 @@ import {
 import { inferShortname } from "../controls/player-names";
 import styles from "./bracket.css";
 
-// TODO (Storm 2026): replace with the actual bracket URL once it exists.
 const START_GG_BRACKET_URL =
-  "https://www.start.gg/tournament/ceo-2024-6/event/in-the-groove-2-sm5-1/brackets/1583769/2372293";
+  "https://www.start.gg/tournament/ceo-2026/event/itgmania/brackets/2339228/3380960";
 
 const REFRESH_INTERVAL_MS = 30_000;
 
@@ -58,12 +57,22 @@ function groupByRound(sets: BracketSet[]): Map<number, BracketSet[]> {
 // column immediately after the Grand Final so it renders as its own step.
 const GRAND_FINAL_RESET_ROUND_OFFSET = 0.5;
 
+// start.gg always creates a Grand Final Reset set in the bracket structure,
+// but it only actually gets entrants assigned once the loser's-bracket
+// player wins the true Grand Final and forces the reset - until then (or if
+// it never happens) its slots are unassigned, and it shouldn't be shown.
+function isResetRequired(set: BracketSet): boolean {
+  return (set.slots ?? []).some((slot) => slot?.entrant != null);
+}
+
 function splitOutGrandFinalReset(
   rounds: Map<number, BracketSet[]>,
 ): Map<number, BracketSet[]> {
   const result = new Map<number, BracketSet[]>();
   for (const [round, roundSets] of rounds) {
-    const resets = roundSets.filter((set) => /reset/i.test(set.fullRoundText ?? ""));
+    const resets = roundSets
+      .filter((set) => /reset/i.test(set.fullRoundText ?? ""))
+      .filter(isResetRequired);
     const rest = roundSets.filter((set) => !/reset/i.test(set.fullRoundText ?? ""));
     if (rest.length) {
       result.set(round, rest);
@@ -128,7 +137,7 @@ function SetCard({ set, connect }: { set: BracketSet; connect: boolean }) {
           ? inferShortname(gamerTag)
           : entrant?.name
             ? inferShortname(entrant.name)
-            : "TBD";
+            : "";
         const prefix = gamerTag ? participant?.prefix : null;
         const score = slot?.standing?.stats?.score?.value;
         const isWinner =
