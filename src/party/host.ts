@@ -1,12 +1,8 @@
 import type { AppState } from "../state/root-reducer";
 
-export const PARTYKIT_HOST =
-  process.env.NODE_ENV === "development"
-    ? "127.0.0.1:1999"
-    : "ddr-card-draw-party.noahm.partykit.dev";
-
-const ENDPOINT_PROTOCOL =
-  process.env.NODE_ENV === "development" ? "http" : "https";
+// storm 2026 is only meant to run locally on site
+export const PARTYKIT_HOST = "127.0.0.1:1999";
+const ENDPOINT_PROTOCOL = "http";
 
 export function partykitEndpoint(roomName: string) {
   return `${ENDPOINT_PROTOCOL}://${PARTYKIT_HOST}/parties/main/${roomName}`;
