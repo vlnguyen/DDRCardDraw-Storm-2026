@@ -144,6 +144,16 @@
   box-shadow: 0px 0px 5px red;
 }
 
+.vetoed::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cline x1='0' y1='100' x2='100' y2='0' stroke='red' stroke-width='2.5' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  filter: drop-shadow(0px 0px 5px red);
+}
+
 .protected {
   border-color: green;
   box-shadow: 0px 0px 5px green;
