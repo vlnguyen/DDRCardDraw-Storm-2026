@@ -1,4 +1,4 @@
-export type { CardSectionProps, CardContentsProps } from "./base";
+export type { CardSectionProps, CardContentsProps, CardAction } from "./base";
 export { baseChartValues } from "./base";
 
 import {
@@ -12,6 +12,7 @@ import { ItgCardFooter, PersonaItgCardFooter } from "./itg";
 import { MaimaiCardFooter } from "./maimai";
 import { DonkeyKongaCardCenter } from "./donkeykonga";
 import { PersonaBaseCardCenter } from "./persona-base";
+import { SmxCardCenter, SmxCardFooter, getSmxCardActions } from "./smx";
 
 export function getContentVariants(
   cardType: string | undefined,
@@ -36,6 +37,12 @@ export function getContentVariants(
       return {
         CenterContent: DonkeyKongaCardCenter,
         FooterContent: BaseCardFooter,
+      };
+    case "smx":
+      return {
+        CenterContent: SmxCardCenter,
+        FooterContent: SmxCardFooter,
+        getActions: getSmxCardActions,
       };
     default:
       return {
