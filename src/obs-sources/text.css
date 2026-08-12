@@ -20,10 +20,19 @@
 }
 
 .fitText {
+  /* Horizontal placement (left/right/transform-x) and the title font's
+     vertical squash both need to land in this one transform, but they're
+     set by separate classes (alignLeft/Center/Right, titleFont) that can be
+     combined with this one in any order — a plain `transform` override from
+     either would clobber the other's. Custom properties sidestep that: each
+     class only overrides its own piece, and this is the sole place the full
+     transform is assembled. */
+  --align-x: -50%;
+  --scale-y: 1;
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(var(--align-x), -50%) scaleY(var(--scale-y));
   width: fit-content;
   margin: 0;
   white-space: pre;
@@ -38,19 +47,26 @@
 .titleFont {
   font-family: "FOT-Rodin Pro";
   letter-spacing: -0.05em;
-  transform: translate(-50%, -50%) scaleY(0.75);
+  --scale-y: 0.75;
 }
 
 .alignLeft {
   text-align: left;
+  left: 0;
+  --align-x: 0%;
 }
 
 .alignCenter {
   text-align: center;
+  left: 50%;
+  --align-x: -50%;
 }
 
 .alignRight {
   text-align: right;
+  left: auto;
+  right: 0;
+  --align-x: 0%;
 }
 
 .textStroke {
