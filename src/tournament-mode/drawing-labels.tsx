@@ -14,6 +14,7 @@ export function MatchLabels() {
   const showLabels = useAtomValue(showPlayerAndRoundLabels);
   const meta = useDrawing((d) => d.meta);
   const winners = useDrawing((d) => d.winners);
+  const priorityPlayer = useDrawing((d) => d.priorityPlayer);
   if (!showLabels) {
     return null;
   }
@@ -41,6 +42,7 @@ export function MatchLabels() {
           const ret = (
             <span key={idx}>
               {playerDisplayName(player, idx)}
+              {player.id === priorityPlayer && " (L)"}
               {winCount}
             </span>
           );

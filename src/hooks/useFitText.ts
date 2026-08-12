@@ -3,6 +3,16 @@ import { useLayoutEffect, useRef, useState } from "react";
 const MIN_FONT_SIZE = 1;
 
 /**
+ * Fraction of the viewport reserved as a margin on every side, so fitted
+ * text is never sized flush to the frame's true edge. Content like the seed
+ * subscript (rendered via `vertical-align: sub`) can extend slightly past
+ * the box that's actually measured here, and with zero margin that overflow
+ * gets clipped by the page's `overflow: hidden` — this leaves headroom for
+ * that (and matches the conventional ~5% broadcast title-safe margin).
+ */
+const SAFE_MARGIN_RATIO = 0.05;
+
+/**
  * Binary-searches the largest font-size (in px) that keeps the element's
  * content box within the current viewport, then keeps it in sync on resize
  * and whenever `content` (or any extra dep, e.g. a font-family switch) changes.
@@ -28,6 +38,9 @@ export function useFitText<T extends HTMLElement>(
 
     function fit() {
       if (!el) return;
+      const availableWidth = window.innerWidth * (1 - 2 * SAFE_MARGIN_RATIO);
+      const availableHeight =
+        window.innerHeight * (1 - 2 * SAFE_MARGIN_RATIO);
       const maxFontSize = Math.max(window.innerWidth, window.innerHeight);
       let low = MIN_FONT_SIZE;
       let high = maxFontSize;
@@ -36,7 +49,7 @@ export function useFitText<T extends HTMLElement>(
         el.style.fontSize = `${mid}px`;
         const rect = el.getBoundingClientRect();
         const fits =
-          rect.width <= window.innerWidth && rect.height <= window.innerHeight;
+          rect.width <= availableWidth && rect.height <= availableHeight;
         if (fits) {
           low = mid;
         } else {

@@ -198,6 +198,7 @@ export function CabPlayer(props: {
     const player = parent.meta.players[props.p - 1];
     const playerId = player?.id;
     const name = player?.name || "";
+    const hasPriority = playerId != null && playerId === parent.priorityPlayer;
     const hideWins =
       parent.meta.type === "startgg" && parent.meta.subtype === "gauntlet";
     const score = hideWins
@@ -206,7 +207,7 @@ export function CabPlayer(props: {
           if (curr === playerId) return prev + 1;
           return prev;
         }, 0);
-    return { name, hideWins, score };
+    return { name, hasPriority, hideWins, score };
   });
   const cardDrawPhase = useAppState(
     (s) => s.event.tournament?.cardDrawPhase ?? "de-bo3",
@@ -220,7 +221,8 @@ export function CabPlayer(props: {
 
   if (displayType === "name") {
     const name = info?.name ?? "";
-    return <PlayerName name={name} seed={findSeedByGamerTag(name)} />;
+    const displayName = info?.hasPriority ? `${name} (L)` : name;
+    return <PlayerName name={displayName} seed={findSeedByGamerTag(name)} />;
   }
 
   let text: string | number | null = null;
