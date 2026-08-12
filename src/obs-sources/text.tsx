@@ -147,7 +147,7 @@ export function CabTitle() {
     if (!parent) return null;
     return parent.meta.title;
   });
-  return <FitH1>{text}</FitH1>;
+  return <FitH1 fontClassName={styles.titleFont}>{text}</FitH1>;
 }
 
 export function CabPlayers() {
