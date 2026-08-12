@@ -40,6 +40,7 @@ export function VsMeter() {
     p1Score === p2Score ? null : p1Score > p2Score ? "p1" : "p2";
 
   const delta = Math.abs(p1Score - p2Score);
+  const deltaText = winningSide ? `+${delta.toFixed(2)}` : "";
   const normalizedDelta = Math.min(delta, MAX_EX_DELTA) / MAX_EX_DELTA;
   // Logarithmic easing: equal steps in normalizedDelta near 0 move the
   // circle further than the same steps near MAX_EX_DELTA.
@@ -76,6 +77,25 @@ export function VsMeter() {
             }}
           />
         </div>
+        {winningSide && (
+          <div
+            className={
+              winningSide === "p1" ? styles.deltaWrapP1 : styles.deltaWrapP2
+            }
+          >
+            <p aria-hidden="true" className={styles.deltaStroke}>
+              {deltaText}
+            </p>
+            <p
+              className={classNames(styles.delta, {
+                [styles.deltaP1]: winningSide === "p1",
+                [styles.deltaP2]: winningSide === "p2",
+              })}
+            >
+              {deltaText}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
