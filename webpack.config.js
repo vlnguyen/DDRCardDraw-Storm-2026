@@ -205,6 +205,8 @@ module.exports = function (env = {}, argv = {}) {
         "process.env.SYNCSTART_PORT": JSON.stringify(
           process.env.SYNCSTART_PORT,
         ),
+        "process.env.PARTYKIT_HOST": JSON.stringify(process.env.PARTYKIT_HOST),
+        "process.env.PARTYKIT_PORT": JSON.stringify(process.env.PARTYKIT_PORT),
       }),
       new MiniCssExtractPlugin({
         filename: "[name].[chunkhash:5].css",
