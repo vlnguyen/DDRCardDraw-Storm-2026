@@ -8,11 +8,13 @@ export const sortedEntrants = [...entrants].sort((a, b) =>
 export interface EntrantOption {
   value: number;
   label: string;
+  gamerTag: string;
 }
 
 export const entrantOptions: EntrantOption[] = sortedEntrants.map((e) => ({
   value: e.id,
   label: e.prefix ? `${e.gamerTag} [${e.prefix}]` : e.gamerTag,
+  gamerTag: e.gamerTag,
 }));
 
 export function fuzzyMatchEntrant(query: string, item: EntrantOption): boolean {

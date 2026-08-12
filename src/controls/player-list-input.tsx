@@ -113,7 +113,8 @@ export function PlayerListInput(props: {
                   items={entrantOptions}
                   inputProps={{ leftIcon: <Person /> }}
                   selectedItem={
-                    entrantOptions.find((o) => o.label === value.name) ?? null
+                    entrantOptions.find((o) => o.gamerTag === value.name) ??
+                    null
                   }
                   itemPredicate={(query, item) => fuzzyMatchEntrant(query, item)}
                   itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
@@ -126,7 +127,11 @@ export function PlayerListInput(props: {
                       onFocus={handleFocus}
                     />
                   )}
-                  createNewItemFromQuery={(query) => ({ value: -1, label: query })}
+                  createNewItemFromQuery={(query) => ({
+                    value: -1,
+                    label: query,
+                    gamerTag: query,
+                  })}
                   createNewItemRenderer={(query, active, handleClick) => (
                     <MenuItem
                       key="create-new-player"
@@ -136,7 +141,7 @@ export function PlayerListInput(props: {
                       onClick={handleClick}
                     />
                   )}
-                  onItemSelect={(item) => renameAt(index!, item.label)}
+                  onItemSelect={(item) => renameAt(index!, item.gamerTag)}
                   inputValueRenderer={(item) => item.label}
                   noResults={<MenuItem disabled text="No matching players" />}
                 />

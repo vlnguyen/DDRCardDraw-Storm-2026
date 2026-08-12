@@ -9,7 +9,17 @@ import { formatDate, useCurrentTime } from "../hooks/useCurrentTime";
 import { useFitText } from "../hooks/useFitText";
 import { ROSTER_SLOTS } from "./step-stats";
 import { entrantsMap, SEED_UNSEEDED } from "../assets/entrants/entrantsMap";
+import entrants from "../assets/entrants/entrants.json";
 import styles from "./text.css";
+
+/** Looks up the current-event seed for a gamer tag (case-insensitive), for
+ * callers that only have a plain name string rather than an entrant id. */
+function findSeedByGamerTag(name: string): number | null {
+  const entrant = entrants.find(
+    (e) => e.gamerTag.toLowerCase() === name.toLowerCase(),
+  );
+  return entrant ? (entrantsMap[entrant.id]?.seed ?? null) : null;
+}
 
 function FitH1({
   children,
@@ -49,6 +59,17 @@ function FitH1({
         {children}
       </h1>
     </>
+  );
+}
+
+function PlayerName({ name, seed }: { name: string; seed?: number | null }) {
+  return (
+    <FitH1>
+      {name}
+      {seed != null && seed !== SEED_UNSEEDED && (
+        <sub className={styles.seed}>{seed}</sub>
+      )}
+    </FitH1>
   );
 }
 
@@ -100,14 +121,7 @@ export function PoolPlayerName() {
       ? (entrantsMap[player.entrantId]?.seed ?? null)
       : null;
 
-  return (
-    <FitH1>
-      {name}
-      {seed != null && seed !== SEED_UNSEEDED && (
-        <sub className={styles.seed}>{seed}</sub>
-      )}
-    </FitH1>
-  );
+  return <PlayerName name={name} seed={seed} />;
 }
 
 const labelTypeFont: Record<ObsLabelType, string> = {
@@ -204,11 +218,14 @@ export function CabPlayer(props: {
     return <ScoreTicks won={won} total={total} />;
   }
 
+  if (displayType === "name") {
+    const name = info?.name ?? "";
+    return <PlayerName name={name} seed={findSeedByGamerTag(name)} />;
+  }
+
   let text: string | number | null = null;
   if (info) {
     if (info.hideWins) {
-      text = info.name;
-    } else if (displayType === "name") {
       text = info.name;
     } else if (displayType === "score") {
       text = info.score;
