@@ -111,6 +111,7 @@ type DashboardTabId =
   | "match-log"
   | "players"
   | "schedule"
+  | "settings"
   | "import-export";
 
 const DEFAULT_DASHBOARD_TAB: DashboardTabId = "sources";
@@ -122,6 +123,7 @@ function isDashboardTabId(value: string | null): value is DashboardTabId {
     value === "match-log" ||
     value === "players" ||
     value === "schedule" ||
+    value === "settings" ||
     value === "import-export"
   );
 }
@@ -167,6 +169,9 @@ export function Dashboard() {
         </Tab>
         <Tab id="schedule" panel={<Schedule />}>
           Schedule
+        </Tab>
+        <Tab id="settings" panel={<Settings />}>
+          Settings/Resources
         </Tab>
         <Tab id="import-export" panel={<ImportExport />}>
           Import/Export
@@ -697,9 +702,6 @@ function Sources() {
         <WeighInSelect />
       </Card>
       <Card className={styles.autoWidthSection}>
-        <CardDrawPhaseSelect />
-      </Card>
-      <Card className={styles.autoWidthSection}>
         <H3>
           Stage Progression <StageProgressionLink />
         </H3>
@@ -707,6 +709,16 @@ function Sources() {
       </Card>
       <Card className={styles.autoWidthSection}>
         <ChartLeaderboardSelect />
+      </Card>
+    </div>
+  );
+}
+
+function Settings() {
+  return (
+    <div className={styles.formStack}>
+      <Card className={styles.autoWidthSection}>
+        <CardDrawPhaseSelect />
       </Card>
       <OtherSources />
       <CssEditor />
