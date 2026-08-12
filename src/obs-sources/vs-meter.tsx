@@ -4,6 +4,7 @@ import { useLiveRankings } from "./useLiveRankings";
 import styles from "./vs-meter.css";
 
 const MAX_EX_DELTA = 1.0;
+const FADE_MS = 400;
 
 export function VsMeter() {
   const lobbyConnection = useAppState(
@@ -19,12 +20,17 @@ export function VsMeter() {
     return null;
   }
 
+  // Only render for 2 player lobbies where both players are on the same machine.
   const machineIds = new Set(
     gameState.players.map((p) => p.socketId).filter(Boolean),
   );
   if (machineIds.size > 1) {
     return null;
   }
+
+  const onGameplayScreen = gameState.players.some(
+    (p) => p.screenName === "ScreenGameplay",
+  );
 
   const p1 = gameState.players.find((p) => p.playerId === "P1");
   const p2 = gameState.players.find((p) => p.playerId === "P2");
@@ -43,25 +49,33 @@ export function VsMeter() {
 
   return (
     <div className={styles.canvas}>
-      <div className={styles.verticalLine} />
-      <div className={styles.line}>
-        <div
-          className={classNames(styles.lineP1, {
-            [styles.dimmed]: winningSide === "p2",
-          })}
-        />
-        <div
-          className={classNames(styles.lineP2, {
-            [styles.dimmed]: winningSide === "p1",
-          })}
-        />
-        <div
-          className={styles.circle}
-          style={{
-            left: `${circlePosition * 100}%`,
-            transform: `translate(${circlePosition * -100}%, -50%)`,
-          }}
-        />
+      <div
+        className={styles.meter}
+        style={{
+          opacity: onGameplayScreen ? 1 : 0,
+          transition: `opacity ${FADE_MS}ms ease`,
+        }}
+      >
+        <div className={styles.verticalLine} />
+        <div className={styles.line}>
+          <div
+            className={classNames(styles.lineP1, {
+              [styles.dimmed]: winningSide === "p2",
+            })}
+          />
+          <div
+            className={classNames(styles.lineP2, {
+              [styles.dimmed]: winningSide === "p1",
+            })}
+          />
+          <div
+            className={styles.circle}
+            style={{
+              left: `${circlePosition * 100}%`,
+              transform: `translate(${circlePosition * -100}%, -50%)`,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

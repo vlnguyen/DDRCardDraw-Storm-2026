@@ -6,6 +6,11 @@
   --p2-color: green;
 }
 
+.meter {
+  position: absolute;
+  inset: 0;
+}
+
 .line {
   position: absolute;
   top: 50%;
