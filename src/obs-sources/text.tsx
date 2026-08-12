@@ -242,5 +242,5 @@ export function PhaseName() {
     return parent.meta.type === "startgg" ? parent.meta.phaseName : null;
   });
 
-  return <FitH1>{text}</FitH1>;
+  return <FitH1 fontClassName={styles.titleFont}>{text}</FitH1>;
 }
