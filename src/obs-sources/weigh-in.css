@@ -74,13 +74,13 @@
 }
 
 .p1 .nameBlock {
-  /* borrowed from stage-progression.css .poolHighlight */
-  background: rgba(0, 132, 254, 0.5);
+  /* matches vs-meter.css --p1-color */
+  background: rgba(245, 0, 138, 0.5);
 }
 
 .p2 .nameBlock {
-  /* borrowed from stage-progression.css .poolHighlightRed */
-  background: rgba(255, 59, 48, 0.5);
+  /* matches vs-meter.css --p2-color */
+  background: rgba(25, 134, 255, 0.5);
 }
 
 .gamerTag {
