@@ -180,10 +180,11 @@ finalEntries.sort((a, b) =>
   a.entry.comment.toLowerCase().localeCompare(b.entry.comment.toLowerCase()),
 );
 
-const newBody =
-  finalEntries.map(({ entry, seed }) => serializeEntry(entry, seed)).join(
-    "",
-  ) + "\n";
+// No trailing "\n" here — `after` (sliced from the original `\n};`) already
+// supplies the newline immediately before the closing brace.
+const newBody = finalEntries
+  .map(({ entry, seed }) => serializeEntry(entry, seed))
+  .join("");
 
 await writeFile(ENTRANTS_MAP_PATH, before + newBody + after);
 

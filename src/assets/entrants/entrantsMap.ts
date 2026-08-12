@@ -1521,7 +1521,6 @@ export const entrantsMap: Record<
     },
     seed: 20,
   },
-
 };
 
 /** GrooveStats member id -> start.gg entrant id, for entrants with both known. */
