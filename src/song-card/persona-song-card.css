@@ -162,6 +162,10 @@
   );
 }
 
+.vetoed .clickTarget {
+  backdrop-filter: blur(1px) brightness(60%) grayscale(75%);
+}
+
 .cardCenter {
   flex: 1 1 auto;
   display: flex;
@@ -205,6 +209,20 @@
   padding: 8px;
   align-items: center;
   min-height: 1.8em;
+}
+
+.cardFooter {
+  position: relative;
+}
+
+.noCmodIcon {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  font-size: 2em;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .coffinCorner {
@@ -276,6 +294,10 @@
   transform-origin: center;
   border-color: #e12b2b;
   box-shadow: 0px 0px 8px #e12b2b;
+}
+
+.chart.vetoed ~ .coffinCorner {
+  filter: grayscale(75%);
 }
 
 .vetoed::after {
