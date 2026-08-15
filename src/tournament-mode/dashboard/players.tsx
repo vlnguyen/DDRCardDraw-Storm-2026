@@ -4,6 +4,7 @@ import {
   DragHandleVertical,
   Duplicate,
   Edit,
+  Lightning,
   Minus,
   Person,
   Plus,
@@ -33,6 +34,7 @@ import {
   routablePoolsPath,
 } from "../copy-obs-source";
 import { MatchLog } from "./match-log";
+import { useMatchLogStore } from "./match-log.store";
 import { LobbyStateView } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
 import { poolSongCounterText } from "../../obs-sources/text";
@@ -40,6 +42,7 @@ import styles from "./players.css";
 
 const MIN_PLAYER_COUNT = 4;
 const CAB_LABELS = ["Cab 1 [P1]", "Cab 1 [P2]", "Cab 2 [P1]", "Cab 2 [P2]"];
+const CUSTOM_ENTRANT_VALUE = -1;
 
 function makeEmptyPlayer(scoreCount: number): PoolPlayer {
   return {
@@ -109,6 +112,7 @@ export function Players() {
   );
   const lobbies = useLobbiesStore((s) => s.lobbies);
   const fetchLobbies = useLobbiesStore((s) => s.fetchLobbies);
+  const matchLogMatches = useMatchLogStore((s) => s.matches);
   useEffect(() => {
     fetchLobbies();
   }, [fetchLobbies]);
@@ -242,6 +246,79 @@ export function Players() {
       ...prev,
       players: (prev.players ?? []).filter((_, j) => j !== index),
     }));
+  }
+
+  function handleAutomateSong(songIndex: number) {
+    const activePlayerNames = players
+      .map((p) => p.gamerTag?.trim())
+      .filter((name): name is string => !!name)
+      .map((name) => name.toLowerCase());
+
+    if (activePlayerNames.length === 0) {
+      toaster.show({
+        message: "Unable to auto-map scores",
+        intent: "danger",
+      });
+      return;
+    }
+
+    const poolNameSet = new Set(activePlayerNames);
+    const sortedMatches = [...matchLogMatches].sort(
+      (a, b) => b.dateAdded - a.dateAdded,
+    );
+    const match = sortedMatches.find((m) => {
+      const matchNameSet = new Set(
+        m.scores.map((s) => s.profileName.trim().toLowerCase()),
+      );
+      return (
+        matchNameSet.size === poolNameSet.size &&
+        [...poolNameSet].every((name) => matchNameSet.has(name))
+      );
+    });
+
+    if (!match) {
+      toaster.show({
+        message: "Unable to auto-map scores",
+        intent: "danger",
+      });
+      return;
+    }
+
+    const scoreByName = new Map(
+      match.scores.map((s) => [s.profileName.trim().toLowerCase(), s]),
+    );
+
+    setPoolState((prev) => ({
+      ...prev,
+      players: (prev.players ?? []).map((p) => {
+        const name = p.gamerTag?.trim().toLowerCase();
+        const score = name ? scoreByName.get(name) : undefined;
+        if (!score) return p;
+        const linked: PoolPlayerScore = {
+          scoreId: score.id,
+          exScore: score.exScore ?? undefined,
+          fantasticPlus: score.fantasticPlus ?? undefined,
+          fantastics: score.fantastics ?? undefined,
+          excellents: score.excellents ?? undefined,
+          greats: score.greats ?? undefined,
+          decents: score.decents ?? undefined,
+          wayOffs: score.wayOffs ?? undefined,
+          misses: score.misses ?? undefined,
+          minesHit: score.minesHit ?? undefined,
+          holdsHeld: score.holdsHeld ?? undefined,
+          rollsHeld: score.rollsHeld ?? undefined,
+        };
+        return {
+          ...p,
+          scores: p.scores.map((s, k) => (k !== songIndex ? s : linked)),
+        };
+      }),
+    }));
+
+    toaster.show({
+      message: `Song ${songIndex + 1} scores filled from match log.`,
+      intent: "success",
+    });
   }
 
   function handleResetSongs() {
@@ -426,6 +503,12 @@ export function Players() {
               <th key={i}>
                 <div className={styles.songHeader}>
                   <span>{`Song ${i + 1}`}</span>
+                  <Tooltip content="Attempt mapping">
+                    <Button
+                      icon={<Lightning />}
+                      onClick={() => handleAutomateSong(i)}
+                    />
+                  </Tooltip>
                   <Button
                     icon={<Minus />}
                     onClick={() =>
@@ -537,18 +620,24 @@ export function Players() {
                   const entrant = sortedEntrants.find(
                     (en) => en.id === option.value,
                   );
-                  if (!entrant) return;
                   setPoolState((prev) => ({
                     ...prev,
                     players: (prev.players ?? []).map((p, j) =>
                       j !== i
                         ? p
-                        : {
-                            ...p,
-                            entrantId: entrant.id,
-                            gamerTag: entrant.gamerTag,
-                            prefix: entrant.prefix,
-                          },
+                        : entrant
+                          ? {
+                              ...p,
+                              entrantId: entrant.id,
+                              gamerTag: entrant.gamerTag,
+                              prefix: entrant.prefix,
+                            }
+                          : {
+                              ...p,
+                              entrantId: undefined,
+                              gamerTag: option.gamerTag,
+                              prefix: undefined,
+                            },
                     ),
                   }));
                 }}
@@ -706,7 +795,16 @@ function PlayerRow({
               selectedItem={
                 player.isDisabled
                   ? null
-                  : entrantOptions.find((o) => o.value === player.entrantId) ?? null
+                  : (entrantOptions.find((o) => o.value === player.entrantId) ??
+                    (player.gamerTag
+                      ? {
+                          value: CUSTOM_ENTRANT_VALUE,
+                          label: player.prefix
+                            ? `${player.gamerTag} [${player.prefix}]`
+                            : player.gamerTag,
+                          gamerTag: player.gamerTag,
+                        }
+                      : null))
               }
               itemPredicate={(query, item) => fuzzyMatchEntrant(query, item)}
               itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (
@@ -722,6 +820,21 @@ function PlayerRow({
               onItemSelect={onPlayerSelect}
               inputValueRenderer={(item) => item.label}
               noResults={<MenuItem disabled text="No matching players" />}
+              createNewItemFromQuery={(query) => ({
+                value: CUSTOM_ENTRANT_VALUE,
+                label: query,
+                gamerTag: query,
+              })}
+              createNewItemRenderer={(query, active, handleClick) => (
+                <MenuItem
+                  key="create-new-entrant"
+                  icon={<Plus />}
+                  text={`Use "${query}"`}
+                  roleStructure="listoption"
+                  active={active}
+                  onClick={handleClick}
+                />
+              )}
             />
           </div>
           <Tooltip content="Remove player">
