@@ -28,7 +28,7 @@ export function PersonaBaseCardCenter(props: CardSectionProps) {
 }
 
 export function PersonaBaseCardFooter(props: BaseFooterProps) {
-  const { winner } = props;
+  const { winner, centerElement } = props;
   const hasWinner = winner !== undefined && winner !== null;
   const winnerLabel = usePlayerLabelForId(winner ?? "");
   const visibility = hasWinner ? "visible" : "hidden";
@@ -43,6 +43,7 @@ export function PersonaBaseCardFooter(props: BaseFooterProps) {
       <span className={styles.winnerLabel} style={{ visibility }}>
         {winnerLabel}
       </span>
+      {centerElement}
     </div>
   );
 }

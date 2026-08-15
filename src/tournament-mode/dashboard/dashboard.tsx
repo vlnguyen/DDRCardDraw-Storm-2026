@@ -83,6 +83,7 @@ import {
 import {
   fetchStageRows,
   getPoolCodesForStage,
+  parsePoolPlayers,
 } from "../../obs-sources/pool-history";
 import styles from "./dashboard.css";
 import { Lobbies } from "./lobbies";
@@ -473,7 +474,21 @@ function StagePoolSelect({
   // ticks once/sec purely to keep the "time ago" text below live
   useCurrentTime();
 
+  const selectedStageRows = useAppState(
+    (s) =>
+      s.event.tournament?.poolHistory?.data?.[selectedStage] as
+        | string[][]
+        | undefined,
+  );
+
   const poolCodes = stagePoolCodes[selectedStage];
+
+  const selectedPoolPlayerNames = useMemo(() => {
+    if (!selectedStageRows || !selectedPool) return [];
+    return parsePoolPlayers(selectedStageRows, selectedPool)
+      .map((player) => player.gamerTag)
+      .filter((tag): tag is string => !!tag);
+  }, [selectedStageRows, selectedPool]);
 
   const fetchData = async () => {
     setIsFetching(true);
@@ -552,6 +567,11 @@ function StagePoolSelect({
           ? `${formatLastFetched(lastFetched)} (${formatTimeAgo(lastFetched)})`
           : "never"}
       </div>
+      {selectedPoolPlayerNames.length > 0 && (
+        <div style={{ fontSize: "0.75em", opacity: 0.6 }}>
+          {selectedPoolPlayerNames.join(", ")}
+        </div>
+      )}
     </>
   );
 }

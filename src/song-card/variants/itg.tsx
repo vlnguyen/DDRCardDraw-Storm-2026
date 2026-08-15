@@ -1,5 +1,6 @@
 import { BaseCardFooter, CardSectionProps, baseChartValues } from "./base";
 import { PersonaBaseCardFooter } from "./persona-base";
+import personaStyles from "../persona-song-card.css";
 
 export function ItgCardFooter(props: CardSectionProps) {
   const { flags } = baseChartValues(props.chart);
@@ -17,7 +18,11 @@ export function PersonaItgCardFooter(props: CardSectionProps) {
     <PersonaBaseCardFooter
       chart={props.chart}
       winner={props.winner}
-      centerElement={flags?.includes("noCmod") && "🚫"}
+      centerElement={
+        flags?.includes("noCmod") && (
+          <span className={personaStyles.noCmodIcon}>🚫</span>
+        )
+      }
     />
   );
 }

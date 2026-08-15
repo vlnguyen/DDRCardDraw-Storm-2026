@@ -1,6 +1,7 @@
 {
   "meta": {
     "menuParent": "events",
+    "cardVariant": "itg",
     "flags": ["noCmod", "Base", "Lower", "Upper"],
     "lastUpdated": 1782464915971,
     "usesDrawGroups": false,
