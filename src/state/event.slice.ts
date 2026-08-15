@@ -68,7 +68,6 @@ export interface PoolState {
   players?: PoolPlayer[];
   numPlayersAdvance?: number;
   totalSongs?: number;
-  currentSong?: number;
 }
 
 export type CardDrawPhase =
@@ -269,7 +268,6 @@ export const eventSlice = createSlice({
       action: PayloadAction<{
         numPlayersAdvance?: number;
         totalSongs?: number;
-        currentSong?: number;
       }>,
     ) {
       if (!state.tournament.poolState) {
@@ -278,7 +276,6 @@ export const eventSlice = createSlice({
       state.tournament.poolState.numPlayersAdvance =
         action.payload.numPlayersAdvance;
       state.tournament.poolState.totalSongs = action.payload.totalSongs;
-      state.tournament.poolState.currentSong = action.payload.currentSong;
     },
     updateLobbyConnection(
       state,

@@ -80,21 +80,21 @@ export function CurrentTime() {
   return <FitH1 textStroke={textStroke}>{formatDate(now, "currentTime")}</FitH1>;
 }
 
-export function poolSongCounterText(
-  currentSong: number | undefined,
+export function getCurrentSongNumber(
+  songs: string[] | undefined,
   totalSongs: number | undefined,
 ): string {
-  return `Song ${currentSong ?? 1}/${totalSongs ?? 6}`;
+  const total = totalSongs ?? 6;
+  const current = Math.min((songs?.length ?? 0) + 1, total);
+  return `Song ${current}/${total}`;
 }
 
 export function PoolSongCounter() {
-  const currentSong = useAppState(
-    (s) => s.event.tournament?.poolState?.currentSong,
-  );
+  const songs = useAppState((s) => s.event.tournament?.poolState?.songs);
   const totalSongs = useAppState(
     (s) => s.event.tournament?.poolState?.totalSongs,
   );
-  return <FitH1>{poolSongCounterText(currentSong, totalSongs)}</FitH1>;
+  return <FitH1>{getCurrentSongNumber(songs, totalSongs)}</FitH1>;
 }
 
 /**

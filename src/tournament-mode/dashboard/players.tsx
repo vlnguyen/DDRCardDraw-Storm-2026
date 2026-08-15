@@ -37,7 +37,7 @@ import { MatchLog } from "./match-log";
 import { useMatchLogStore } from "./match-log.store";
 import { LobbyStateView } from "./lobbies";
 import { useLobbiesStore } from "./lobbies.store";
-import { poolSongCounterText } from "../../obs-sources/text";
+import { getCurrentSongNumber } from "../../obs-sources/text";
 import styles from "./players.css";
 
 const MIN_PLAYER_COUNT = 4;
@@ -158,7 +158,6 @@ export function Players() {
     ),
     numPlayersAdvance: savedPoolState.numPlayersAdvance ?? 2,
     totalSongs: savedPoolState.totalSongs ?? 6,
-    currentSong: savedPoolState.currentSong ?? 1,
   }));
 
   const players = poolState.players ?? [];
@@ -195,7 +194,6 @@ export function Players() {
       eventSlice.actions.setPoolSettings({
         numPlayersAdvance: poolState.numPlayersAdvance,
         totalSongs: poolState.totalSongs,
-        currentSong: poolState.currentSong,
       }),
     );
     toaster.show({ message: "Pool state updated.", intent: "success" });
@@ -241,10 +239,14 @@ export function Players() {
     }));
   }
 
-  function handleRemovePlayer(index: number) {
+  function handleClearPlayer(index: number) {
     setPoolState((prev) => ({
       ...prev,
-      players: (prev.players ?? []).filter((_, j) => j !== index),
+      players: (prev.players ?? []).map((p, j) =>
+        j !== index
+          ? p
+          : { ...p, entrantId: undefined, gamerTag: undefined, prefix: undefined },
+      ),
     }));
   }
 
@@ -316,7 +318,7 @@ export function Players() {
     }));
 
     toaster.show({
-      message: `Song ${songIndex + 1} scores filled from match log.`,
+      message: `Successfully auto-mapped from ${match.songTitle} in lobby ${match.lobbyCode}`,
       intent: "success",
     });
   }
@@ -388,21 +390,6 @@ export function Players() {
             <Radio label="2" value="2" />
           </RadioGroup>
         </FormGroup>
-        <FormGroup label={<strong>Current Song</strong>}>
-          <InputGroup
-            type="number"
-            value={
-              poolState.currentSong != null ? String(poolState.currentSong) : ""
-            }
-            onChange={(e) =>
-              setPoolState((prev) => ({
-                ...prev,
-                currentSong:
-                  e.target.value === "" ? undefined : Number(e.target.value),
-              }))
-            }
-          />
-        </FormGroup>
         <FormGroup label={<strong>Total Songs</strong>}>
           <div className={styles.formRow}>
             <InputGroup
@@ -418,14 +405,13 @@ export function Players() {
                 }))
               }
             />
-            <Tooltip
-              content={poolSongCounterText(
-                poolState.currentSong,
-                poolState.totalSongs,
-              )}
-            >
+            <Tooltip content="Copy OBS source URL">
               <AnchorButton
                 icon={<Duplicate />}
+                text={getCurrentSongNumber(
+                  savedPoolState.songs,
+                  savedPoolState.totalSongs,
+                )}
                 href={poolSongCounterHref}
                 onClick={(e) => {
                   e.preventDefault();
@@ -588,8 +574,7 @@ export function Players() {
                 lobbyPlayerName={getLobbyPlayerName(i)}
                 player={player}
                 songs={songs}
-                canRemove={players.length > MIN_PLAYER_COUNT}
-                onRemove={() => handleRemovePlayer(i)}
+                onClear={() => handleClearPlayer(i)}
                 onEditScore={(songIndex: number) =>
                   setEditingScore({ playerIndex: i, songIndex })
                 }
@@ -735,8 +720,7 @@ interface PlayerRowProps {
   lobbyPlayerName: string;
   player: PoolPlayer;
   songs: string[];
-  canRemove: boolean;
-  onRemove(): void;
+  onClear(): void;
   onEditScore(songIndex: number): void;
   onClearScore(songIndex: number): void;
   onToggleActive(active: boolean): void;
@@ -749,8 +733,7 @@ function PlayerRow({
   lobbyPlayerName,
   player,
   songs,
-  canRemove,
-  onRemove,
+  onClear,
   onEditScore,
   onClearScore,
   onToggleActive,
@@ -837,8 +820,8 @@ function PlayerRow({
               )}
             />
           </div>
-          <Tooltip content="Remove player">
-            <Button icon={<Trash />} disabled={!canRemove} onClick={onRemove} />
+          <Tooltip content="Clear player">
+            <Button icon={<Trash />} onClick={onClear} />
           </Tooltip>
         </div>
         <Suggest<string>
