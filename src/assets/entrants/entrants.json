@@ -19,7 +19,7 @@
   },
   {
     "id": 3442088,
-    "discriminator": "",
+    "discriminator": "9215bfa8",
     "gamerTag": "kickinnc2",
     "prefix": ""
   },
@@ -453,6 +453,12 @@
     "id": 437458,
     "discriminator": "f63b99dd",
     "gamerTag": "Rynker",
+    "prefix": ""
+  },
+  {
+    "id": 3453428,
+    "discriminator": "",
+    "gamerTag": "SpeakEZ",
     "prefix": ""
   },
   {
