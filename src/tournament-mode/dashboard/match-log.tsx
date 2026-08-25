@@ -1,6 +1,6 @@
-import { Button, Card, H3, H4 } from "@blueprintjs/core";
-import { Edit, Locate, Refresh } from "@blueprintjs/icons";
-import { useEffect } from "react";
+import { Button, Card, Checkbox, H3, H4 } from "@blueprintjs/core";
+import { Download, Edit, Locate, Refresh } from "@blueprintjs/icons";
+import { useEffect, useMemo, useState } from "react";
 import { Match, PlayerScore, ServerMessage } from "../../obs-sources/lobby.types";
 import {
   SYNCSTART_PORT,
@@ -8,6 +8,11 @@ import {
 } from "../../obs-sources/syncstart-connection";
 import { formatTimeAgo, useCurrentTime } from "../../hooks/useCurrentTime";
 import { useMatchLogStore } from "./match-log.store";
+import {
+  exportMatchLogCsv,
+  exportMatchLogJson,
+  isLabelledMatch,
+} from "./match-log-export";
 import styles from "./match-log.css";
 
 export function formatRatio(numerator: number | null, total: number | null) {
@@ -28,8 +33,14 @@ export function MatchLog({
   const fetchMatches = useMatchLogStore((s) => s.fetchMatches);
   const addMatch = useMatchLogStore((s) => s.addMatch);
   const patchMatch = useMatchLogStore((s) => s.patchMatch);
+  const [labelledOnly, setLabelledOnly] = useState(false);
   // ticks once/sec purely to keep the "time ago" text below live
   useCurrentTime();
+
+  const displayedMatches = useMemo(
+    () => (labelledOnly ? matches.filter(isLabelledMatch) : matches),
+    [matches, labelledOnly],
+  );
 
   useEffect(() => {
     fetchMatches();
@@ -54,7 +65,7 @@ export function MatchLog({
     return () => socket.close();
   }, [addMatch, patchMatch]);
 
-  const totalScores = matches.reduce(
+  const totalScores = displayedMatches.reduce(
     (sum, match) => sum + match.scores.length,
     0,
   );
@@ -65,16 +76,35 @@ export function MatchLog({
         Match Log{" "}
         <Button icon={<Refresh />} onClick={fetchMatches} />
       </H3>
+      <div className={styles.exportControls}>
+        <Checkbox
+          checked={labelledOnly}
+          label="Labelled matches only"
+          onChange={(e) => setLabelledOnly(e.currentTarget.checked)}
+        />
+        <Button
+          icon={<Download />}
+          text="Export Log (.json)"
+          disabled={displayedMatches.length === 0}
+          onClick={() => exportMatchLogJson(displayedMatches)}
+        />
+        <Button
+          icon={<Download />}
+          text="Export Log (.csv)"
+          disabled={displayedMatches.length === 0}
+          onClick={() => exportMatchLogCsv(displayedMatches)}
+        />
+      </div>
       {lastUpdated && (
         <p className={styles.refreshInfo}>
           Last updated: {lastUpdated.toLocaleString()} (
           {formatTimeAgo(lastUpdated)})
           <br />
-          Received {matches.length} matches and {totalScores} scores.
+          Received {displayedMatches.length} matches and {totalScores} scores.
         </p>
       )}
       {error && <p>{error}</p>}
-      {matches.map((match) => (
+      {displayedMatches.map((match) => (
         <MatchCard
           key={match.id}
           match={match}
