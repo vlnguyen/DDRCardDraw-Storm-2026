@@ -12,6 +12,17 @@
   margin-top: 0;
 }
 
+.exportControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: -0.5rem;
+}
+
+.exportControls :global(.bp6-control) {
+  margin-bottom: 0;
+}
+
 .matchHeader {
   display: flex;
   justify-content: space-between;
